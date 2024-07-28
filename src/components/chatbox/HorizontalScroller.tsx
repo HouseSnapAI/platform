@@ -14,21 +14,22 @@ import { examplePromptsOne, examplePromptsTwo, exampleListings } from '@/utils/v
 type HorizontalScrollerProps = {
     setInputValue: (value: string) => void
     email: string | null | undefined
+    setUserInfo: (data:any)=>void | undefined;
 }
 
-const HorizontalScroller = ({setInputValue, email}: HorizontalScrollerProps) => {
+const HorizontalScroller = ({setInputValue, email, setUserInfo }: HorizontalScrollerProps) => {
   return (
     <Box className='w-[64%] flex flex-col justify-center items-center gap-2'>
       {/* EXAMPLE LISTINGS */}
       <Box className="w-full flex flex-row relative listings gap-2">
         <Box className="h-full flex listings-slide gap-2">
           {exampleListings.map((listing, index) => (
-            <Listing key={index} listing={listing} email={email} />
+            <Listing key={index} listing={listing} email={email} setUserInfo={setUserInfo} />
           ))}
         </Box>
         <Box className="h-full flex listings-slide gap-2">
           {exampleListings.map((listing, index) => (
-            <Listing key={index} listing={listing} email={email} />
+            <Listing key={index} listing={listing} email={email} setUserInfo={setUserInfo} />
           ))}
         </Box>
       </Box>

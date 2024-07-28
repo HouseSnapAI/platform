@@ -70,6 +70,7 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({ anchorEl, open, onClose, 
             if (response.status === 200) {
                 console.log('User preferences updated successfully');
                 setUserInfo(userInfo[0] ? [userInfo[0], userPreferences]: []);
+                localStorage.setItem('userInfo', JSON.stringify(userInfo[0] ? [userInfo[0], userPreferences] : []));
             } else {
                 console.error('Error updating user preferences');
             }

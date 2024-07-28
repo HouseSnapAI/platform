@@ -82,7 +82,6 @@ export default function Home() {
       });
 
       const data = await response.json();
-      console.log(data);
       setEmail('');
       toast('Added!', {
         position: "top-right",
@@ -254,7 +253,7 @@ export default function Home() {
             </Box>
           </Box>
           
-          <HorizontalScroller setInputValue={setInputValue} email={undefined} />
+          <HorizontalScroller setInputValue={setInputValue} email={undefined} setUserInfo={(data:any)=>{}} />
   
           {/* CALL TO ACTION + TITLES */}
   

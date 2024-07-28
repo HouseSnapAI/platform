@@ -10,9 +10,10 @@ type ChatBoxProps = {
   inputValue: string
   handleClick: () => void
   email: string | null | undefined
+  setUserInfo: (data:any)=>void;
 }
 
-const Chatbox = ({drawerOpen, setInputValue, inputValue, handleClick, email}: ChatBoxProps) => {
+const Chatbox = ({drawerOpen, setInputValue, inputValue, handleClick, email, setUserInfo}: ChatBoxProps) => {
     const theme = useTheme();
 
     return (
@@ -30,7 +31,7 @@ const Chatbox = ({drawerOpen, setInputValue, inputValue, handleClick, email}: Ch
 
 
       {/* HORIZONTAL SCROLLER */}
-      <HorizontalScroller setInputValue={setInputValue} email={email} />
+      <HorizontalScroller setInputValue={setInputValue} email={email} setUserInfo={setUserInfo} />
 
       {/* TODO: ON SUBMIT QUERY THE MODEL */}
       <Box className='w-[64%] px-4 py-3'>

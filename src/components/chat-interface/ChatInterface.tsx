@@ -10,6 +10,7 @@ import { IconSend } from '@tabler/icons-react'
 import ChatWindow from './ChatWindow'
 import { ChatHistoryType, MessageType, UserPreferencesType, UserType } from '@/utils/types'
 import Typography from '@mui/material/Typography'
+import IconButton from '@mui/material/IconButton'
 
 type ChatInterfaceProps = {
     drawerOpen: boolean
@@ -23,8 +24,6 @@ type ChatInterfaceProps = {
   }
 const ChatInterface = ({drawerOpen, setInputValue, inputValue, chatHistory, handleClick, userInfo, chatId, loading}: ChatInterfaceProps) => {
 
-    
-
   return (
     <Box className={`h-[100vh] p-4 relative flex flex-col items-center text-white w-[calc(100vw-67px)]`}>
         {/* CHAT TITLE */}
@@ -37,48 +36,54 @@ const ChatInterface = ({drawerOpen, setInputValue, inputValue, chatHistory, hand
 
         {/* INPUT */}
         <Box className='w-[64%] px-4 py-3 overflow-y-hidden'>
-            <form onSubmit={(e)=>{
-            e.preventDefault();
-            handleClick()}}>
-                <Box id='finput' className='w-full flex flex-row items-center justify-between gap-2 fade-in-on-scroll cursor-pointer border mb-14 rounded-md transition-all ease-in-out duration-300'>
-    
-                    <TextField 
-                        value={inputValue} 
-                        onChange={(e) => setInputValue(e.target.value)}
-                        variant='outlined' 
-                        color='secondary' 
-                        fullWidth 
-                        autoComplete='false' 
-                        InputProps={{
-                            endAdornment: 
-                            <IconSend 
+            <form
+                onSubmit={(e) => {
+                    e.preventDefault();
+                    handleClick();
+                }}
+                className='w-full flex flex-row items-center justify-between gap-2 fade-in-on-scroll cursor-pointer border mb-14 rounded-md transition-all ease-in-out duration-300'
+            >
+                <TextField 
+                    value={inputValue} 
+                    onChange={(e) => setInputValue(e.target.value)}
+                    variant='outlined' 
+                    color='secondary' 
+                    fullWidth 
+                    autoComplete='false' 
+                    InputProps={{
+                        endAdornment: 
+                        <IconButton
+                            type='submit'
                             onClick={handleClick}
-                            size={30} 
-                            stroke={2} 
-                            className='text-[white] mr-2 hover:cursor-pointer hover:text-pink-500 transition-all ease-in-out duration-300' 
-                            />,
-                            style: { border: 'none', boxShadow: 'none' }
-                        }}
-                        sx={{
-                            '& .MuiOutlinedInput-root': {
-                                '& fieldset': {
-                                    border: 'none',
-                                },
-                                '&:hover fieldset': {
-                                    border: 'none',
-                                },
-                                '&.Mui-focused fieldset': {
-                                    border: 'none',
-                                },
-                            },
-                            '& .MuiInputBase-input': {
-                                color: 'white',
-                            },
-                        }}
+                            color='secondary'
+                            size='small'
                         >
-                        Get Started!!
-                    </TextField>
-                </Box>
+                            <IconSend 
+                                size={30} 
+                                stroke={2} 
+                                className='text-[white] mr-2 hover:cursor-pointer hover:text-pink-500 transition-all ease-in-out duration-300' 
+                            />
+                        </IconButton>
+                    }}
+                    sx={{
+                        '& .MuiOutlinedInput-root': {
+                            '& fieldset': {
+                                border: 'none',
+                            },
+                            '&:hover fieldset': {
+                                border: 'none',
+                            },
+                            '&.Mui-focused fieldset': {
+                                border: 'none',
+                            },
+                        },
+                        '& .MuiInputBase-input': {
+                            color: 'white',
+                        },
+                    }}
+                >
+                    Get Started!!
+                </TextField>
             </form>
         </Box>
     </Box>

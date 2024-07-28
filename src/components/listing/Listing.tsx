@@ -16,7 +16,7 @@ const formatPrice = (price: number): string => {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(price);
 }
 
-const Listing = ({listing, email}: {listing: ListingDetailType, email: string|null|undefined}) => {
+const Listing = ({listing, email, setUserInfo}: {listing: ListingDetailType, email: string|null|undefined, setUserInfo: (data:any)=>void}) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const handleOpenDrawer = () => {
@@ -40,7 +40,7 @@ const Listing = ({listing, email}: {listing: ListingDetailType, email: string|nu
         </Typography>
         <Typography variant='subtitle2' className='text-center text-white/70 group-hover:text-white ease-in-out duration-300'>{listing?.bedrooms?.N} Bed {listing?.bathrooms?.N} Bath {listing?.square_footage?.N} sqft - <span className="font-semibold text-md">{formatPrice(Number(listing?.listing_detail_price?.N))}</span></Typography>
       </Box>
-      <ListingDrawer open={drawerOpen} onClose={handleCloseDrawer} listing={listing} email={email} />
+      <ListingDrawer open={drawerOpen} onClose={handleCloseDrawer} listing={listing} email={email} setUserInfo={setUserInfo} />
     </>
   )
 }

@@ -67,9 +67,15 @@ const ChatHistory = () => {
       <Typography pl={1} pt={1} pb={0.5} fontSize={14} className='text-[#6f6f6f]' sx={{borderBottom: `1px solid ${theme.palette.divider}`}}>{label}</Typography>
       {chats.map((chat) => (
         <Box key={chat.M.chat_id.S} className='flex flex-row justify-between transition-all cursor-pointer ease-in-out duration-300 p-1' sx={{borderBottom: `1px solid ${theme.palette.divider}`}} onClick={() => {window.location.href = `/chat/${chat.M.chat_id.S}`}}>
-          <Button fullWidth endIcon={
-            <IconTrash className='text-[#6f6f6f] hover:text-red-500 transition-colors ease-in-out duration-300' size={18} strokeWidth={1.5} onClick={() => handleDelete(chat.M.chat_id.S)}/>
-          } style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', textTransform: 'none' }}>
+          <Button
+            fullWidth
+            endIcon={
+              <IconTrash className='text-[#6f6f6f] hover:text-red-500 transition-colors ease-in-out duration-300' size={18} strokeWidth={1.5} onClick={() => handleDelete(chat.M.chat_id.S)}/>
+            }
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', textTransform: 'none' }}
+            color={window.location.href.includes(`/chat/${chat.M.chat_id.S}`) ? "secondary" : "primary"}
+            variant={window.location.href.includes(`/chat/${chat.M.chat_id.S}`) ? "contained" : "text"}
+          >
             {chat.M.title.S.length > 25 ? chat.M.title.S.substring(0, 25) + '...' : chat.M.title.S}
           </Button>
         </Box>

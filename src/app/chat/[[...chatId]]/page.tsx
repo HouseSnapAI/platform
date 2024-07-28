@@ -82,12 +82,15 @@ const ChatPage = () => {
 
   // If enter is clicked
   const handleClick = async () => {
+    console.log("IN")
     setLoading(true);
     // If New chat
     if (chatId[0] === "newChat" && user?.email) {
-      createChat({ email: user?.email as string, initialMessage: inputValue })
+      console.log("new chat ")
+      createChat({ email: user?.email as string, initialMessage: inputValue, setUserInfo })
       // Normal handle click
     } else if(user) {
+      console.log("responding")
       const userInformation = {
         name: userInfo[0]?.name?.S,
         locations: userInfo[1]?.locations.L.map((l: { S: string }) => l.S),
@@ -121,6 +124,7 @@ const ChatPage = () => {
       })
 
       const data = await response.json()
+      console.log("GOT DATA", data)
 
 
     await updateChatTable({chatHistory: {
@@ -158,6 +162,7 @@ const ChatPage = () => {
           inputValue={inputValue} 
           handleClick={handleClick}
           email={user?.email}
+          setUserInfo={setUserInfo}
         />
       : 
         <ChatInterface 

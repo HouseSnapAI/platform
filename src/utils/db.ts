@@ -18,6 +18,7 @@ export const fetchUser = async ({ email, setUserInfo }: FetchUserType) => {
     const cachedUserInfo = localStorage.getItem('userInfo');
     if (cachedUserInfo) {
         setUserInfo(JSON.parse(cachedUserInfo));
+        console.log("CACHED USER INFO", JSON.parse(cachedUserInfo))
         return;
     }
 
@@ -60,10 +61,11 @@ export const fetchChatHistory = async ({ chatId, email, setChatHistory }: FetchC
 
 type CreateChatType = {
     email: string,
-    initialMessage: string
+    initialMessage: string,
+    setUserInfo: (data:any)=>void
 }
   
-export const createChat = async ({ email, initialMessage }: CreateChatType) => {
+export const createChat = async ({ email, initialMessage, setUserInfo }: CreateChatType) => {
     const chat_uuid = uuidv4();
     const response = await fetch('/api/chat/create', {
       method: 'POST',
@@ -71,11 +73,25 @@ export const createChat = async ({ email, initialMessage }: CreateChatType) => {
     });
 
     if (response.status !== 200) {
-      console.log("Error creating chat")
+      console.log("Error creating chat");
     } else {
+      // Update localStorage with the new chat information
+      const userInfo = JSON.parse(localStorage.getItem('userInfo') || '[]');
+      if (userInfo.length > 0) {
+        const userChats = userInfo[0].chats.L;
+        userChats.push({
+          M: {
+            chat_id: { S: chat_uuid },
+            title: { S: "New Chat Title" }, // You might want to replace this with the actual title
+            updated: { S: new Date().toISOString() }
+          }
+        });
+        localStorage.setItem('userInfo', JSON.stringify(userInfo));
+        setUserInfo(userInfo);
+      }
+
       window.location.href = `/chat/${chat_uuid}?initialMessage=${initialMessage}`;
     }
-
 }
 
 type UpdateChatType = {
@@ -137,13 +153,39 @@ export const deleteChat = async (chatId:string, email:string) => {
 }
 
 
-export const updateEngagements = async (listings_detail_label:string, zipcode:string, viewed:boolean, clicked:boolean, email:string) => {
+type UpdateEngagementsParams = {
+  listings_detail_label: string;
+  zipcode: string;
+  viewed: boolean;
+  clicked: boolean;
+  email: string;
+  setUserInfo: (data: any) => void;
+};
+
+export const updateEngagements = async ({ listings_detail_label, zipcode, viewed, clicked, email, setUserInfo }: UpdateEngagementsParams) => {
   const response = await fetch('/api/listings/update', {
     method: 'POST',
     body: JSON.stringify({ listings_detail_label: listings_detail_label, zipcode: zipcode, viewed: viewed, clicked: clicked, email: email }),
   });
 
   if (response.status === 200) {
+    
+    // Update localStorage and userInfo
+    const userInfo = JSON.parse(localStorage.getItem('userInfo') || '[]');
+    if (userInfo.length > 0) {
+      const userPreferences = userInfo[1];
+      
+      if (viewed) {
+        ("pushed")
+        userPreferences.viewed.L.push({ S: listings_detail_label });
+      }
+      if (clicked) {
+        userPreferences.clicked.L.push({ S: listings_detail_label });
+      }
+      
+      localStorage.setItem('userInfo', JSON.stringify(userInfo));
+      setUserInfo(userInfo);
+    }
     console.log('Engagements updated successfully');
   } else {
     const data = await response.json();

@@ -12,6 +12,18 @@ const AnimatedTransition = ({ children }: { children: React.ReactNode }) => {
         setPage(pathname);
     }, [pathname]);
 
+    useEffect(() => {
+        const handleBeforeUnload = () => {
+            localStorage.clear();
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, []);
+
     return (
         <AnimatePresence mode="wait">
             <motion.div

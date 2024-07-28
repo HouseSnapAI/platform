@@ -11,9 +11,10 @@ type ListingDrawerProps = {
   onClose: () => void;
   listing: ListingDetailType | null;
   email: string | null | undefined;
+  setUserInfo: (data:any)=>void;
 };
 
-const ListingDrawer = ({ open, onClose, listing, email }: ListingDrawerProps) => {
+const ListingDrawer = ({ open, onClose, listing, email, setUserInfo }: ListingDrawerProps) => {
   const theme = useTheme();
 
   const excludedFields = [
@@ -26,7 +27,7 @@ const ListingDrawer = ({ open, onClose, listing, email }: ListingDrawerProps) =>
 
   useEffect(() => {
     if(open && listing && email) {
-        updateEngagements(listing?.listings_detail_label?.S, listing?.zipcode?.S, true, true, email)
+        updateEngagements({listings_detail_label: listing?.listings_detail_label?.S, zipcode: listing?.zipcode?.S, viewed: true, clicked: true, email: email, setUserInfo: setUserInfo})
     }
   }, [open])
 
