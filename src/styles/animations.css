@@ -1,0 +1,39 @@
+  .listings:hover .listings-slide{
+    animation-play-state: paused;
+    
+  }
+  
+  .listings:hover .listings-slide-reverse{
+    animation-play-state: paused;
+    
+  }
+
+  .listings-slide {
+    animation: listings-slide 60s linear infinite;
+    white-space: nowrap;
+  }
+
+  .listings-slide-reverse {
+    animation: listings-slide-reverse 60s linear infinite;
+    white-space: nowrap;
+  }
+
+  .listings {
+    overflow-x: hidden; 
+    overflow-y: hidden;
+    white-space: nowrap;
+  }
+
+  @keyframes listings-slide {
+    from { 
+        transform: translateX(0);
+     }
+    to { transform: translateX(calc(-100% - 0.5rem)); }
+  }
+
+  @keyframes listings-slide-reverse {
+    from { 
+        transform: translateX(calc(-100% - 0.5rem));
+     }
+    to { transform: translateX(0); }
+  }
