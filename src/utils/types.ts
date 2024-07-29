@@ -240,3 +240,47 @@ type SchoolType = {
   stars: number,
   url: string
 }
+
+
+//  SUPABASE TYPES
+export type ListingRecordType = {
+  engage_date: string,
+  id: string,
+}
+
+export type User ={
+  id: string,
+  created_at: string, 
+  updated_at: string,
+  geoip: any,
+  ip: string,
+  email: string,
+  name: string,
+  beds: number | null,
+  baths: number | null,
+  min_budget: number | null,
+  max_budget: number | null,
+  house_description: string,
+  min_size_of_house: number | null,
+  max_size_of_house: number | null,
+  location: string[],
+  property_types: string[],
+  clicked: ListingRecordType[],
+  viewed: ListingRecordType[],
+  saved: ListingRecordType[],
+}
+
+export type Message = {
+  role: string
+  content: string
+  listings: string[]
+}
+
+export type Chat = {
+  id: string,
+  user_id: string,
+  created_at: string,
+  updated_at: string,
+  title: string,
+  messages: Message[],
+}
