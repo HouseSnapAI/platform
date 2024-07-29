@@ -11,9 +11,10 @@ type ListingDrawerProps = {
   onClose: () => void;
   listing: ListingDetailType | null;
   email: string | null | undefined;
+  setUserInfo: (userInfo: any) => void;
 };
 
-const ListingDrawer = ({ open, onClose, listing, email }: ListingDrawerProps) => {
+const ListingDrawer = ({ open, onClose, listing, email, setUserInfo }: ListingDrawerProps) => {
   const theme = useTheme();
   const [info, setInfo] = useState<any>();
   const [saved, setSaved] = useState<boolean>(false);
@@ -32,7 +33,7 @@ const ListingDrawer = ({ open, onClose, listing, email }: ListingDrawerProps) =>
       setInfo(JSON.parse(cachedUserInfo)[1]);
     } else if (email) {
       // fetch user info and populate fields
-      fetchUser({ email: email, setUserInfo: setInfo })
+      fetchUser({ email: email, setUserInfo: setUserInfo })
     }
 
     if (info && info.saved && info.saved.L) {
