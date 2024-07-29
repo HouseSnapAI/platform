@@ -87,7 +87,7 @@ const ChatPage = () => {
     // If New chat
     if (chatId[0] === "newChat" && user?.email) {
       console.log("new chat ")
-      createChat({ email: user?.email as string, initialMessage: inputValue, setUserInfo })
+      createChat({ email: user?.email as string, initialMessage: inputValue })
       // Normal handle click
     } else if(user) {
       console.log("responding")
