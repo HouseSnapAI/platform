@@ -16,10 +16,10 @@ type FetchChatHistoryType = {
 
 export const fetchUser = async ({ email, setUserInfo }: FetchUserType) => {
     const cachedUserInfo = localStorage.getItem('userInfo');
-    if (cachedUserInfo) {
-        setUserInfo(JSON.parse(cachedUserInfo));
-        return;
-    }
+    // if (cachedUserInfo) {
+    //     setUserInfo(JSON.parse(cachedUserInfo));
+    //     return;
+    // }
 
     const response = await fetch('/api/auth/user', {
       method: 'POST',
