@@ -14,21 +14,21 @@ import PersistentDrawer from '@/components/sidebar/PersistentDrawer';
 import Chatbox from '@/components/chatbox/Chatbox';
 
 // ** Type Imports
-import { ChatHistoryType, UserType, UserPreferencesType, DrawerContentType } from '@/utils/types';
+import { ChatHistoryType, UserType, UserPreferencesType, DrawerContentType, User, Chat } from '@/utils/types';
 
 // ** Auth Imports
 import { useUser } from '@auth0/nextjs-auth0/client';
 import ChatInterface from '@/components/chat-interface/ChatInterface';
-import { chatStarter } from '@/utils/vars';
+import { chatStarter, initChat } from '@/utils/vars';
 
 // ** UUID Imports
-import { createChat, fetchChatHistory, fetchUser, updateChatTable } from '@/utils/db';
+import { createChat, fetchChat, fetchUserInfo, updateChat, updateChatTable } from '@/utils/db';
 
 const ChatPage = () => {
 
   // ** User States
   const {user, isLoading} = useUser();
-  const [userInfo, setUserInfo] = useState<[UserType, UserPreferencesType] | []>([])
+  const [userInfo, setUserInfo] = useState<User | null>(null)
 
   const params = useParams();
   const chatId = (params.chatId || ['newChat']) as string[];
@@ -40,10 +40,13 @@ const ChatPage = () => {
 
   // Chat Message States
   const [inputValue, setInputValue] = useState<string>(query.get('initialMessage') || '')
-  const [chatHistory, setChatHistory] = useState<ChatHistoryType>({
-    chatId: {S: chatId[0] as string},
-    email: {S: user?.email as string},
-    messages: {L: [{M: chatStarter}]}
+  const [chatHistory, setChatHistory] = useState<Chat>({
+    id: chatId[0] as string,
+    user_id: userInfo?.id as string,
+    chat_history: [initChat],
+    title: "New Chat",
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   })
   const [loading, setLoading] = useState(false);
 
@@ -51,29 +54,42 @@ const ChatPage = () => {
   // Fetch user information from DB
   useEffect(() => {
 
+    const fetchUser = async (email: string) =>{
+      const data = await fetchUserInfo(email);
+      console.log("USER DATA SUPA", data)
+      setUserInfo(data)
+    }
+
     if (user?.email) {
-      fetchUser({ email: user?.email, setUserInfo });
+      fetchUser(user.email)
     }
   }, [user?.email])
 
   // Fetch Chat History
   useEffect(() => {
-  
-    if (chatId[0] !== 'newChat' && user?.email) {
-      setLoading(true);
-      fetchChatHistory({ chatId: chatId, email: user?.email, setChatHistory });
-      setLoading(false);
+    const fetchChatData = async () => {
+      if (chatId[0] !== 'newChat' && userInfo?.id) {
+        setLoading(true);
+        const chatData = await fetchChat({chat_id: chatId[0], user_id: userInfo?.id});
+        if (chatData) {
+          setChatHistory(chatData);
+        }
+        setLoading(false);
+      }
+    };
+
+    if (userInfo?.id) {
+      fetchChatData();
     }
 
     // If the query has an initial message, handle the click
-    if (query.get('initialMessage') && chatHistory.messages.L.length <= 2 && user?.email) {
-      
-      handleClick()
+    if (query.get('initialMessage') && chatHistory.chat_history.length <= 2 && userInfo?.email) {
+      handleClick();
       const url = new URL(window.location.href);
       url.search = '';
       window.history.replaceState({}, document.title, url.toString());
     }
-  }, [chatId[0], user?.email, query.get('initialMessage')]);
+  }, [chatId[0], userInfo?.id, query.get('initialMessage')]);
 
   // Drawer open/close
   const handleDrawerClose = () => {
@@ -91,35 +107,28 @@ const ChatPage = () => {
       // Normal handle click
     } else if(user) {
       console.log("responding")
-      const userInformation = {
-        name: userInfo[0]?.name?.S,
-        locations: userInfo[1]?.locations.L.map((l: { S: string }) => l.S),
-        budget: [userInfo[1]?.budget.L?.[0].N, userInfo[1]?.budget.L?.[1].N],
-        beds: userInfo[1]?.beds_baths.L?.[0].N,
-        baths: userInfo[1]?.beds_baths.L?.[1].N,
-        size_of_house: [userInfo[1]?.size_of_house.L?.[0].N, userInfo[1]?.size_of_house.L?.[1].N],
-        house_descriptions: userInfo[1]?.house_descriptions.S ,
-      }
 
       setInputValue('')
       
       // Update chat history first
       setChatHistory({
           ...chatHistory,
-            messages: {L: [...chatHistory.messages.L, 
-                { M: {role: {S: "user"}, content: {S: inputValue}}}
-        ]}
-      });
+            chat_history: [...chatHistory.chat_history, 
+                { role: "user", content: inputValue, listings: []}
+            ]
+        }
+      );
+
       // get response
-      const response = await fetch(`/api/chat`, {
+      const response = await fetch(`/api/chat/response`, {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json'
           },
           body: JSON.stringify({ 
               prompt: inputValue, 
-              chatHistory: chatHistory, 
-              userInfo: userInformation
+              chat: chatHistory, 
+              user: userInfo
           })
       })
 
@@ -127,13 +136,12 @@ const ChatPage = () => {
       console.log("GOT DATA", data)
 
 
-    await updateChatTable({chatHistory: {
+    await updateChat({
       ...chatHistory,
-      messages: {L: [...chatHistory.messages.L, 
-          { M: {role: {S: "user"}, content: {S: inputValue}}},
-          { M: {role: {S: "assistant"}, content: {S: data.content}}}
-       ]
-    }}, setChatHistory, email: user?.email as string});
+        chat_history: [...chatHistory.chat_history, 
+            { role: "user", content: inputValue, listings: []}
+        ]
+    });
 
     setLoading(false);
   }

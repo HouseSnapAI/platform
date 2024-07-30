@@ -10,7 +10,7 @@ import Button from '@mui/material/Button'
 import { sidebar } from './NavItems'
 
 // ** Types
-import { DrawerContentType, UserPreferencesType, UserType } from '@/utils/types';
+import { DrawerContentType, User, UserPreferencesType, UserType } from '@/utils/types';
 
 // ** Util Imports
 import { getInitials } from '@/utils/utils';
@@ -18,7 +18,7 @@ import { getInitials } from '@/utils/utils';
 type SideBarProps = {
     setDrawerContent: (content: DrawerContentType) => void;
     setDrawerOpen: (open: boolean) => void;
-    userInfo: [UserType, UserPreferencesType] | [];
+    userInfo: User | [];
 }
 
 const SideBar = ({ setDrawerContent, setDrawerOpen, userInfo }: SideBarProps) => {

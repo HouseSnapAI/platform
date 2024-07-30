@@ -4,7 +4,7 @@ import { IconChevronRight, IconBookmark, IconBookmarkFilled } from '@tabler/icon
 import { ListingDetailType } from '@/utils/types';
 import ImageSlider from './ImageSlider';
 import { useTheme } from '@mui/material/styles';
-import { updateEngagements, addSavedHouse, deleteSavedHouse, fetchUser } from '@/utils/db';
+import { updateEngagements, addSavedHouse, deleteSavedHouse, fetchUserInfo } from '@/utils/db';
 
 type ListingDrawerProps = {
   open: boolean;
@@ -36,7 +36,12 @@ const ListingDrawer = ({ open, onClose, listing, email, setUserInfo }: ListingDr
         updateEngagements({ listings_detail_label: listing.listings_detail_label?.S, zipcode: listing.zipcode?.S, viewed: true, clicked: true, user: parsedInfo[0] });
       }
     } else if (email) {
-      fetchUser({ email: email, setUserInfo: setUserInfo });
+      const fetchUserInfoData = async (email:string)=>{
+        const data = fetchUserInfo(email);
+        console.log("DATA", data)
+        setUserInfo(data);
+      };
+      fetchUserInfoData(email);
     }
 
     if (info && info.saved && info.saved.L) {

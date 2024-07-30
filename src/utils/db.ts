@@ -80,11 +80,6 @@ type FetchChatType = {
 
 export const fetchChat = async ({ chat_id, user_id }: FetchChatType) => {
 
-  const cachedUserInfo = localStorage.getItem('userInfo');
-    // if (cachedUserInfo) {
-    //     setUserInfo(JSON.parse(cachedUserInfo));
-    //     return;
-    // }
   const response = await fetch('/api/chat/fetch', {
     method: 'POST',
     body: JSON.stringify({ chat_id: chat_id, user_id: user_id }),

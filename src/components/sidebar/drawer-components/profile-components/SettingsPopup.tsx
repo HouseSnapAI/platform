@@ -16,7 +16,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import { useTheme } from '@mui/material/styles';
 
 // ** Type Imports
-import { UserPreferencesType, UserType } from '@/utils/types';
+import { User, User, UserPreferencesType, UserType } from '@/utils/types';
 
 // ** Custom Component Imports
 import ChatSlider from '@/components/chat-interface/message/message-components/ChatSlider'; // Import the ChatSlider component
@@ -26,8 +26,8 @@ interface SettingsPopupProps {
   anchorEl: HTMLElement | null;
   open: boolean;
   onClose: () => void;
-  userInfo: [UserType, UserPreferencesType] | []; // Adjust the type as per your userInfo structure
-  setUserInfo: (userInfo: [UserType, UserPreferencesType] | []) => void;
+  userInfo: User | null; // Adjust the type as per your userInfo structure
+  setUserInfo: (userInfo: User | null) => void;
 }
 
 const SettingsPopup: React.FC<SettingsPopupProps> = ({ anchorEl, open, onClose, userInfo, setUserInfo }) => {

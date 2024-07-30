@@ -10,13 +10,13 @@ import Skeleton from '@mui/material/Skeleton';
 import Button  from '@mui/material/Button';
 
 // ** Type Imports
-import { UserPreferencesType, UserType } from '@/utils/types';
+import { User, UserPreferencesType, UserType } from '@/utils/types';
 
 // ** Style Imports
 import { useTheme } from '@mui/material/styles';
 
 // ** Utils Imports
-import { fetchUser } from '@/utils/db';
+import { fetchUserInfo } from '@/utils/db';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { getInitials } from '@/utils/utils';
 
@@ -29,14 +29,20 @@ import SavedHousesPopup from './profile-components/SavedHousesPopup';
 
 const ProfilePopup = () => {
     const { user, isLoading } = useUser()
-    const [userInfo, setUserInfo] = useState<[UserType, UserPreferencesType] | []>([])
+    const [userInfo, setUserInfo] = useState<User>(null)
 
     const theme = useTheme()
 
     useEffect(() => {
-      if (user?.email) {
-        fetchUser({ email: user.email, setUserInfo })
-      }
+        const fetchUserInfoData = async (email:string)=>{
+            const data = fetchUserInfo(email);
+            console.log("DATA", data)
+            setUserInfo(data);
+          };
+          
+          if (user?.email) {
+            fetchUserInfoData(user.email);
+          }
     }, [user?.email])
 
     const hasIncompletePreferences = userInfo[1] && (
