@@ -25,6 +25,7 @@ import { IconAnalyze, IconEdit, IconFile, IconHistory, IconHome, IconLogout, Ico
 
 // ** Component Imports
 import SettingsPopup from './profile-components/SettingsPopup';
+import SavedHousesPopup from './profile-components/SavedHousesPopup';
 
 const ProfilePopup = () => {
     const { user, isLoading } = useUser()
@@ -47,6 +48,7 @@ const ProfilePopup = () => {
     );
 
     const [settingsOpen, setSettingsOpen] = useState(false);
+    const [savedHousesOpen, setSavedHousesOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
     const handleSettingsClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -56,6 +58,16 @@ const ProfilePopup = () => {
 
     const handleSettingsClose = () => {
         setSettingsOpen(false);
+        setAnchorEl(null);
+    };
+
+    const handleSavedHousesClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget.parentElement); 
+        setSavedHousesOpen(true);
+    };
+
+    const handleSavedHousesClose = () => {
+        setSavedHousesOpen(false);
         setAnchorEl(null);
     };
 
@@ -83,8 +95,8 @@ const ProfilePopup = () => {
             {/* Add more user info as needed */}
             </Box>
             <Box mt={1} pl={1} pr={1} pb={1} className='flex w-full gap-2 items-center justify-evenly' sx={{borderBottom: `1px solid ${theme.palette.divider}`}}> 
-                <Button sx={{textTransform: 'none', borderColor: theme.palette.divider }} className='flex flex-col' variant='outlined'>
-                    <Typography fontSize={14} noWrap textAlign={'left'}>{userInfo[1]?.viewed?.L?.length}</Typography>
+                <Button onClick={handleSavedHousesClick} sx={{textTransform: 'none', borderColor: theme.palette.divider }} className='flex flex-col' variant='outlined'>
+                    <Typography fontSize={14} noWrap textAlign={'left'}>{userInfo[1]?.saved?.L?.length}</Typography>
                     <Typography fontSize={10} noWrap className='text-[#6f6f6f]'>Saved Houses</Typography>
                 </Button>
                 <Button sx={{textTransform: 'none', borderColor: theme.palette.divider }} className='flex flex-col' variant='outlined'>
@@ -150,7 +162,7 @@ const ProfilePopup = () => {
                     }
                     endIcon={
                         hasIncompletePreferences && (
-                            <Box className="ml-[134px] w-2 h-2 bg-purple-500 rounded-full"></Box>
+                            <Box className=" w-2 h-2 bg-purple-500 rounded-full"></Box>
                         )
                     }
                 >
@@ -214,6 +226,7 @@ const ProfilePopup = () => {
                 </Button>
             </Box>
             <SettingsPopup anchorEl={anchorEl} open={settingsOpen} onClose={handleSettingsClose} userInfo={userInfo} setUserInfo={setUserInfo} />
+            {savedHousesOpen && <SavedHousesPopup savedHouses={userInfo[1]?.saved.L} anchorEl={anchorEl} open={savedHousesOpen} userInfo={userInfo[1]} onClose={handleSavedHousesClose} />}
         </>
           
       ) : (

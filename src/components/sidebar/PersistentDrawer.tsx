@@ -58,8 +58,7 @@ export default function PersistentDrawer({ open, handleDrawerClose, content }: P
             top: 0,
             left: 1,
             margin: 1,
-            height: 400, 
-            width: 250,  
+            width: 300,  
             border: `1px solid ${theme.palette.divider}`,
             backgroundColor: '#171717', // Slightly lighter than background.paper
             display: isVisible ? 'block' : 'none', // Hide the component when not visible
