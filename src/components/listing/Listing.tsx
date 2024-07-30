@@ -7,7 +7,7 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 
 // ** Types Imports
-import { ListingDetailType } from '@/utils/types'
+import { ListingDetailType, User } from '@/utils/types'
 
 // ** Components Imports
 import ListingDrawer from './ListingDrawer'
@@ -16,7 +16,7 @@ const formatPrice = (price: number): string => {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(price);
 }
 
-const Listing = ({listing, email, setUserInfo}: {listing: ListingDetailType, email: string|null|undefined, setUserInfo: (data:any)=>void}) => {
+const Listing = ({listing, email, userInfo, setUserInfo}: {listing: ListingDetailType, email: string|null|undefined, userInfo: User |undefined, setUserInfo: (data:User)=>void | undefined}) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const handleOpenDrawer = () => {
@@ -40,7 +40,7 @@ const Listing = ({listing, email, setUserInfo}: {listing: ListingDetailType, ema
         </Typography>
         <Typography variant='subtitle2' className='text-center text-white/70 group-hover:text-white ease-in-out duration-300'>{listing?.bedrooms?.N} Bed {listing?.bathrooms?.N} Bath {listing?.square_footage?.N} sqft - <span className="font-semibold text-md">{formatPrice(Number(listing?.listing_detail_price?.N))}</span></Typography>
       </Box>
-      <ListingDrawer open={drawerOpen} onClose={handleCloseDrawer} listing={listing} email={email} setUserInfo={setUserInfo} />
+      <ListingDrawer open={drawerOpen} onClose={handleCloseDrawer} listing={listing} email={email} userInfo={userInfo} setUserInfo={setUserInfo} />
     </>
   )
 }

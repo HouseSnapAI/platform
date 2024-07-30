@@ -2,40 +2,6 @@ import {Chat, ChatHistoryType, User, UserType } from "./types";
 import { v4 as uuidv4 } from 'uuid';
 import { HumanMessage } from '@langchain/core/messages';
 
-
-type FetchUserType = {
-    email: string,
-    setUserInfo: (data:any)=>void
-}
-
-type FetchChatHistoryType = {
-    chatId: string[],
-    email: string,
-    setChatHistory: (data:any)=>void
-}
-
-export const fetchUser = async ({ email, setUserInfo }: FetchUserType) => {
-    const cachedUserInfo = localStorage.getItem('userInfo');
-    // if (cachedUserInfo) {
-    //     setUserInfo(JSON.parse(cachedUserInfo));
-    //     return;
-    // }
-
-    const response = await fetch('/api/auth/user', {
-      method: 'POST',
-      body: JSON.stringify({ email: email }),
-
-    });
-    // If user is not logged in, redirect to login
-    if (response.status !== 200) {
-      window.location.href = "/api/auth/login"
-    }
-
-    const data = await response.json();
-    setUserInfo(data);
-    localStorage.setItem('userInfo', JSON.stringify(data));
-  }
-
 export const fetchUserInfo = async (email: string) => {
   const cachedUserInfo = localStorage.getItem('userInfo');
   // if (cachedUserInfo) {
@@ -50,28 +16,6 @@ export const fetchUserInfo = async (email: string) => {
   localStorage.setItem('userInfo', JSON.stringify(data));
   return data;
 }
-
-export const fetchChatHistory = async ({ chatId, email, setChatHistory }: FetchChatHistoryType) => {
-    const response = await fetch('/api/chat/fetch', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ chat_uuid: chatId[0], email: email })
-    });
-
-    if (response.status === 200) {
-      const data = await response.json();
-      setChatHistory({
-        chatId: {S: chatId[0] as string},
-        email: {S: email as string},
-        messages: {L: data.messages.L}
-      });
-      console.log("FETCHED CHAT HISTORY")
-    } else {
-      console.error('Error fetching chat history');
-    }
-  }; 
 
 type FetchChatType = {
   chat_id: string,
@@ -91,26 +35,6 @@ export const fetchChat = async ({ chat_id, user_id }: FetchChatType) => {
   } else {
     console.error('Error fetching chat');
   }
-}
-
-type CreateChatType = {
-    email: string,
-    initialMessage: string
-}
-  
-export const createChat = async ({ email, initialMessage }: CreateChatType) => {
-    const chat_uuid = uuidv4();
-    const response = await fetch('/api/chat/create', {
-      method: 'POST',
-      body: JSON.stringify({ email: email, chat_uuid: chat_uuid, initialMessage: initialMessage }),
-    });
-
-    if (response.status !== 200) {
-      console.log("Error creating chat")
-    } else {
-      window.location.href = `/chat/${chat_uuid}?initialMessage=${initialMessage}`;
-    }
-
 }
 
 type createNewChatType = {
@@ -149,12 +73,12 @@ export const createNewChat = async ({ user, initialMessage }: createNewChatType)
 
 }
 
-type DeleteChatType ={
+type DeleteUserChatType ={
   id: string,
   user: User
 }
 
-export const deleteUserChat = async ({ id, user }: DeleteChatType) => {
+export const deleteUserChat = async ({ id, user }: DeleteUserChatType) => {
   const response = await fetch('/api/auth/user/update', {
     method: 'PATCH',
     headers: {
@@ -166,40 +90,6 @@ export const deleteUserChat = async ({ id, user }: DeleteChatType) => {
   response.status === 200 ? console.log('Chat deleted successfully') : console.error('Error deleting chat');
 }
 
-type UpdateChatType = {
-    chatHistory: ChatHistoryType,
-    setChatHistory: (data:any)=>void,
-    email: string
-}
-
-export const updateChatTable = async ({ chatHistory, setChatHistory, email }: UpdateChatType) => {
-    try {
-      const response = await fetch('/api/chat/update', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          chatObject: {
-            chatId: chatHistory.chatId,
-            messages: chatHistory.messages,
-          },
-          email: email,
-        }),
-      });
-
-      if (response.status !== 200) {
-        console.error('Error updating chat table');
-      } else {
-        console.log('Chat table updated successfully');
-
-        setChatHistory(chatHistory);
-      }
-    } catch (error) {
-      console.error('Error updating chat table:', error);
-    }
-};
-
 export const updateChat = async (chat: Chat) => {
   const response = await fetch('/api/chat/update/update', {
     method: 'POST',
@@ -209,6 +99,7 @@ export const updateChat = async (chat: Chat) => {
   if (response.status !== 200) {
     console.error('Error updating chat');
   }
+  return chat
 }
 
 export async function generateChatTitle(initialMessage: string, model:any): Promise<string> {
@@ -221,20 +112,6 @@ const prompt = `
 const response = await model.invoke([new HumanMessage(prompt)]);
 return response.trim();
 }
-
-export const deleteChat = async (chatId:string, email:string) => {
-  const response = await fetch('/api/chat/delete', {
-    method: 'POST',
-    body: JSON.stringify({ chat_id: chatId, email: email }),
-  });
-
-  if (response.status === 200) {
-    console.log('Chat deleted successfully');
-  } else {
-    console.error('Error deleting chat');
-  }
-}
-
 
 type UpdateEngagementsParams = {
   listings_detail_label: string;
@@ -288,42 +165,7 @@ export const updateEngagements = async ({
   }
 };
 
-export async function updateUserEngagements(listings_detail_label: string, viewed: boolean, clicked: boolean, email: string) {
-  const response = await fetch('/api/user/update', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ 
-      email, 
-      viewed: viewed ? listings_detail_label : null,
-      clicked: clicked ? listings_detail_label : null
-    }),
-  });
-
-  if (response.status === 200) {
-    console.log('User engagements updated successfully');
-  } else {
-    const data = await response.json();
-    console.error('Error updating user engagements:', data);
-  }
-}
-
-export const addSavedHouse = async (address:string, email:string, user_id:string) => {
-  const response = await fetch('/api/listings/savedHouses/add', {
-    method: 'POST',
-    body: JSON.stringify({ user_id: user_id, email: email, address: address }),
-  });
-
-  if (response.status === 200) {
-    console.log('Saved House added successfully');
-  } else {
-    const data = await response.json();
-    console.error('Error adding saved house:', data);
-  }
-}
-
-export const saveHouse = async (id:string, user: User) => {
+export const saveHouse = async ({id, user}: {id:string, user: User}) => {
   const response = await fetch('/api/auth/user/update', {
     method: 'PATCH',
     body: JSON.stringify({ id: user.id, saved: [...user.saved||[], { updated_at: new Date().toISOString(), id: id }] }),
@@ -337,21 +179,7 @@ export const saveHouse = async (id:string, user: User) => {
   }
 }
 
-export const deleteSavedHouse = async (address:string, email:string, user_id:string) => {
-  const response = await fetch('/api/listings/savedHouses/delete', {
-    method: 'POST',
-    body: JSON.stringify({ user_id: user_id, email: email, address: address }),
-  });
-
-  if (response.status === 200) {
-    console.log('Saved House deleted successfully');
-  } else {
-    const data = await response.json();
-    console.error('Error deleting saved house:', data);
-  }
-}
-
-export const unsaveHouse = async (id:string, user: User) => {
+export const deleteSavedHouse = async ({id, user}: {id:string, user: User}) => {
   const response = await fetch('/api/auth/user/update', {
     method: 'PATCH',
     body: JSON.stringify({ id: user.id, saved: user.saved.filter((house: any) => house.id !== id) }),

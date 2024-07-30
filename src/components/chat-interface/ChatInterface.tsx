@@ -8,21 +8,20 @@ import { IconSend } from '@tabler/icons-react'
 
 // ** Custom Imports
 import ChatWindow from './ChatWindow'
-import { ChatHistoryType, Message, MessageType, User, UserPreferencesType, UserType } from '@/utils/types'
+import { Chat, User, } from '@/utils/types'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 
 type ChatInterfaceProps = {
-    drawerOpen: boolean
     setInputValue: (value: string) => void
     inputValue: string
-    chatHistory: ChatHistoryType
+    chatHistory: Chat
     handleClick: () => void
     userInfo: User | null
     chatId: string
     loading: boolean
   }
-const ChatInterface = ({drawerOpen, setInputValue, inputValue, chatHistory, handleClick, userInfo, chatId, loading}: ChatInterfaceProps) => {
+const ChatInterface = ({ setInputValue, inputValue, chatHistory, handleClick, userInfo, chatId, loading}: ChatInterfaceProps) => {
 
   return (
     <Box className={`h-[100vh] p-4 relative flex flex-col items-center text-white w-[calc(100vw-67px)]`}>

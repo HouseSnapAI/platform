@@ -253,7 +253,7 @@ export default function Home() {
             </Box>
           </Box>
           
-          <HorizontalScroller setInputValue={setInputValue} email={undefined} setUserInfo={(data:any)=>{}} />
+          <HorizontalScroller setInputValue={setInputValue} email={undefined} userInfo={undefined} setUserInfo={(data:any)=>{}} />
   
           {/* CALL TO ACTION + TITLES */}
   

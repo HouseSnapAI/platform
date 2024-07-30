@@ -3,6 +3,7 @@ import { Box, Button, Typography, TextField, Popper, ClickAwayListener } from '@
 import { useTheme } from '@mui/material/styles';
 import { IconSend } from '@tabler/icons-react';
 import HorizontalScroller from './HorizontalScroller';
+import { User } from '@/utils/types';
 
 type ChatBoxProps = {
   drawerOpen: boolean
@@ -10,10 +11,11 @@ type ChatBoxProps = {
   inputValue: string
   handleClick: () => void
   email: string | null | undefined
-  setUserInfo: (data:any)=>void;
+  setUserInfo: (data:User)=>void;
+  userInfo: User;
 }
 
-const Chatbox = ({drawerOpen, setInputValue, inputValue, handleClick, email, setUserInfo}: ChatBoxProps) => {
+const Chatbox = ({drawerOpen, setInputValue, inputValue, handleClick, email, setUserInfo, userInfo}: ChatBoxProps) => {
     const theme = useTheme();
 
     return (
@@ -31,7 +33,7 @@ const Chatbox = ({drawerOpen, setInputValue, inputValue, handleClick, email, set
 
 
       {/* HORIZONTAL SCROLLER */}
-      <HorizontalScroller setInputValue={setInputValue} email={email} setUserInfo={setUserInfo} />
+      <HorizontalScroller setInputValue={setInputValue} email={email} userInfo={userInfo} setUserInfo={setUserInfo} />
 
       {/* TODO: ON SUBMIT QUERY THE MODEL */}
       <Box className='w-[64%] px-4 py-3'>

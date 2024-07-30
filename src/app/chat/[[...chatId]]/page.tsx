@@ -22,7 +22,7 @@ import ChatInterface from '@/components/chat-interface/ChatInterface';
 import { chatStarter, initChat } from '@/utils/vars';
 
 // ** UUID Imports
-import { createChat, fetchChat, fetchUserInfo, updateChat, updateChatTable } from '@/utils/db';
+import { createNewChat, fetchChat, fetchUserInfo, updateChat } from '@/utils/db';
 
 const ChatPage = () => {
 
@@ -101,9 +101,9 @@ const ChatPage = () => {
     console.log("IN")
     setLoading(true);
     // If New chat
-    if (chatId[0] === "newChat" && user?.email) {
+    if (chatId[0] === "newChat" && userInfo) {
       console.log("new chat ")
-      createChat({ email: user?.email as string, initialMessage: inputValue })
+      createNewChat({ user: userInfo, initialMessage: inputValue })
       // Normal handle click
     } else if(user) {
       console.log("responding")
@@ -136,19 +136,21 @@ const ChatPage = () => {
       console.log("GOT DATA", data)
 
 
-    await updateChat({
+    const updatedChat = await updateChat({
       ...chatHistory,
         chat_history: [...chatHistory.chat_history, 
             { role: "user", content: inputValue, listings: []}
         ]
     });
 
+    setChatHistory(updatedChat) // Double check if chat isnt updated properly
+
     setLoading(false);
   }
 }
 
   return (
-    userInfo.length > 0 ? 
+    userInfo ? 
     <Box className="flex w-[100vw] h-[100vh] overflow-hidden flex-row bg-black relative">
       <SideBar 
         setDrawerContent={setDrawerContent} 
@@ -163,9 +165,10 @@ const ChatPage = () => {
       />   
 
       {/* CHAT BOX */}
-      {chatHistory.messages.L.length === 1 ? 
+      {chatHistory.chat_history.length === 1 ? 
         <Chatbox 
           drawerOpen={drawerOpen} 
+          userInfo={userInfo}
           setInputValue={setInputValue} 
           inputValue={inputValue} 
           handleClick={handleClick}
@@ -175,12 +178,11 @@ const ChatPage = () => {
       : 
         <ChatInterface 
           key={JSON.stringify(chatHistory)}
-          drawerOpen={drawerOpen} 
           setInputValue={setInputValue} 
           inputValue={inputValue} 
           chatHistory={chatHistory}
           handleClick={handleClick}
-          userInfo={userInfo[0]}
+          userInfo={userInfo}
           chatId={chatId[0]}
           loading={loading}
         />

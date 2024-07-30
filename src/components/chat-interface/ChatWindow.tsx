@@ -6,13 +6,13 @@ import Box from '@mui/material/Box'
 import Message from './message/Message'
 
 // ** Type Imports
-import { ChatHistoryType } from '@/utils/types'
+import { Chat, ChatHistoryType } from '@/utils/types'
 
 // ** Custom Components Imports
 import SpinnerComponent from '../common/CustomSpinner'
 
 type ChatWindowProps = {
-  chatHistory: ChatHistoryType
+  chatHistory: Chat
   loading: boolean
 }
 
@@ -21,8 +21,8 @@ const ChatWindow = ({chatHistory, loading}: ChatWindowProps) => {
   return (
     <Box className='w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center'>
       <Box className='w-[64%] h-full px-4 py-3 gap-8 flex flex-col'>
-        {chatHistory.messages?.L.map((chat, index) => (
-          <Message key={`${chat.M?.role.S}-${index}`} message={chat} />
+        {chatHistory.chat_history.map((chat, index) => (
+          <Message key={`${chat.role}-${index}`} message={chat} />
         ))}
       {loading && 
         <div className="banter-loader">

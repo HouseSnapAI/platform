@@ -1,22 +1,22 @@
 import {useEffect, useState} from 'react';
 import { Drawer, Box, Typography, IconButton } from '@mui/material';
 import { IconChevronRight, IconBookmark, IconBookmarkFilled } from '@tabler/icons-react';
-import { ListingDetailType } from '@/utils/types';
+import { ListingDetailType, ListingRecordType, User } from '@/utils/types';
 import ImageSlider from './ImageSlider';
 import { useTheme } from '@mui/material/styles';
-import { updateEngagements, addSavedHouse, deleteSavedHouse, fetchUserInfo } from '@/utils/db';
+import { updateEngagements, saveHouse, deleteSavedHouse } from '@/utils/db';
 
 type ListingDrawerProps = {
   open: boolean;
   onClose: () => void;
   listing: ListingDetailType | null;
   email: string | null | undefined;
-  setUserInfo: (userInfo: any) => void;
+  setUserInfo: (userInfo: User) => void | undefined;
+  userInfo: User |undefined;
 };
 
-const ListingDrawer = ({ open, onClose, listing, email, setUserInfo }: ListingDrawerProps) => {
+const ListingDrawer = ({ open, onClose, listing, email, setUserInfo, userInfo }: ListingDrawerProps) => {
   const theme = useTheme();
-  const [info, setInfo] = useState<any>();
   const [saved, setSaved] = useState<boolean>(false);
 
   const excludedFields = [
@@ -28,25 +28,13 @@ const ListingDrawer = ({ open, onClose, listing, email, setUserInfo }: ListingDr
   ];
 
   useEffect(() => {
-    const cachedUserInfo = localStorage.getItem('userInfo');
-    if (cachedUserInfo) {
-      const parsedInfo = JSON.parse(cachedUserInfo);
-      setInfo(parsedInfo[1]);
-      if (open && listing && email && parsedInfo[0]?.user_id) {
-        updateEngagements({ listings_detail_label: listing.listings_detail_label?.S, zipcode: listing.zipcode?.S, viewed: true, clicked: true, user: parsedInfo[0] });
+      if (open && listing && email && userInfo?.id) {
+        updateEngagements({ listings_detail_label: listing.listings_detail_label?.S, zipcode: listing.zipcode?.S, viewed: true, clicked: true, user: userInfo });
       }
-    } else if (email) {
-      const fetchUserInfoData = async (email:string)=>{
-        const data = fetchUserInfo(email);
-        console.log("DATA", data)
-        setUserInfo(data);
-      };
-      fetchUserInfoData(email);
-    }
-
-    if (info && info.saved && info.saved.L) {
-      const savedInfo = info.saved.L;
-      if(listing && listing.listings_detail_label?.S && savedInfo.some((elem: any) => JSON.stringify({ S: listing.listings_detail_label?.S }) === JSON.stringify(elem))) {
+    
+    if (userInfo?.saved) {
+      const savedInfo = userInfo.saved;
+      if(listing && listing.listings_detail_label?.S && savedInfo.some((elem: ListingRecordType) => elem.id === listing.listings_detail_label?.S)) {
         setSaved(true);
       } else {
         setSaved(false);
@@ -54,26 +42,18 @@ const ListingDrawer = ({ open, onClose, listing, email, setUserInfo }: ListingDr
     }
   }, [open])  
   const saveListing = async () => {
-    const cachedUserInfo = localStorage.getItem('userInfo');
-    let data;
-    if(cachedUserInfo) {
-      data = JSON.parse(cachedUserInfo);
-    }
-
     // if saved then add to DB and also to local storage
     // if unsaved then remove from DB and also from local storage
-    if (saved && listing) {
-        deleteSavedHouse(listing.listings_detail_label?.S, info.email.S, info.user_id.S);
-        let filtered = data[1].saved.L.filter((val: { S: string; }) => val.S != listing.listings_detail_label?.S);
-        data[1].saved.L = filtered;
-        localStorage.setItem('userInfo', JSON.stringify(data));
-        setSaved(false);
+    if (saved && listing && userInfo?.email && userInfo?.id) {
+      deleteSavedHouse({ id: listing.listings_detail_label?.S, user: userInfo });
+      let filtered = userInfo.saved.filter((val: ListingRecordType) => val.id != listing.listings_detail_label?.S);
+      setUserInfo({...userInfo, saved: filtered});
+      setSaved(false);
     } else {
-      if (listing && info?.email?.S && info?.user_id?.S) {
-        addSavedHouse(listing.listings_detail_label?.S, info.email.S, info.user_id.S);
+      if (listing && userInfo?.email && userInfo?.id) {
+        saveHouse({ id: listing.listings_detail_label?.S, user: userInfo });
         setSaved(true);
-        data[1].saved.L.push({S: listing.listings_detail_label?.S});
-        localStorage.setItem('userInfo', JSON.stringify(data));
+        setUserInfo({...userInfo, saved: [...userInfo.saved, {id: listing.listings_detail_label?.S, engage_date: new Date().toISOString()}]});
       }
     }
   }

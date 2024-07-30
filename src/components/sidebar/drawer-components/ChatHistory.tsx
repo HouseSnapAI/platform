@@ -1,27 +1,25 @@
 // ** Next Imports
 import React, { useEffect, useState } from 'react'
 // ** Type Imports 
-import { UserType, UserPreferencesType, UserChatType, User } from '@/utils/types'
+import { User } from '@/utils/types'
 
 // ** MUI Imports
 import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
-import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 
 // ** Tabler Icons
-import { IconFolderOpen, IconMessageCircle, IconTrash } from '@tabler/icons-react'
+import { IconTrash } from '@tabler/icons-react'
 
 // ** Auth Imports
 import { useUser } from '@auth0/nextjs-auth0/client'
 
 // ** Utils Imports
-import { fetchUser, deleteChat, fetchUserInfo, deleteUserChat } from '@/utils/db'
-import SpinnerComponent from '@/components/common/CustomSpinner'
+import { fetchUserInfo, deleteUserChat } from '@/utils/db'
 
 // ** Style Imports
 import { useTheme } from '@mui/material/styles'
-import { format, isToday, isThisWeek, parseISO } from 'date-fns'
+import { isToday, isThisWeek, parseISO } from 'date-fns'
 import Skeleton from '@mui/material/Skeleton'
 
 const ChatHistory = () => {

@@ -10,7 +10,7 @@ import Skeleton from '@mui/material/Skeleton';
 import Button  from '@mui/material/Button';
 
 // ** Type Imports
-import { User, UserPreferencesType, UserType } from '@/utils/types';
+import { User } from '@/utils/types';
 
 // ** Style Imports
 import { useTheme } from '@mui/material/styles';
@@ -21,7 +21,7 @@ import { useUser } from '@auth0/nextjs-auth0/client';
 import { getInitials } from '@/utils/utils';
 
 // ** Icon Imports
-import { IconAnalyze, IconEdit, IconFile, IconHistory, IconHome, IconLogout, IconSettings } from '@tabler/icons-react';
+import { IconAnalyze, IconEdit, IconFile, IconLogout, IconSettings } from '@tabler/icons-react';
 
 // ** Component Imports
 import SettingsPopup from './profile-components/SettingsPopup';
@@ -29,13 +29,13 @@ import SavedHousesPopup from './profile-components/SavedHousesPopup';
 
 const ProfilePopup = () => {
     const { user, isLoading } = useUser()
-    const [userInfo, setUserInfo] = useState<User>(null)
+    const [userInfo, setUserInfo] = useState<User | null>(null)
 
     const theme = useTheme()
 
     useEffect(() => {
         const fetchUserInfoData = async (email:string)=>{
-            const data = fetchUserInfo(email);
+            const data = await fetchUserInfo(email);
             console.log("DATA", data)
             setUserInfo(data);
           };
@@ -45,13 +45,16 @@ const ProfilePopup = () => {
           }
     }, [user?.email])
 
-    const hasIncompletePreferences = userInfo[1] && (
-      !userInfo[1].budget?.L.length ||
-      !userInfo[1].locations?.L.length ||
-      !userInfo[1].size_of_house?.L.length ||
-      !userInfo[1].beds_baths?.L.length ||
-      !userInfo[1].property_types?.L.length
-    );
+    const hasIncompletePreferences = userInfo && (
+        !userInfo.max_budget ||
+        !userInfo.min_budget ||
+        !userInfo.location ||
+        !userInfo.min_size_of_house ||
+        !userInfo.max_size_of_house ||
+        !userInfo.beds ||
+        !userInfo.baths ||
+        !userInfo.property_types
+      );
 
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [savedHousesOpen, setSavedHousesOpen] = useState(false);
@@ -79,21 +82,21 @@ const ProfilePopup = () => {
 
     return (
     <Box className=' flex w-full flex-col'>
-      {userInfo[0]?.name?.S && userInfo[0]?.email?.S ? (
+      {userInfo?.name && userInfo?.email ? (
         <>
             <Box mt={1} pl={1} pr={1} pb={1} className='flex w-full gap-2 items-center justify-evenly' sx={{borderBottom: `1px solid ${theme.palette.divider}`}}>
                 <Box 
                     className="min-w-[40px] min-h-[40px] max-h-[40px] max-w-[40px] rounded-full flex items-center justify-center bg-gradient-to-r outline outline-black from-purple-400 via-pink-500 to-red-500 border border-black hover:outline hover:outline-3 hover:outline-white transition-all duration-300 cursor-pointer"
                 >   
-                    <Tooltip title={userInfo[0]?.name?.S || 'Guest User'} placement="right">            
+                    <Tooltip title={userInfo?.name || 'Guest User'} placement="right">            
                         <Typography variant="h6" className="text-white">
-                            {getInitials(userInfo[0]?.name?.S || 'Guest User')}
+                            {getInitials(userInfo?.name || 'Guest User')}
                         </Typography> 
                     </Tooltip>
                 </Box>
                 <Box className='flex flex-col'>
-                    <Typography fontSize={12} color='text.secondary'>{userInfo[0]?.name?.S}</Typography>
-                    <Typography fontSize={12} color='text.secondary'> {userInfo[0]?.email?.S}</Typography>
+                    <Typography fontSize={12} color='text.secondary'>{userInfo?.name}</Typography>
+                    <Typography fontSize={12} color='text.secondary'> {userInfo?.email}</Typography>
                 </Box>
                 <IconButton href='/api/auth/logout'>
                     <IconEdit className='text-[#6f6f6f] hover:text-white duration-300 transition-all ease-in-out' />
@@ -102,11 +105,11 @@ const ProfilePopup = () => {
             </Box>
             <Box mt={1} pl={1} pr={1} pb={1} className='flex w-full gap-2 items-center justify-evenly' sx={{borderBottom: `1px solid ${theme.palette.divider}`}}> 
                 <Button onClick={handleSavedHousesClick} sx={{textTransform: 'none', borderColor: theme.palette.divider }} className='flex flex-col' variant='outlined'>
-                    <Typography fontSize={14} noWrap textAlign={'left'}>{userInfo[1]?.saved?.L?.length}</Typography>
+                    <Typography fontSize={14} noWrap textAlign={'left'}>{userInfo?.saved?.length}</Typography>
                     <Typography fontSize={10} noWrap className='text-[#6f6f6f]'>Saved Houses</Typography>
                 </Button>
                 <Button sx={{textTransform: 'none', borderColor: theme.palette.divider }} className='flex flex-col' variant='outlined'>
-                    <Typography fontSize={14} noWrap textAlign={'left'}>{userInfo[1]?.clicked?.L?.length}</Typography>
+                    <Typography fontSize={14} noWrap textAlign={'left'}>{userInfo?.clicked?.length}</Typography>
                     <Typography fontSize={10} noWrap className='text-[#6f6f6f]'>Houses History</Typography>
                 </Button>
             </Box>
@@ -232,7 +235,7 @@ const ProfilePopup = () => {
                 </Button>
             </Box>
             <SettingsPopup anchorEl={anchorEl} open={settingsOpen} onClose={handleSettingsClose} userInfo={userInfo} setUserInfo={setUserInfo} />
-            {savedHousesOpen && <SavedHousesPopup savedHouses={userInfo[1]?.saved.L} anchorEl={anchorEl} open={savedHousesOpen} userInfo={userInfo[1]} onClose={handleSavedHousesClose} />}
+            {savedHousesOpen && <SavedHousesPopup savedHouses={userInfo?.saved} anchorEl={anchorEl} open={savedHousesOpen} userInfo={userInfo} onClose={handleSavedHousesClose} />}
         </>
           
       ) : (
