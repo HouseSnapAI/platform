@@ -44,6 +44,7 @@ export const PATCH = withApiAuthRequired(async function handler(req: NextRequest
 
   const { id, ...updateFields } = parseResult.data;
 
+
   try {
     const { data, error } = await supabase
       .from('User')

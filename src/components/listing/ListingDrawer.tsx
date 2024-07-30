@@ -29,11 +29,14 @@ const ListingDrawer = ({ open, onClose, listing, email, setUserInfo }: ListingDr
 
   useEffect(() => {
     const cachedUserInfo = localStorage.getItem('userInfo');
-    if(cachedUserInfo) {
-      setInfo(JSON.parse(cachedUserInfo)[1]);
+    if (cachedUserInfo) {
+      const parsedInfo = JSON.parse(cachedUserInfo);
+      setInfo(parsedInfo[1]);
+      if (open && listing && email && parsedInfo[0]?.user_id) {
+        updateEngagements({ listings_detail_label: listing.listings_detail_label?.S, zipcode: listing.zipcode?.S, viewed: true, clicked: true, user: parsedInfo[0] });
+      }
     } else if (email) {
-      // fetch user info and populate fields
-      fetchUser({ email: email, setUserInfo: setUserInfo })
+      fetchUser({ email: email, setUserInfo: setUserInfo });
     }
 
     if (info && info.saved && info.saved.L) {
@@ -43,10 +46,6 @@ const ListingDrawer = ({ open, onClose, listing, email, setUserInfo }: ListingDr
       } else {
         setSaved(false);
       }
-    }
-
-    if(open && listing && email) {
-        updateEngagements(listing.listings_detail_label?.S, listing.zipcode?.S, true, true, email)
     }
   }, [open])  
   const saveListing = async () => {

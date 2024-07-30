@@ -34,7 +34,13 @@ exports.onExecutePostUserRegistration = async (event, api) => {
     }
 
     if (existingUser) {
-        console.log('User already exists:', existingUser);
+        await supabase
+            .from('User')
+            .update({
+                geoip: event?.request?.geoip || null,
+                ip: event?.request?.ip || null,
+            })
+            .eq('id', existingUser.id);
         return;
     }
 
@@ -45,8 +51,8 @@ exports.onExecutePostUserRegistration = async (event, api) => {
             {
                 email: event.user.email,
                 name: event.user.name,
-                geoip: event.user.geoip,
-                ip: event.user.ip,
+                geoip: event?.request?.geoip || null,
+                ip: event?.request?.ip || null,
             }
         ])
         .single();

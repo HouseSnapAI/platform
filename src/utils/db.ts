@@ -1,4 +1,4 @@
-import {ChatHistoryType } from "./types";
+import {ChatHistoryType, User, UserType } from "./types";
 import { v4 as uuidv4 } from 'uuid';
 import { HumanMessage } from '@langchain/core/messages';
 
@@ -137,17 +137,76 @@ export const deleteChat = async (chatId:string, email:string) => {
 }
 
 
-export const updateEngagements = async (listings_detail_label:string, zipcode:string, viewed:boolean, clicked:boolean, email:string) => {
+type UpdateEngagementsParams = {
+  listings_detail_label: string;
+  zipcode: string;
+  viewed: boolean;
+  clicked: boolean;
+  user: UserType;
+};
+
+export const updateEngagements = async ({
+  listings_detail_label,
+  zipcode,
+  viewed,
+  clicked,
+  user
+}: UpdateEngagementsParams) => {
   const response = await fetch('/api/listings/update', {
     method: 'POST',
-    body: JSON.stringify({ listings_detail_label: listings_detail_label, zipcode: zipcode, viewed: viewed, clicked: clicked, email: email }),
+    body: JSON.stringify({ listings_detail_label, zipcode, viewed, clicked, email: user.email }),
   });
 
   if (response.status === 200) {
     console.log('Engagements updated successfully');
+
+    console.log("VIEWED", [...user.viewed||[], { engage_date: new Date().toISOString(), id: listings_detail_label }])
+    console.log("CLICKED", [...user.clicked||[], { engage_date: new Date().toISOString(), id: listings_detail_label }])
+    // Update user's viewed and clicked arrays
+    const userUpdateResponse = await fetch('/api/auth/user/update', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        // change to supabase user
+        id: user.user_id.S,
+        // TODO: change listings_detail_label to listing_id after supabase listings table is updated
+        viewed: viewed ? [...user.viewed||[], { engage_date: new Date().toISOString(), id: listings_detail_label }] : user.viewed,
+        clicked: clicked ? [...user.clicked||[], { engage_date: new Date().toISOString(), id: listings_detail_label }] : user.clicked,
+      }),
+    });
+
+    if (userUpdateResponse.status === 200) {
+      console.log('User engagements updated successfully');
+    } else {
+      const data = await userUpdateResponse.json();
+      console.error('Error updating user engagements:', data);
+    }
   } else {
     const data = await response.json();
     console.error('Error updating engagements:', data);
+  }
+};
+
+async function updateUserEngagements(listings_detail_label: string, viewed: boolean, clicked: boolean, email: string) {
+  const response = await fetch('/api/user/update', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ 
+      email, 
+      viewed: viewed ? listings_detail_label : null,
+      clicked: clicked ? listings_detail_label : null
+    }),
+  });
+
+  if (response.status === 200) {
+    console.log('User engagements updated successfully');
+  } else {
+    const data = await response.json();
+    console.error('Error updating user engagements:', data);
   }
 }
 
