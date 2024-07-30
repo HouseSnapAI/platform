@@ -5,13 +5,13 @@ import { useEffect, useRef } from 'react'
 import { Box, Typography } from '@mui/material'
 
 // ** Type Imports
-import { MessageType } from '@/utils/types'
+import type { Message } from '@/utils/types'
 
 // ** Style Imports
 import { useTheme } from '@mui/material/styles'
 
-const Message = ({ message }: { message: MessageType }) => {
-  const isAssistant = message.M?.role?.S === 'assistant';
+const Message = ({ message }: { message: Message }) => {
+  const isAssistant = message.role === 'assistant';
 
   const theme = useTheme()
 
@@ -26,16 +26,16 @@ const Message = ({ message }: { message: MessageType }) => {
         <Box className="flex flex-col">
           <Box className="flex flex-col mr-10">
             <Typography fontSize={16} className='text-white' mb={1}>Dream<span className="bg-gradient-to-r from-purple-400 via-pink-500 fade-in-on-scroll to-red-500 text-transparent bg-clip-text">RE</span></Typography>
-            <Typography fontSize={16} color='text.secondary'>{message.M?.content?.S}</Typography>
+            <Typography fontSize={16} color='text.secondary'>{message.content}</Typography>
           </Box>
           <div ref={chatEndRef} className='bg-red-500'></div>
         </Box>
     )
-  } else if(message.M?.role?.S === 'user') {
+  } else if(message.role === 'user') {
       return (
         <Box className="items-end flex-col flex">
             <Box className='px-4 py-2' sx={{ backgroundColor: theme.palette.background.paper, border: `1px solid ${theme.palette.divider}` }}>
-              <Typography fontSize={16} color='text.primary'>{message.M?.content?.S}</Typography>
+              <Typography fontSize={16} color='text.primary'>{message.content}</Typography>
             </Box>
         </Box>
       )

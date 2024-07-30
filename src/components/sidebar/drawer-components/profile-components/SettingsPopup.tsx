@@ -16,7 +16,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import { useTheme } from '@mui/material/styles';
 
 // ** Type Imports
-import { UserPreferencesType, UserType } from '@/utils/types';
+import { User } from '@/utils/types';
 
 // ** Custom Component Imports
 import ChatSlider from '@/components/chat-interface/message/message-components/ChatSlider'; // Import the ChatSlider component
@@ -26,37 +26,34 @@ interface SettingsPopupProps {
   anchorEl: HTMLElement | null;
   open: boolean;
   onClose: () => void;
-  userInfo: [UserType, UserPreferencesType] | []; // Adjust the type as per your userInfo structure
-  setUserInfo: (userInfo: [UserType, UserPreferencesType] | []) => void;
+  userInfo: User | null; // Adjust the type as per your userInfo structure
+  setUserInfo: (userInfo: User | null) => void;
 }
 
 const SettingsPopup: React.FC<SettingsPopupProps> = ({ anchorEl, open, onClose, userInfo, setUserInfo }) => {
   const theme = useTheme();
 
-  const [budget, setBudget] = useState<number[] | undefined>(userInfo[1]?.budget?.L && userInfo[1]?.budget?.L?.length > 0 ? [userInfo?.[1]?.budget?.L[0].N, userInfo?.[1]?.budget?.L[1].N] : [0, 5000000]);
-  const [locations, setLocations] = useState<string[]>(userInfo?.[1]?.locations?.L.map((l: { S: string }) => l.S) || []);
-  const [houseDescriptions, setHouseDescriptions] = useState<string>(userInfo?.[1]?.house_descriptions?.S || '');
-  const [sizeOfHouse, setSizeOfHouse] = useState<number[]>(userInfo[1]?.size_of_house?.L && userInfo[1]?.size_of_house?.L?.length > 0 ? [userInfo?.[1]?.size_of_house?.L[0]?.N, userInfo?.[1]?.size_of_house?.L[1]?.N] : [0, 5000]);
-  const [beds, setBeds] = useState<number>(userInfo[1]?.beds_baths?.L[0]?.N || 0);
-  const [baths, setBaths] = useState<number>(userInfo[1]?.beds_baths?.L[1]?.N || 0);
-  const [propertyType, setPropertyType] = useState<string[]>(userInfo[1]?.property_types?.L?.map((p: { S: string }) => p.S) || []);
+  const [budget, setBudget] = useState<[number, number]>(userInfo?.min_budget && userInfo?.max_budget ? [userInfo?.min_budget, userInfo?.max_budget] : [0, 5000000]);
+  const [locations, setLocations] = useState<string[]>(userInfo?.location || []);
+  const [houseDescriptions, setHouseDescriptions] = useState<string>(userInfo?.house_description || '');
+  const [sizeOfHouse, setSizeOfHouse] = useState<[number, number]>(userInfo?.min_size_of_house && userInfo?.max_size_of_house ? [userInfo?.min_size_of_house, userInfo?.max_size_of_house] : [0, 5000]);
+  const [beds, setBeds] = useState<number>(userInfo?.beds || 0);
+  const [baths, setBaths] = useState<number>(userInfo?.baths || 0);
+  const [propertyType, setPropertyType] = useState<string[]>(userInfo?.property_types || []);
 
   const handleSave = async () => {
 
-    if (userInfo[1]?.user_id && userInfo[1]?.email && budget && budget.length>0)   {
-        const userPreferences: UserPreferencesType = {
-            user_id: userInfo[1]?.user_id || {S: ''},
-            email: userInfo[1]?.email || {S: ''},
-            budget: { L: [{N: budget[0]}, {N: budget[1]}] },
-            locations: { L: locations.map(l => ({ S: l })) },
-            house_descriptions: { S: houseDescriptions },
-            size_of_house: { L: sizeOfHouse.map(s => ({ N: s })) },
-            beds_baths: { L: [{N: beds}, {N: baths}] },
-            property_types: { L: propertyType.map(p => ({ S: p })) },
-            clicked: userInfo[1]?.clicked || { L: [] },
-            viewed: userInfo[1]?.viewed || { L: [] },
-            saved: userInfo[1]?.saved || { L: [] },
-            };
+    if (userInfo)   {
+        const userPreferences: Partial<User>  = {
+            min_budget: budget[0],
+            max_budget: budget[1],
+            location: locations,
+            house_description: houseDescriptions,
+            max_size_of_house: sizeOfHouse[0],
+            beds,
+            baths,
+            property_types: propertyType,
+        };
             
         try {
             const response = await fetch('/api/auth/user/update-preferences', {
@@ -66,11 +63,19 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({ anchorEl, open, onClose, 
                 },
                 body: JSON.stringify(userPreferences),
             });
+
+            const updateUser = await fetch('/api/auth/user/update', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({id: userInfo.id, ...userPreferences}),
+            });
             
             if (response.status === 200) {
                 console.log('User preferences updated successfully');
-                setUserInfo(userInfo[0] ? [userInfo[0], userPreferences]: []);
-                localStorage.setItem('userInfo', JSON.stringify(userInfo[0] ? [userInfo[0], userPreferences] : []));
+                setUserInfo(userInfo ? {...userInfo, ...userPreferences} : null);
+                localStorage.setItem('userInfo', JSON.stringify(userInfo ? {...userInfo, ...userPreferences} : null));
             } else {
                 console.error('Error updating user preferences');
             }
@@ -113,7 +118,7 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({ anchorEl, open, onClose, 
           <Typography color='text.secondary' fontSize={14}>
             Budget: ({(budget?.[0] ?? 0) >= 1000000 ? `${((budget?.[0] ?? 0) / 1000000).toFixed(1)}M` : (budget?.[0] ?? 0) >= 1000 ? `${((budget?.[0] ?? 0) / 1000).toFixed(1)}K` : (budget?.[0] ?? 0)} – {(budget?.[1] ?? 0) >= 1000000 ? `${((budget?.[1] ?? 0) / 1000000).toFixed(1)}M` : (budget?.[1] ?? 0) >= 1000 ? `${((budget?.[1] ?? 0) / 1000).toFixed(1)}K` : (budget?.[1] ?? 0)})
           </Typography>
-          <ChatSlider value={budget as number[]} setValue={setBudget} /> 
+          <ChatSlider value={budget} setValue={setBudget} /> 
           </Box>
           <Box>
           <Typography color='text.secondary' fontSize={14}>Locations</Typography>
@@ -208,7 +213,7 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({ anchorEl, open, onClose, 
           <Slider
             value={sizeOfHouse}
             onChange={(e, newValue) => 
-                setSizeOfHouse(newValue as number[])}
+                setSizeOfHouse(newValue as [number, number])}
             valueLabelDisplay="off"
             min={0}
             max={5000}

@@ -10,26 +10,28 @@ import Listing from '../listing/Listing'
 
 // ** Util Imports
 import { examplePromptsOne, examplePromptsTwo, exampleListings } from '@/utils/vars'
+import { User } from '@/utils/types';
 
 type HorizontalScrollerProps = {
     setInputValue: (value: string) => void
     email: string | null | undefined
-    setUserInfo: (data:any)=>void | undefined;
+    userInfo: User |undefined;
+    setUserInfo: (data:User)=>void | undefined;
 }
 
-const HorizontalScroller = ({setInputValue, email, setUserInfo }: HorizontalScrollerProps) => {
+const HorizontalScroller = ({setInputValue, email, userInfo, setUserInfo }: HorizontalScrollerProps) => {
   return (
     <Box className='w-[64%] flex flex-col justify-center items-center gap-2'>
       {/* EXAMPLE LISTINGS */}
       <Box className="w-full flex flex-row relative listings gap-2">
         <Box className="h-full flex listings-slide gap-2">
           {exampleListings.map((listing, index) => (
-            <Listing key={index} listing={listing} email={email} setUserInfo={setUserInfo} />
+            <Listing key={index} listing={listing} email={email} userInfo={userInfo} setUserInfo={setUserInfo} />
           ))}
         </Box>
         <Box className="h-full flex listings-slide gap-2">
           {exampleListings.map((listing, index) => (
-            <Listing key={index} listing={listing} email={email} setUserInfo={setUserInfo} />
+            <Listing key={index} listing={listing} email={email} userInfo={userInfo} setUserInfo={setUserInfo} />
           ))}
         </Box>
       </Box>

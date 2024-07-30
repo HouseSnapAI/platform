@@ -1,22 +1,22 @@
 import {useEffect, useState} from 'react';
 import { Drawer, Box, Typography, IconButton, Snackbar, SnackbarOrigin } from '@mui/material';
 import { IconChevronRight, IconBookmark, IconBookmarkFilled } from '@tabler/icons-react';
-import { ListingDetailType } from '@/utils/types';
+import { ListingDetailType, ListingRecordType, User } from '@/utils/types';
 import ImageSlider from './ImageSlider';
 import { useTheme } from '@mui/material/styles';
-import { updateEngagements, addSavedHouse, deleteSavedHouse, fetchUser } from '@/utils/db';
+import { updateEngagements, saveHouse, deleteSavedHouse } from '@/utils/db';
 
 type ListingDrawerProps = {
   open: boolean;
   onClose: () => void;
   listing: ListingDetailType | null;
   email: string | null | undefined;
-  setUserInfo: (userInfo: any) => void;
+  setUserInfo: (userInfo: User) => void | undefined;
+  userInfo: User |undefined;
 };
 
-const ListingDrawer = ({ open, onClose, listing, email, setUserInfo }: ListingDrawerProps) => {
+const ListingDrawer = ({ open, onClose, listing, email, setUserInfo, userInfo }: ListingDrawerProps) => {
   const theme = useTheme();
-  const [info, setInfo] = useState<any>();
   const [saved, setSaved] = useState<boolean>(false);
   const [snackOpen, setSnackOpen] = useState(false);
   const [delSnackOpen, setDelSnackOpen] = useState(false);
@@ -30,50 +30,34 @@ const ListingDrawer = ({ open, onClose, listing, email, setUserInfo }: ListingDr
   ];
 
   useEffect(() => {
-    const cachedUserInfo = localStorage.getItem('userInfo');
-    if(cachedUserInfo) {
-      setInfo(JSON.parse(cachedUserInfo)[1]);
-    } else if (email) {
-      // fetch user info and populate fields
-      fetchUser({ email: email, setUserInfo: setUserInfo })
-    }
-
-    if (info && info.saved && info.saved.L) {
-      const savedInfo = info.saved.L;
-      if(listing && listing.listings_detail_label?.S && savedInfo.some((elem: any) => JSON.stringify({ S: listing.listings_detail_label?.S }) === JSON.stringify(elem))) {
+      if (open && listing && email && userInfo?.id) {
+        updateEngagements({ listings_detail_label: listing.listings_detail_label?.S, zipcode: listing.zipcode?.S, viewed: true, clicked: true, user: userInfo });
+      }
+    
+    if (userInfo?.saved) {
+      const savedInfo = userInfo.saved;
+      if(listing && listing.listings_detail_label?.S && savedInfo.some((elem: ListingRecordType) => elem.id === listing.listings_detail_label?.S)) {
         setSaved(true);
       } else {
         setSaved(false);
       }
     }
-
-    if(open && listing && email) {
-        updateEngagements(listing.listings_detail_label?.S, listing.zipcode?.S, true, true, email)
-    }
   }, [open])  
   const saveListing = async () => {
-    const cachedUserInfo = localStorage.getItem('userInfo');
-    let data;
-    if(cachedUserInfo) {
-      data = JSON.parse(cachedUserInfo);
-    }
-
     // if saved then add to DB and also to local storage
     // if unsaved then remove from DB and also from local storage
-    if (saved && listing) {
-        deleteSavedHouse(listing.listings_detail_label?.S, info.email.S, info.user_id.S);
-        let filtered = data[1].saved.L.filter((val: { S: string; }) => val.S != listing.listings_detail_label?.S);
-        data[1].saved.L = filtered;
-        localStorage.setItem('userInfo', JSON.stringify(data));
-        setSaved(false);
-        setDelSnackOpen(true);
+    if (saved && listing && userInfo?.email && userInfo?.id) {
+      deleteSavedHouse({ id: listing.listings_detail_label?.S, user: userInfo });
+      let filtered = userInfo.saved.filter((val: ListingRecordType) => val.id != listing.listings_detail_label?.S);
+      setUserInfo({...userInfo, saved: filtered});
+      setSaved(false);
+      setDelSnackOpen(true);
     } else {
-      if (listing && info?.email?.S && info?.user_id?.S) {
-        addSavedHouse(listing.listings_detail_label?.S, info.email.S, info.user_id.S);
+      if (listing && userInfo?.email && userInfo?.id) {
+        saveHouse({ id: listing.listings_detail_label?.S, user: userInfo });
         setSaved(true);
+        setUserInfo({...userInfo, saved: [...userInfo.saved, {id: listing.listings_detail_label?.S, engage_date: new Date().toISOString()}]});
         setSnackOpen(true);
-        data[1].saved.L.push({S: listing.listings_detail_label?.S});
-        localStorage.setItem('userInfo', JSON.stringify(data));
       }
     }
   }

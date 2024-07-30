@@ -10,7 +10,7 @@ import Button from '@mui/material/Button'
 import { sidebar } from './NavItems'
 
 // ** Types
-import { DrawerContentType, UserPreferencesType, UserType } from '@/utils/types';
+import { DrawerContentType, User } from '@/utils/types';
 
 // ** Util Imports
 import { getInitials } from '@/utils/utils';
@@ -18,24 +18,26 @@ import { getInitials } from '@/utils/utils';
 type SideBarProps = {
     setDrawerContent: (content: DrawerContentType) => void;
     setDrawerOpen: (open: boolean) => void;
-    userInfo: [UserType, UserPreferencesType] | [];
+    userInfo: User | null;
 }
 
 const SideBar = ({ setDrawerContent, setDrawerOpen, userInfo }: SideBarProps) => {
-  const items = sidebar(setDrawerContent, setDrawerOpen, userInfo?.[0]);
+  const items = sidebar(setDrawerContent, setDrawerOpen, userInfo);
 
   const handleProfileClick = () => {
-    setDrawerContent({ title: 'Profile', component: 'ProfilePopup', props: userInfo?.[0] });
+    setDrawerContent({ title: 'Profile', component: 'ProfilePopup', props: userInfo });
     setDrawerOpen(true);
   };
 
-  const userPreferences = userInfo?.[1];
-  const hasIncompletePreferences = userPreferences && (
-    !userPreferences.budget?.L.length ||
-    !userPreferences.locations?.L.length ||
-    !userPreferences.size_of_house?.L.length ||
-    !userPreferences.beds_baths?.L.length ||
-    !userPreferences.property_types?.L.length
+  const hasIncompletePreferences = userInfo && (
+    !userInfo.max_budget ||
+    !userInfo.min_budget ||
+    !userInfo.location ||
+    !userInfo.min_size_of_house ||
+    !userInfo.max_size_of_house ||
+    !userInfo.beds ||
+    !userInfo.baths ||
+    !userInfo.property_types
   );
 
   return (
@@ -49,9 +51,9 @@ const SideBar = ({ setDrawerContent, setDrawerOpen, userInfo }: SideBarProps) =>
         {hasIncompletePreferences && (
             <Box className="absolute top-0 right-0 w-2 h-2 bg-purple-500 rounded-full"></Box>
         )}
-        <Tooltip title={userInfo?.[0]?.name?.S || 'Guest User'} placement="right">            
+        <Tooltip title={userInfo?.name || 'Guest User'} placement="right">            
             <Typography variant="h6" className="text-white">
-            {getInitials(userInfo?.[0]?.name?.S || 'Guest User')}
+            {getInitials(userInfo?.name || 'Guest User')}
             </Typography> 
         </Tooltip>
         </Box>

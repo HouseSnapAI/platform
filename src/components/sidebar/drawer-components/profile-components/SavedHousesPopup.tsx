@@ -8,19 +8,19 @@ import Box from '@mui/material/Box';
 
 // ** Style Imports
 import { useTheme } from '@mui/material/styles';
-import { UserType, UserPreferencesType } from '@/utils/types';
+import { ListingRecordType, User } from '@/utils/types';
 import { Skeleton } from '@mui/material';
 
 
 interface SavedHousesPopupProps {
   anchorEl: HTMLElement | null;
   open: boolean;
-  userInfo: UserPreferencesType | undefined;
+  userInfo: User | null;
   onClose: () => void;
-  savedHouses: {S: string}[] | undefined;
+  savedHouses: ListingRecordType[] | undefined;
 }
 
-const SavedHousesPopup: React.FC<SavedHousesPopupProps> = ({ anchorEl, open, userInfo, onClose, savedHouses }) => {
+const SavedHousesPopup = ({ anchorEl, open, userInfo, onClose, savedHouses }: SavedHousesPopupProps) => {
   const theme = useTheme();
 
   return (
@@ -74,10 +74,10 @@ const SavedHousesPopup: React.FC<SavedHousesPopupProps> = ({ anchorEl, open, use
                     savedHouses && savedHouses.map((savedHouse) => {
                         if ('S' in savedHouse) {
                             return (
-                                <Box key={savedHouse.S} className='flex flex-col gap-2'>
+                                <Box key={savedHouse.id} className='flex flex-col gap-2'>
                                     <Box>
                                         <Typography color='text.primary' fontSize={14}>
-                                            {savedHouse.S}
+                                            {savedHouse.id}
                                         </Typography>
                                     </Box>
                                 </Box>

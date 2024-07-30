@@ -24,10 +24,10 @@ const inverseScale = (value: number) => {
   }
 };
 
-export default function ChatSlider({value, setValue}: {value: number[], setValue: (value: number[]) => void}) {
+export default function ChatSlider({value, setValue}: {value: [number,number], setValue: (value: [number, number]) => void}) {
 
   const handleChange = (event: Event, newValue: number | number[]) => {
-    setValue((newValue as number[]).map(scale));
+    setValue((newValue as [number, number]).map(scale) as [number, number]);
   };
 
   const theme = useTheme();

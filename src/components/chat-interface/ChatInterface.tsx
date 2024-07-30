@@ -8,27 +8,26 @@ import { IconSend } from '@tabler/icons-react'
 
 // ** Custom Imports
 import ChatWindow from './ChatWindow'
-import { ChatHistoryType, MessageType, UserPreferencesType, UserType } from '@/utils/types'
+import { Chat, User, } from '@/utils/types'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 
 type ChatInterfaceProps = {
-    drawerOpen: boolean
     setInputValue: (value: string) => void
     inputValue: string
-    chatHistory: ChatHistoryType
+    chatHistory: Chat
     handleClick: () => void
-    userInfo: UserType | undefined
+    userInfo: User | null
     chatId: string
     loading: boolean
   }
-const ChatInterface = ({drawerOpen, setInputValue, inputValue, chatHistory, handleClick, userInfo, chatId, loading}: ChatInterfaceProps) => {
+const ChatInterface = ({ setInputValue, inputValue, chatHistory, handleClick, userInfo, chatId, loading}: ChatInterfaceProps) => {
 
   return (
     <Box className={`h-[100vh] p-4 relative flex flex-col items-center text-white w-[calc(100vw-67px)]`}>
         {/* CHAT TITLE */}
        {userInfo &&  <Box className='w-full flex flex-row items-center justify-center'>
-            <Typography variant='subtitle1' color='text.secondary'>{userInfo.chats?.L.find((chat) => chat.M.chat_id.S === chatId)?.M.title.S}</Typography>
+            <Typography variant='subtitle1' color='text.secondary'>{userInfo.chats.find((chat:any) => chat.id === chatId)?.title}</Typography>
         </Box>}
 
         {/* CHAT WINDOW */}
