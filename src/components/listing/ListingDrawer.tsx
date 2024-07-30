@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react';
-import { Drawer, Box, Typography, IconButton } from '@mui/material';
+import { Drawer, Box, Typography, IconButton, Snackbar, SnackbarOrigin } from '@mui/material';
 import { IconChevronRight, IconBookmark, IconBookmarkFilled } from '@tabler/icons-react';
 import { ListingDetailType } from '@/utils/types';
 import ImageSlider from './ImageSlider';
@@ -18,6 +18,8 @@ const ListingDrawer = ({ open, onClose, listing, email, setUserInfo }: ListingDr
   const theme = useTheme();
   const [info, setInfo] = useState<any>();
   const [saved, setSaved] = useState<boolean>(false);
+  const [snackOpen, setSnackOpen] = useState(false);
+  const [delSnackOpen, setDelSnackOpen] = useState(false);
 
   const excludedFields = [
     'listings_detail_label',
@@ -64,15 +66,19 @@ const ListingDrawer = ({ open, onClose, listing, email, setUserInfo }: ListingDr
         data[1].saved.L = filtered;
         localStorage.setItem('userInfo', JSON.stringify(data));
         setSaved(false);
+        setDelSnackOpen(true);
     } else {
       if (listing && info?.email?.S && info?.user_id?.S) {
         addSavedHouse(listing.listings_detail_label?.S, info.email.S, info.user_id.S);
         setSaved(true);
+        setSnackOpen(true);
         data[1].saved.L.push({S: listing.listings_detail_label?.S});
         localStorage.setItem('userInfo', JSON.stringify(data));
       }
     }
   }
+
+  const snackbarOrigin: SnackbarOrigin = { vertical: 'bottom', horizontal: 'right' };
 
   return (
     <Drawer
@@ -112,6 +118,32 @@ const ListingDrawer = ({ open, onClose, listing, email, setUserInfo }: ListingDr
               }
               return null;
             })}
+            <Snackbar
+              ContentProps={{
+                sx: {
+                  background: theme.palette.divider,
+                  color: 'white'
+                }
+              }}
+              anchorOrigin={snackbarOrigin}
+              open={snackOpen}
+              autoHideDuration={3000}
+              onClose={() => setSnackOpen(false)}
+              message="listing saved"
+            />
+            <Snackbar
+              ContentProps={{
+                sx: {
+                  background: theme.palette.divider,
+                  color: 'white'
+                }
+              }}
+              anchorOrigin={snackbarOrigin}
+              open={delSnackOpen}
+              autoHideDuration={3000}
+              onClose={() => setDelSnackOpen(false)}
+              message= "listing unsaved"
+            />
           </Box>
         ) : (
           <Typography variant="body1">No listing selected</Typography>
