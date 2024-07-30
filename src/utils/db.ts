@@ -24,8 +24,8 @@ export const fetchUser = async ({ email, setUserInfo }: FetchUserType) => {
     const response = await fetch('/api/auth/user', {
       method: 'POST',
       body: JSON.stringify({ email: email }),
-    });
 
+    });
     // If user is not logged in, redirect to login
     if (response.status !== 200) {
       window.location.href = "/api/auth/login"

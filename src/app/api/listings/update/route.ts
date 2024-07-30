@@ -10,29 +10,8 @@ const dynamoDBClient = new DynamoDBClient({
   },
 });
 
-async function fetchUser(email: string) {
 
-  const params = {
-    TableName: process.env.USER_TABLE!,
-    FilterExpression: '#email = :email',
-    ExpressionAttributeNames: {
-      '#email': 'email',
-    },
-    ExpressionAttributeValues: {
-      ':email': { S: email },
-    },
-  };
-
-  const command = new ScanCommand(params);
-  const result = await dynamoDBClient.send(command);
-
-  if (result.Items?.length === 0) {
-    throw new Error('User not found');
-  }
-
-  return result.Items![0];
-}
-
+// TODO: once supabase has listings replace
 export const POST = withApiAuthRequired(async function handler(req: NextRequest) {
   if (req.method !== 'POST') {
     return NextResponse.json({ message: 'Method not allowed' }, { status: 405 });
@@ -63,44 +42,5 @@ export const POST = withApiAuthRequired(async function handler(req: NextRequest)
     ExpressionAttributeValues: expressionAttributeValues,
   };
 
-  try {
-    const command = new UpdateItemCommand(params);
-    await dynamoDBClient.send(command);
-
-    // Fetch user using DynamoDB
-    const user = await fetchUser(email);
-    const user_id = user.user_id.S; 
-
-    const updateUserParams = {
-      TableName: process.env.PREFERENCES_TABLE!,
-      Key: {
-        user_id: { S: user_id },
-        email: { S: email },
-      },
-      UpdateExpression: '',
-      ExpressionAttributeValues: {},
-    };
-    if (clicked) {
-      updateUserParams.UpdateExpression = 'SET viewed = list_append(if_not_exists(viewed, :empty_list), :viewed), clicked = list_append(if_not_exists(clicked, :empty_list), :clicked)';
-      updateUserParams.ExpressionAttributeValues = {
-        ':viewed': { L: [{ S: listings_detail_label }] },
-        ':clicked': { L: [{ S: listings_detail_label }] },
-        ':empty_list': { L: [] },
-      };
-    } else if (viewed) {
-      updateUserParams.UpdateExpression = 'SET viewed = list_append(if_not_exists(viewed, :empty_list), :viewed)';
-      updateUserParams.ExpressionAttributeValues = {
-        ':viewed': { L: [{ S: listings_detail_label }] },
-        ':empty_list': { L: [] },
-      };
-    }
-
-    // @ts-ignore
-    await dynamoDBClient.send(new UpdateItemCommand(updateUserParams));
-
-    return NextResponse.json({ message: 'Listing and user preferences updated successfully' }, { status: 200 });
-  } catch (error) {
-    console.error('Error updating listing or user preferences in DynamoDB:', error);
-    return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
-  }
+    return NextResponse.json({ message: 'Listing updated successfully' }, { status: 200 });
 });
