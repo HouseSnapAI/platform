@@ -30,6 +30,11 @@ const schema = z.object({
     engage_date: z.string(),
     id: z.string(),
   })).optional(),
+  chats: z.array(z.object({
+    id: z.string(),
+    updated_at: z.string(),
+    title: z.string(),
+  })).optional(),
 });
 
 export const PATCH = withApiAuthRequired(async function handler(req: NextRequest) {

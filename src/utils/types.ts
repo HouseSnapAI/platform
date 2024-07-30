@@ -268,6 +268,11 @@ export type User ={
   clicked: ListingRecordType[],
   viewed: ListingRecordType[],
   saved: ListingRecordType[],
+  chats: {
+    id: string,
+    updated_at: string,
+    title: string
+  }[]
 }
 
 export type Message = {
@@ -282,5 +287,5 @@ export type Chat = {
   created_at: string,
   updated_at: string,
   title: string,
-  messages: Message[],
+  chat_history: Message[],
 }

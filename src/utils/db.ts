@@ -1,4 +1,4 @@
-import {ChatHistoryType, User, UserType } from "./types";
+import {Chat, ChatHistoryType, User, UserType } from "./types";
 import { v4 as uuidv4 } from 'uuid';
 import { HumanMessage } from '@langchain/core/messages';
 
@@ -36,6 +36,21 @@ export const fetchUser = async ({ email, setUserInfo }: FetchUserType) => {
     localStorage.setItem('userInfo', JSON.stringify(data));
   }
 
+export const fetchUserInfo = async (email: string) => {
+  const cachedUserInfo = localStorage.getItem('userInfo');
+  // if (cachedUserInfo) {
+  //     setUserInfo(JSON.parse(cachedUserInfo));
+  //     return;
+  // }
+  const encodedEmail = encodeURIComponent(email);
+  const response = await fetch(`/api/auth/user/${encodedEmail}`, {
+    method: 'GET',
+  });
+  const data = await response.json();
+  localStorage.setItem('userInfo', JSON.stringify(data));
+  return data;
+}
+
 export const fetchChatHistory = async ({ chatId, email, setChatHistory }: FetchChatHistoryType) => {
     const response = await fetch('/api/chat/fetch', {
       method: 'POST',
@@ -58,6 +73,31 @@ export const fetchChatHistory = async ({ chatId, email, setChatHistory }: FetchC
     }
   }; 
 
+type FetchChatType = {
+  chat_id: string,
+  user_id: string
+}
+
+export const fetchChat = async ({ chat_id, user_id }: FetchChatType) => {
+
+  const cachedUserInfo = localStorage.getItem('userInfo');
+    // if (cachedUserInfo) {
+    //     setUserInfo(JSON.parse(cachedUserInfo));
+    //     return;
+    // }
+  const response = await fetch('/api/chat/fetch', {
+    method: 'POST',
+    body: JSON.stringify({ chat_id: chat_id, user_id: user_id }),
+  });
+
+  if (response.status === 200) {
+    const data = await response.json();
+    return data;
+  } else {
+    console.error('Error fetching chat');
+  }
+}
+
 type CreateChatType = {
     email: string,
     initialMessage: string
@@ -76,6 +116,59 @@ export const createChat = async ({ email, initialMessage }: CreateChatType) => {
       window.location.href = `/chat/${chat_uuid}?initialMessage=${initialMessage}`;
     }
 
+}
+
+type createNewChatType = {
+  user: User,
+  initialMessage: string
+}
+
+export const createNewChat = async ({ user, initialMessage }: createNewChatType) => {
+  const response = await fetch('/api/chat/create/create', {
+    method: 'POST',
+    body: JSON.stringify({ user: user, initialMessage: initialMessage }),
+  });
+
+  if (response.status !== 200) {
+    console.log("Error creating chat")
+  } else {
+    const data = await response.json();
+    const userUpdateResponse = await fetch('/api/auth/user/update', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        // change to supabase user
+        id: user.id,
+        // TODO: change listings_detail_label to listing_id after supabase listings table is updated
+        chats: [...user.chats||[], { updated_at: new Date().toISOString(), id: data.chat.id }]
+      }),
+    });
+    if (userUpdateResponse.status !== 200) {
+      console.error('Error updating user chats');
+    }
+
+    window.location.href = `/chat/${data.chat.id}?initialMessage=${initialMessage}`;
+  }
+
+}
+
+type DeleteChatType ={
+  id: string,
+  user: User
+}
+
+export const deleteUserChat = async ({ id, user }: DeleteChatType) => {
+  const response = await fetch('/api/auth/user/update', {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ id: user.id, chats: user.chats.filter((chat: any) => chat.id !== id) }),
+  });
+
+  response.status === 200 ? console.log('Chat deleted successfully') : console.error('Error deleting chat');
 }
 
 type UpdateChatType = {
@@ -112,6 +205,17 @@ export const updateChatTable = async ({ chatHistory, setChatHistory, email }: Up
     }
 };
 
+export const updateChat = async (chat: Chat) => {
+  const response = await fetch('/api/chat/update/update', {
+    method: 'POST',
+    body: JSON.stringify({ chat: chat }),
+  });
+
+  if (response.status !== 200) {
+    console.error('Error updating chat');
+  }
+}
+
 export async function generateChatTitle(initialMessage: string, model:any): Promise<string> {
 
 const prompt = `
@@ -142,7 +246,7 @@ type UpdateEngagementsParams = {
   zipcode: string;
   viewed: boolean;
   clicked: boolean;
-  user: UserType;
+  user: User;
 };
 
 export const updateEngagements = async ({
@@ -170,7 +274,7 @@ export const updateEngagements = async ({
       },
       body: JSON.stringify({
         // change to supabase user
-        id: user.user_id.S,
+        id: user.id,
         // TODO: change listings_detail_label to listing_id after supabase listings table is updated
         viewed: viewed ? [...user.viewed||[], { engage_date: new Date().toISOString(), id: listings_detail_label }] : user.viewed,
         clicked: clicked ? [...user.clicked||[], { engage_date: new Date().toISOString(), id: listings_detail_label }] : user.clicked,
@@ -189,7 +293,7 @@ export const updateEngagements = async ({
   }
 };
 
-async function updateUserEngagements(listings_detail_label: string, viewed: boolean, clicked: boolean, email: string) {
+export async function updateUserEngagements(listings_detail_label: string, viewed: boolean, clicked: boolean, email: string) {
   const response = await fetch('/api/user/update', {
     method: 'POST',
     headers: {
@@ -220,7 +324,21 @@ export const addSavedHouse = async (address:string, email:string, user_id:string
     console.log('Saved House added successfully');
   } else {
     const data = await response.json();
-    console.error('Error adding saved houses:', data);
+    console.error('Error adding saved house:', data);
+  }
+}
+
+export const saveHouse = async (id:string, user: User) => {
+  const response = await fetch('/api/auth/user/update', {
+    method: 'PATCH',
+    body: JSON.stringify({ id: user.id, saved: [...user.saved||[], { updated_at: new Date().toISOString(), id: id }] }),
+  });
+
+  if (response.status === 200) {
+    console.log('Saved House added successfully');
+  } else {
+    const data = await response.json();
+    console.error('Error adding saved house:', data);
   }
 }
 
@@ -234,6 +352,20 @@ export const deleteSavedHouse = async (address:string, email:string, user_id:str
     console.log('Saved House deleted successfully');
   } else {
     const data = await response.json();
-    console.error('Error adding saved houses:', data);
+    console.error('Error deleting saved house:', data);
+  }
+}
+
+export const unsaveHouse = async (id:string, user: User) => {
+  const response = await fetch('/api/auth/user/update', {
+    method: 'PATCH',
+    body: JSON.stringify({ id: user.id, saved: user.saved.filter((house: any) => house.id !== id) }),
+  });
+  
+  if (response.status === 200) {
+    console.log('Saved House deleted successfully');
+  } else {
+    const data = await response.json();
+    console.error('Error deleting saved house:', data);
   }
 }

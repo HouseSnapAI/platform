@@ -10,15 +10,14 @@ const schema = z.object({
 export const GET =  withApiAuthRequired(async function handler(
   req: NextRequest
 ) {
-  // im too lazy to figure out dynamic routing rn 
-  const id = req.url.split('/').pop()?.split('?')[0]; 
-  console.log("id", id)
-  // const id = "4f8a4146-7ca7-4cdd-b537-a60fe7d236b9"
+  const encodedEmail = req.url.split('/').pop()?.split('?')[0];
+  const email = encodedEmail ? decodeURIComponent(encodedEmail) : null;
+
   if (req.method !== 'GET') {
     return NextResponse.json({ message: 'Method not allowed' }, { status: 405 });
   }
 
-  if (!id) {
+  if (!email) {
     return NextResponse.json({ message: 'Invalid request parameters' }, { status: 400 });
   }
 
@@ -26,7 +25,7 @@ export const GET =  withApiAuthRequired(async function handler(
     const { data: user, error: userError } = await supabase
       .from('User')
       .select('*')
-      .eq('id', id)
+      .eq('email', email)
       .single();
 
     if (userError) {
