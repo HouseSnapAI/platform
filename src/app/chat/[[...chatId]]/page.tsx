@@ -102,7 +102,7 @@ const ChatPage = () => {
     setLoading(true);
     // If New chat
     if (chatId[0] === "newChat" && userInfo) {
-      console.log("new chat ")
+      console.log("new chat ", userInfo, inputValue)
       createNewChat({ user: userInfo, initialMessage: inputValue })
       // Normal handle click
     } else if(user) {
@@ -139,7 +139,8 @@ const ChatPage = () => {
     const updatedChat = await updateChat({
       ...chatHistory,
         chat_history: [...chatHistory.chat_history, 
-            { role: "user", content: inputValue, listings: []}
+            { role: "user", content: inputValue, listings: []},
+            data
         ]
     });
 
