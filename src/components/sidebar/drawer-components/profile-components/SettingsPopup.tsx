@@ -41,6 +41,18 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({ anchorEl, open, onClose, 
   const [baths, setBaths] = useState<number>(userInfo?.baths || 0);
   const [propertyType, setPropertyType] = useState<string[]>(userInfo?.property_types || []);
 
+  const handleBedsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setBeds(Number(e.target.value));
+  };
+
+  const handleBathsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setBaths(Number(e.target.value));
+  };
+
+  const enforceMinMax = (value: number) => {
+    return Math.max(1, Math.min(10, value));
+  };
+
   const handleSave = async () => {
 
     if (userInfo)   {
@@ -49,21 +61,13 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({ anchorEl, open, onClose, 
             max_budget: budget[1],
             location: locations,
             house_description: houseDescriptions,
-            max_size_of_house: sizeOfHouse[0],
+            min_size_of_house: sizeOfHouse[0],
+            max_size_of_house: sizeOfHouse[1],
             beds,
             baths,
             property_types: propertyType,
         };
-            
         try {
-            const response = await fetch('/api/auth/user/update-preferences', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(userPreferences),
-            });
-
             const updateUser = await fetch('/api/auth/user/update', {
                 method: 'PATCH',
                 headers: {
@@ -72,7 +76,7 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({ anchorEl, open, onClose, 
                 body: JSON.stringify({id: userInfo.id, ...userPreferences}),
             });
             
-            if (response.status === 200) {
+            if (updateUser.status === 200) {
                 console.log('User preferences updated successfully');
                 setUserInfo(userInfo ? {...userInfo, ...userPreferences} : null);
                 localStorage.setItem('userInfo', JSON.stringify(userInfo ? {...userInfo, ...userPreferences} : null));
@@ -234,8 +238,8 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({ anchorEl, open, onClose, 
                     size='small'
                     type="number"
                     value={beds}
-                    onChange={(e) => 
-                        setBeds(Math.max(1, Math.min(10, Number(e.target.value))))}
+                    onChange={handleBedsChange}
+                    onBlur={() => setBeds(enforceMinMax(beds))}
                     className='transition-all ease-in-out duration-300'
                     InputProps={{ inputProps: { min: 1, max: 10, step: 1 } }}
                     sx={{
@@ -249,8 +253,8 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({ anchorEl, open, onClose, 
                     size='small'
                     type="number"
                     value={baths}
-                    onChange={(e) => 
-                        setBaths(Math.max(1, Math.min(10, Number(e.target.value))))}
+                    onChange={handleBathsChange}
+                    onBlur={() => setBaths(enforceMinMax(baths))}
                     className='transition-all ease-in-out duration-300'
                     InputProps={{ inputProps: { min: 1, max: 10, step: 1 } }}
                     sx={{

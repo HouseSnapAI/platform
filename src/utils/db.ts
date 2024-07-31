@@ -24,7 +24,7 @@ type FetchChatType = {
 
 export const fetchChat = async ({ chat_id, user_id }: FetchChatType) => {
 
-  const response = await fetch('/api/chat/fetch', {
+  const response = await fetch('/api/chat/fetch/fetch', {
     method: 'POST',
     body: JSON.stringify({ chat_id: chat_id, user_id: user_id }),
   });
@@ -45,7 +45,7 @@ type createNewChatType = {
 export const createNewChat = async ({ user, initialMessage }: createNewChatType) => {
   const response = await fetch('/api/chat/create/create', {
     method: 'POST',
-    body: JSON.stringify({ user: user, initialMessage: initialMessage }),
+    body: JSON.stringify({ id: user.id, initialMessage: initialMessage }),
   });
 
   if (response.status !== 200) {
@@ -91,6 +91,9 @@ export const deleteUserChat = async ({ id, user }: DeleteUserChatType) => {
 }
 
 export const updateChat = async (chat: Chat) => {
+
+  console.log(chat, "CHAT")
+
   const response = await fetch('/api/chat/update/update', {
     method: 'POST',
     body: JSON.stringify({ chat: chat }),
@@ -168,7 +171,7 @@ export const updateEngagements = async ({
 export const saveHouse = async ({id, user}: {id:string, user: User}) => {
   const response = await fetch('/api/auth/user/update', {
     method: 'PATCH',
-    body: JSON.stringify({ id: user.id, saved: [...user.saved||[], { updated_at: new Date().toISOString(), id: id }] }),
+    body: JSON.stringify({ id: user.id, saved: [...user.saved||[], { engage_date: new Date().toISOString(), id: id }] }),
   });
 
   if (response.status === 200) {

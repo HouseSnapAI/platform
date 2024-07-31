@@ -9,11 +9,13 @@ import Slider from '@mui/material/Slider';
 import { useTheme } from '@mui/material/styles';
 
 const scale = (value: number) => {
+  let result: number;
   if (value <= 66) {
-    return (value / 66) * 1000000;
+    result = (value / 66) * 1000000;
   } else {
-    return 1000000 + ((value - 66) / 34) * 4000000;
+    result = 1000000 + ((value - 66) / 34) * 4000000;
   }
+  return Math.round(result / 1000) * 1000; // Round to nearest thousand
 };
 
 const inverseScale = (value: number) => {
@@ -27,7 +29,7 @@ const inverseScale = (value: number) => {
 export default function ChatSlider({value, setValue}: {value: [number,number], setValue: (value: [number, number]) => void}) {
 
   const handleChange = (event: Event, newValue: number | number[]) => {
-    setValue((newValue as [number, number]).map(scale) as [number, number]);
+    setValue((newValue as [number, number]).map(v => Math.round(scale(v) / 1000) * 1000) as [number, number]);
   };
 
   const theme = useTheme();

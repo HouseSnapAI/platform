@@ -1,45 +1,34 @@
 import { withApiAuthRequired } from '@auth0/nextjs-auth0';
-import { DynamoDBClient, GetItemCommand } from '@aws-sdk/client-dynamodb';
 import { NextRequest, NextResponse } from 'next/server';
-
-const dynamoDBClient = new DynamoDBClient({
-  region: process.env.REGION || '',
-  credentials: {
-    accessKeyId: process.env.NEXT_AWS_ACCESS_KEY || '',
-    secretAccessKey: process.env.NEXT_AWS_SECRET_KEY || '',
-  },
-});
+import { supabase } from '@/supabase/client';
 
 export const POST = withApiAuthRequired(async function handler(req: NextRequest) {
   if (req.method !== 'POST') {
     return NextResponse.json({ message: 'Method not allowed' }, { status: 405 });
   }
 
-  const { chat_uuid, email } = await req.json();
+  const { chat_id, user_id } = await req.json();
 
-  if (!chat_uuid || !email) {
+  if (!chat_id || !user_id) {
     return NextResponse.json({ message: 'Invalid request body' }, { status: 400 });
   }
 
-  const params = {
-    TableName: process.env.CHATS_TABLE!,
-    Key: {
-      chat_id: { S: chat_uuid },
-      email: { S: email },
-    },
-  };
-
   try {
-    const command = new GetItemCommand(params);
-    const result = await dynamoDBClient.send(command);
+    const { data, error } = await supabase
+      .from('Chats')
+      .select('*')
+      .eq('id', chat_id)
+      .eq('user_id', user_id)
+      .single();
 
-    if (!result.Item) {
+    if (error) {
+      console.error('Error fetching chat from Supabase:', error);
       return NextResponse.json({ message: 'Chat not found' }, { status: 404 });
     }
 
-    return NextResponse.json(result.Item, { status: 200 });
+    return NextResponse.json(data, { status: 200 });
   } catch (error) {
-    console.error('Error fetching chat history from DynamoDB:', error);
+    console.error('Error fetching chat history from Supabase:', error);
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
   }
 });
