@@ -26,6 +26,7 @@ import { IconAnalyze, IconEdit, IconFile, IconLogout, IconSettings } from '@tabl
 // ** Component Imports
 import SettingsPopup from './profile-components/SettingsPopup';
 import SavedHousesPopup from './profile-components/SavedHousesPopup';
+import HousesHistoryPopup from './profile-components/HousesHistoryPopup';
 
 const ProfilePopup = () => {
     const { user, isLoading } = useUser()
@@ -58,6 +59,7 @@ const ProfilePopup = () => {
 
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [savedHousesOpen, setSavedHousesOpen] = useState(false);
+    const [housesHistoryOpen, setHousesHistoryOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
     const handleSettingsClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -77,6 +79,16 @@ const ProfilePopup = () => {
 
     const handleSavedHousesClose = () => {
         setSavedHousesOpen(false);
+        setAnchorEl(null);
+    };
+
+    const handleHousesHistoryClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget.parentElement); 
+        setHousesHistoryOpen(true);
+    };
+
+    const handleHousesHistoryClose = () => {
+        setHousesHistoryOpen(false);
         setAnchorEl(null);
     };
 
@@ -108,7 +120,7 @@ const ProfilePopup = () => {
                     <Typography fontSize={14} noWrap textAlign={'left'}>{userInfo?.saved?.length}</Typography>
                     <Typography fontSize={10} noWrap className='text-[#6f6f6f]'>Saved Houses</Typography>
                 </Button>
-                <Button sx={{textTransform: 'none', borderColor: theme.palette.divider }} className='flex flex-col' variant='outlined'>
+                <Button onClick={handleHousesHistoryClick} sx={{textTransform: 'none', borderColor: theme.palette.divider }} className='flex flex-col' variant='outlined'>
                     <Typography fontSize={14} noWrap textAlign={'left'}>{userInfo?.clicked?.length}</Typography>
                     <Typography fontSize={10} noWrap className='text-[#6f6f6f]'>Houses History</Typography>
                 </Button>
@@ -235,7 +247,8 @@ const ProfilePopup = () => {
                 </Button>
             </Box>
             <SettingsPopup anchorEl={anchorEl} open={settingsOpen} onClose={handleSettingsClose} userInfo={userInfo} setUserInfo={setUserInfo} />
-            {savedHousesOpen && <SavedHousesPopup savedHouses={userInfo?.saved} anchorEl={anchorEl} open={savedHousesOpen} userInfo={userInfo} onClose={handleSavedHousesClose} />}
+            {savedHousesOpen && <SavedHousesPopup savedHouses={userInfo?.saved} anchorEl={anchorEl} open={savedHousesOpen} onClose={handleSavedHousesClose} />}
+            {housesHistoryOpen && <HousesHistoryPopup housesHistory={userInfo?.clicked} anchorEl={anchorEl} open={housesHistoryOpen} onClose={handleHousesHistoryClose} />}
         </>
           
       ) : (

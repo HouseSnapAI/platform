@@ -12,18 +12,18 @@ import { ListingRecordType, User } from '@/utils/types';
 import { Skeleton } from '@mui/material';
 
 
-interface SavedHousesPopupProps {
+interface HousesHistoryPopupProps {
   anchorEl: HTMLElement | null;
   open: boolean;
   onClose: () => void;
-  savedHouses: ListingRecordType[] | undefined;
+  housesHistory: ListingRecordType[] | undefined;
 }
 
-const SavedHousesPopup = ({ anchorEl, open, onClose, savedHouses }: SavedHousesPopupProps) => {
+const HousesHistoryPopup = ({ anchorEl, open, onClose, housesHistory }: HousesHistoryPopupProps) => {
   const theme = useTheme();
 
   useEffect(() => {
-    console.log(savedHouses)
+    console.log(housesHistory)
   }, [])
 
   return (
@@ -53,19 +53,19 @@ const SavedHousesPopup = ({ anchorEl, open, onClose, savedHouses }: SavedHousesP
           border: `1px solid ${theme.palette.divider}`,
         }}>
           <Box p={1} mt={1} className='flex flex-col gap-2 relative'>
-              {savedHouses && savedHouses.length === 0 ? 
+              {housesHistory && housesHistory.length === 0 ? 
                   <Box className=''>
                       <Typography color='text.primary' fontSize={14}>
-                          No Houses Saved...
+                          No Listings Visited...
                       </Typography>
                   </Box>
                   :
-                  savedHouses && savedHouses.map((savedHouse) => {
+                  housesHistory && housesHistory.map((housesHistory) => {
                           return (
-                              <Box key={savedHouse.id} className='flex flex-col gap-2'>
+                              <Box key={housesHistory.id} className='flex flex-col gap-2'>
                                   <Box>
                                       <Typography color='text.primary' fontSize={14}>
-                                          {savedHouse.id}
+                                          {housesHistory.id}
                                       </Typography>
                                   </Box>
                               </Box>
@@ -81,4 +81,4 @@ const SavedHousesPopup = ({ anchorEl, open, onClose, savedHouses }: SavedHousesP
   );
 };
 
-export default SavedHousesPopup;
+export default HousesHistoryPopup;
