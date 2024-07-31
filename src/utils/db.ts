@@ -131,12 +131,7 @@ export const updateEngagements = async ({
   clicked,
   user
 }: UpdateEngagementsParams) => {
-  const response = await fetch('/api/listings/update', {
-    method: 'POST',
-    body: JSON.stringify({ listings_detail_label, zipcode, viewed, clicked, email: user.email }),
-  });
 
-  if (response.status === 200) {
     console.log('Engagements updated successfully');
 
     console.log("VIEWED", [...user.viewed||[], { engage_date: new Date().toISOString(), id: listings_detail_label }])
@@ -162,10 +157,6 @@ export const updateEngagements = async ({
       const data = await userUpdateResponse.json();
       console.error('Error updating user engagements:', data);
     }
-  } else {
-    const data = await response.json();
-    console.error('Error updating engagements:', data);
-  }
 };
 
 export const saveHouse = async ({id, user}: {id:string, user: User}) => {

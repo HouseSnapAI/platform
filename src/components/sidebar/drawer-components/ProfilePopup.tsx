@@ -235,7 +235,7 @@ const ProfilePopup = () => {
                 </Button>
             </Box>
             <SettingsPopup anchorEl={anchorEl} open={settingsOpen} onClose={handleSettingsClose} userInfo={userInfo} setUserInfo={setUserInfo} />
-            {savedHousesOpen && <SavedHousesPopup savedHouses={userInfo?.saved} anchorEl={anchorEl} open={savedHousesOpen} userInfo={userInfo} onClose={handleSavedHousesClose} />}
+            {savedHousesOpen && userInfo && <SavedHousesPopup savedHouses={userInfo?.saved} anchorEl={anchorEl} open={savedHousesOpen} userInfo={userInfo} onClose={handleSavedHousesClose} />}
         </>
           
       ) : (

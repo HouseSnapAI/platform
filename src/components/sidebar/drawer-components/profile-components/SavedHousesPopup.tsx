@@ -45,7 +45,7 @@ const SavedHousesPopup = ({ anchorEl, open, userInfo, onClose, savedHouses }: Sa
       
     >
       {
-        savedHouses && savedHouses[0] && 'S' in savedHouses[0] && savedHouses[0].S === "uninit" ?
+        !savedHouses  ?
         <Box sx={{
             width: '400px',
             height: '500px',
@@ -72,7 +72,6 @@ const SavedHousesPopup = ({ anchorEl, open, userInfo, onClose, savedHouses }: Sa
                     </Box>
                     :
                     savedHouses && savedHouses.map((savedHouse) => {
-                        if ('S' in savedHouse) {
                             return (
                                 <Box key={savedHouse.id} className='flex flex-col gap-2'>
                                     <Box>
@@ -83,8 +82,6 @@ const SavedHousesPopup = ({ anchorEl, open, userInfo, onClose, savedHouses }: Sa
                                 </Box>
 
                             )
-                        }
-                        return null;
                     })
                 }
               
