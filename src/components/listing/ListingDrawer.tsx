@@ -1,10 +1,28 @@
+// ** Next Imports
 import {useEffect, useState} from 'react';
-import { Drawer, Box, Typography, IconButton, Snackbar, SnackbarOrigin } from '@mui/material';
+
+// ** MUI Imports
+import Drawer from '@mui/material/Drawer';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+
+// ** Icon Imports
 import { IconChevronRight, IconBookmark, IconBookmarkFilled } from '@tabler/icons-react';
+
+// ** Type Imports
 import { ListingDetailType, ListingRecordType, User } from '@/utils/types';
-import ImageSlider from './ImageSlider';
-import { useTheme } from '@mui/material/styles';
+
+// ** Utils
 import { updateEngagements, saveHouse, deleteSavedHouse } from '@/utils/db';
+
+// ** Custom Imports
+import ImageSlider from './ImageSlider';
+import { toast, Bounce } from 'react-toastify';
+
+// ** Style Imports
+import { useTheme } from '@mui/material/styles';
+import 'react-toastify/dist/ReactToastify.css';
 
 type ListingDrawerProps = {
   open: boolean;
@@ -18,8 +36,6 @@ type ListingDrawerProps = {
 const ListingDrawer = ({ open, onClose, listing, email, setUserInfo, userInfo }: ListingDrawerProps) => {
   const theme = useTheme();
   const [saved, setSaved] = useState<boolean>(false);
-  const [snackOpen, setSnackOpen] = useState(false);
-  const [delSnackOpen, setDelSnackOpen] = useState(false);
 
   const excludedFields = [
     'listings_detail_label',
@@ -44,25 +60,41 @@ const ListingDrawer = ({ open, onClose, listing, email, setUserInfo, userInfo }:
     }
   }, [open])  
   const saveListing = async () => {
-    // if saved then add to DB and also to local storage
-    // if unsaved then remove from DB and also from local storage
     if (saved && listing && userInfo?.email && userInfo?.id) {
       deleteSavedHouse({ id: listing.listings_detail_label?.S, user: userInfo });
       let filtered = userInfo.saved.filter((val: ListingRecordType) => val.id != listing.listings_detail_label?.S);
       setUserInfo({...userInfo, saved: filtered});
       setSaved(false);
-      setDelSnackOpen(true);
+      toast('Listing unsaved', {
+        position: "bottom-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Bounce,
+      });
     } else {
       if (listing && userInfo?.email && userInfo?.id) {
         saveHouse({ id: listing.listings_detail_label?.S, user: userInfo });
         setSaved(true);
         setUserInfo({...userInfo, saved: [...userInfo.saved, {id: listing.listings_detail_label?.S, engage_date: new Date().toISOString()}]});
-        setSnackOpen(true);
+        toast('Listing saved', {
+          position: "bottom-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+          transition: Bounce,
+        });
       }
     }
   }
-
-  const snackbarOrigin: SnackbarOrigin = { vertical: 'bottom', horizontal: 'right' };
 
   return (
     <Drawer
@@ -102,32 +134,6 @@ const ListingDrawer = ({ open, onClose, listing, email, setUserInfo, userInfo }:
               }
               return null;
             })}
-            <Snackbar
-              ContentProps={{
-                sx: {
-                  background: theme.palette.divider,
-                  color: 'white'
-                }
-              }}
-              anchorOrigin={snackbarOrigin}
-              open={snackOpen}
-              autoHideDuration={3000}
-              onClose={() => setSnackOpen(false)}
-              message="listing saved"
-            />
-            <Snackbar
-              ContentProps={{
-                sx: {
-                  background: theme.palette.divider,
-                  color: 'white'
-                }
-              }}
-              anchorOrigin={snackbarOrigin}
-              open={delSnackOpen}
-              autoHideDuration={3000}
-              onClose={() => setDelSnackOpen(false)}
-              message= "listing unsaved"
-            />
           </Box>
         ) : (
           <Typography variant="body1">No listing selected</Typography>
