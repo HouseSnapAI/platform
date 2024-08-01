@@ -117,7 +117,7 @@ const ProfilePopup = () => {
             </Box>
             <Box mt={1} pl={1} pr={1} pb={1} className='flex w-full gap-2 items-center justify-evenly' sx={{borderBottom: `1px solid ${theme.palette.divider}`}}> 
                 <Button onClick={handleSavedHousesClick} sx={{textTransform: 'none', borderColor: theme.palette.divider }} className='flex flex-col' variant='outlined'>
-                    <Typography fontSize={14} noWrap textAlign={'left'}>{userInfo?.saved?.length}</Typography>
+                    <Typography fontSize={14} noWrap textAlign={'left'}>{userInfo?.saved?.length||0}</Typography>
                     <Typography fontSize={10} noWrap className='text-[#6f6f6f]'>Saved Houses</Typography>
                 </Button>
                 <Button onClick={handleHousesHistoryClick} sx={{textTransform: 'none', borderColor: theme.palette.divider }} className='flex flex-col' variant='outlined'>

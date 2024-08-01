@@ -46,9 +46,12 @@ const ListingDrawer = ({ open, onClose, listing, email, setUserInfo, userInfo }:
   ];
 
   useEffect(() => {
-      if (open && listing && email && userInfo?.id) {
-        updateEngagements({ listings_detail_label: listing.listings_detail_label?.S, zipcode: listing.zipcode?.S, viewed: true, clicked: true, user: userInfo });
-      }
+    if (open && listing && email && userInfo?.id) {
+      updateEngagements({ listings_detail_label: listing.listings_detail_label?.S, zipcode: listing.zipcode?.S, viewed: true, clicked: true, user: userInfo })
+        .then(updatedUser => {
+          if (updatedUser) setUserInfo(updatedUser);
+        });
+    }
     
     if (userInfo?.saved) {
       const savedInfo = userInfo.saved;
@@ -61,27 +64,11 @@ const ListingDrawer = ({ open, onClose, listing, email, setUserInfo, userInfo }:
   }, [open])  
   const saveListing = async () => {
     if (saved && listing && userInfo?.email && userInfo?.id) {
-      deleteSavedHouse({ id: listing.listings_detail_label?.S, user: userInfo });
-      let filtered = userInfo.saved.filter((val: ListingRecordType) => val.id != listing.listings_detail_label?.S);
-      setUserInfo({...userInfo, saved: filtered});
-      setSaved(false);
-      toast('Listing unsaved', {
-        position: "bottom-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-        transition: Bounce,
-      });
-    } else {
-      if (listing && userInfo?.email && userInfo?.id) {
-        saveHouse({ id: listing.listings_detail_label?.S, user: userInfo });
-        setSaved(true);
-        setUserInfo({...userInfo, saved: [...userInfo.saved, {id: listing.listings_detail_label?.S, engage_date: new Date().toISOString()}]});
-        toast('Listing saved', {
+      const updatedUser = await deleteSavedHouse({ id: listing.listings_detail_label?.S, user: userInfo });
+      if (updatedUser) {
+        setUserInfo(updatedUser);
+        setSaved(false);
+        toast('Listing unsaved', {
           position: "bottom-right",
           autoClose: 2000,
           hideProgressBar: false,
@@ -92,6 +79,25 @@ const ListingDrawer = ({ open, onClose, listing, email, setUserInfo, userInfo }:
           theme: "dark",
           transition: Bounce,
         });
+      }
+    } else {
+      if (listing && userInfo?.email && userInfo?.id) {
+        const updatedUser = await saveHouse({ id: listing.listings_detail_label?.S, user: userInfo });
+        if (updatedUser) {
+          setUserInfo(updatedUser);
+          setSaved(true);
+          toast('Listing saved', {
+            position: "bottom-right",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+            transition: Bounce,
+          });
+        }
       }
     }
   }
