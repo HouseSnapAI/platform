@@ -16,14 +16,16 @@ interface HousesHistoryPopupProps {
   anchorEl: HTMLElement | null;
   open: boolean;
   onClose: () => void;
-  housesHistory: ListingRecordType[] | undefined;
+  userInfo: User | null;
 }
 
-const HousesHistoryPopup = ({ anchorEl, open, onClose, housesHistory }: HousesHistoryPopupProps) => {
+const HousesHistoryPopup = ({ anchorEl, open, onClose, userInfo }: HousesHistoryPopupProps) => {
   const theme = useTheme();
+  const [housesHistory, setHousesHistory] = useState<ListingRecordType[] | undefined>([]);
 
   useEffect(() => {
-    console.log(housesHistory)
+    console.log(userInfo?.saved)
+    setHousesHistory(userInfo?.saved);
   }, [])
 
   return (

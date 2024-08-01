@@ -121,7 +121,7 @@ const ProfilePopup = () => {
                     <Typography fontSize={10} noWrap className='text-[#6f6f6f]'>Saved Houses</Typography>
                 </Button>
                 <Button onClick={handleHousesHistoryClick} sx={{textTransform: 'none', borderColor: theme.palette.divider }} className='flex flex-col' variant='outlined'>
-                    <Typography fontSize={14} noWrap textAlign={'left'}>{userInfo?.clicked?.length}</Typography>
+                    <Typography fontSize={14} noWrap textAlign={'left'}>{userInfo?.clicked?.length||0}</Typography>
                     <Typography fontSize={10} noWrap className='text-[#6f6f6f]'>Houses History</Typography>
                 </Button>
             </Box>
@@ -247,8 +247,8 @@ const ProfilePopup = () => {
                 </Button>
             </Box>
             <SettingsPopup anchorEl={anchorEl} open={settingsOpen} onClose={handleSettingsClose} userInfo={userInfo} setUserInfo={setUserInfo} />
-            {savedHousesOpen && <SavedHousesPopup savedHouses={userInfo?.saved} anchorEl={anchorEl} open={savedHousesOpen} onClose={handleSavedHousesClose} />}
-            {housesHistoryOpen && <HousesHistoryPopup housesHistory={userInfo?.clicked} anchorEl={anchorEl} open={housesHistoryOpen} onClose={handleHousesHistoryClose} />}
+            {savedHousesOpen && <SavedHousesPopup userInfo={userInfo} anchorEl={anchorEl} open={savedHousesOpen} onClose={handleSavedHousesClose} />}
+            {housesHistoryOpen && <HousesHistoryPopup userInfo={userInfo} anchorEl={anchorEl} open={housesHistoryOpen} onClose={handleHousesHistoryClose} />}
         </>
           
       ) : (

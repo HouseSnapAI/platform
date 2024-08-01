@@ -16,14 +16,16 @@ interface SavedHousesPopupProps {
   anchorEl: HTMLElement | null;
   open: boolean;
   onClose: () => void;
-  savedHouses: ListingRecordType[] | undefined;
+  userInfo: User | null;
 }
 
-const SavedHousesPopup = ({ anchorEl, open, onClose, savedHouses }: SavedHousesPopupProps) => {
+const SavedHousesPopup = ({ anchorEl, open, onClose, userInfo }: SavedHousesPopupProps) => {
   const theme = useTheme();
+  const [savedHouses, setSavedHouses] = useState<ListingRecordType[] | undefined>([]);
 
   useEffect(() => {
-    console.log(savedHouses)
+    console.log(userInfo?.saved)
+    setSavedHouses(userInfo?.saved);
   }, [])
 
   return (
