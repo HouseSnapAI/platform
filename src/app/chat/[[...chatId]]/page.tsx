@@ -22,7 +22,7 @@ import ChatInterface from '@/components/chat-interface/ChatInterface';
 import { chatStarter, initChat } from '@/utils/vars';
 
 // ** UUID Imports
-import { createNewChat, fetchChat, fetchUserInfo, updateChat } from '@/utils/db';
+import { createNewChat, fetchUserInfo, updateChat } from '@/utils/db';
 
 const ChatPage = () => {
 
@@ -67,23 +67,25 @@ const ChatPage = () => {
 
   // Fetch Chat History
   useEffect(() => {
-    const fetchChatData = async () => {
-      if (chatId[0] !== 'newChat' && userInfo?.id) {
-        setLoading(true);
-        const chatData = await fetchChat({chat_id: chatId[0], user_id: userInfo?.id});
-        if (chatData) {
-          setChatHistory(chatData);
-        }
-        setLoading(false);
-      }
-    };
+    //EVENTUALLY WILL INCLUDE SESSION STORAGE TO SAVE REGULAT + CURRENT LISTING CHAT
 
-    if (userInfo?.id) {
-      fetchChatData();
-    }
+    // const fetchChatData = async () => {
+    //   if (chatId[0] !== 'newChat' && userInfo?.id) {
+    //     setLoading(true);
+    //     const chatData = await fetchChat({chat_id: chatId[0], user_id: userInfo?.id});
+    //     if (chatData) {
+    //       setChatHistory(chatData);
+    //     }
+    //     setLoading(false);
+    //   }
+    // };
+
+    // if (userInfo?.id) {
+    //   fetchChatData();
+    // }
 
     // If the query has an initial message, handle the click
-    if (query.get('initialMessage') && chatHistory.chat_history.length <= 2 && userInfo?.email) {
+    if (query.get('initialMessage') && userInfo?.email) {
       handleClick();
       const url = new URL(window.location.href);
       url.search = '';

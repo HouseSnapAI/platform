@@ -27,7 +27,7 @@ const ChatInterface = ({ setInputValue, inputValue, chatHistory, handleClick, us
     <Box className={`h-[100vh] p-4 relative flex flex-col items-center text-white w-[calc(100vw-67px)]`}>
         {/* CHAT TITLE */}
        {userInfo &&  <Box className='w-full flex flex-row items-center justify-center'>
-            <Typography variant='subtitle1' color='text.secondary'>{userInfo.chats.find((chat:any) => chat.id === chatId)?.title}</Typography>
+            <Typography variant='subtitle1' color='text.secondary'>HouseSnap AI</Typography>
         </Box>}
 
         {/* CHAT WINDOW */}
@@ -49,6 +49,7 @@ const ChatInterface = ({ setInputValue, inputValue, chatHistory, handleClick, us
                     color='secondary' 
                     fullWidth 
                     autoComplete='false' 
+                    placeholder='Message HouseSnap...'
                     InputProps={{
                         endAdornment: 
                         <IconButton

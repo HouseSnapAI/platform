@@ -18,14 +18,6 @@ type ChatBoxProps = {
 const Chatbox = ({drawerOpen, setInputValue, inputValue, handleClick, email, setUserInfo, userInfo}: ChatBoxProps) => {
     const theme = useTheme();
 
-    function keyPress(e: any){
-      console.log(e);
-      if(e.key == "Enter"){
-         console.log('value', e.target.value);
-         handleClick();
-      }
-   }
-
     return (
     <Box className={` h-[100vh] p-4 relative flex flex-col items-center text-center justify-between w-[calc(100vw-67px)]`}>
 
