@@ -141,7 +141,8 @@ const ChatPage = () => {
         chat_history: [...chatHistory.chat_history, 
             { role: "user", content: inputValue, listings: []},
             data
-        ]
+        ],
+        user_id: userInfo!!.id
     });
 
     setChatHistory(updatedChat) // Double check if chat isnt updated properly
