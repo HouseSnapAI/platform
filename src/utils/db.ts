@@ -120,7 +120,7 @@ return response.trim();
 }
 
 type UpdateEngagementsParams = {
-  listings_detail_label: string;
+  id: string;
   zipcode: string;
   viewed: boolean;
   clicked: boolean;
@@ -128,7 +128,7 @@ type UpdateEngagementsParams = {
 };
 
 export const updateEngagements = async ({
-  listings_detail_label,
+  id,
   zipcode,
   viewed,
   clicked,
@@ -143,8 +143,8 @@ export const updateEngagements = async ({
       },
       body: JSON.stringify({
         id: user.id,
-        viewed: [...user.viewed || [], { engage_date: new Date().toISOString(), id: listings_detail_label }],
-        clicked: [...user.clicked || [], { engage_date: new Date().toISOString(), id: listings_detail_label }],
+        viewed: [...user.viewed || [], { engage_date: new Date().toISOString(), id: id }],
+        clicked: [...user.clicked || [], { engage_date: new Date().toISOString(), id: id }],
       }),
     });
 
@@ -152,8 +152,8 @@ export const updateEngagements = async ({
       console.log('User engagements updated successfully');
       const updatedUser = {
         ...user,
-        viewed: [...user.viewed || [], { engage_date: new Date().toISOString(), id: listings_detail_label }],
-        clicked: [...user.clicked || [], { engage_date: new Date().toISOString(), id: listings_detail_label }]
+        viewed: [...user.viewed || [], { engage_date: new Date().toISOString(), id: id }],
+        clicked: [...user.clicked || [], { engage_date: new Date().toISOString(), id: id }]
       };
       localStorage.setItem('userInfo', JSON.stringify(updatedUser));
       return updatedUser;

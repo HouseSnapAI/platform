@@ -14,7 +14,7 @@ import PersistentDrawer from '@/components/sidebar/PersistentDrawer';
 import Chatbox from '@/components/chatbox/Chatbox';
 
 // ** Type Imports
-import { ChatHistoryType, UserType, UserPreferencesType, DrawerContentType, User, Chat } from '@/utils/types';
+import { DrawerContentType, User, Chat } from '@/utils/types';
 
 // ** Style Imports
 import { useTheme } from '@mui/material/styles';
@@ -171,17 +171,17 @@ const ChatPage = () => {
         content={drawerContent} 
       /> 
 
-      <Box className="flex flex-col w-full h-[100vh]  gap-[8px] flex-grow">
-        <Box className="flex w-full h-[50px]" sx={{backgroundColor: theme.palette.background.paper}}>
+      <Box className="flex flex-col w-full h-[100vh] gap-4 flex-grow">
+        <Box className="flex w-full h-[50px]" sx={{borderBottom: `1px solid ${theme.palette.divider}`, backgroundColor: theme.palette.background.paper}}>
         </Box>
         <Box className="flex w-full h-full flex-grow">
         {/* Listings + Filter */}
-        <Box className="flex flex-grow pb-[8px] pl-[8px]">
-          <ListingPage />
+        <Box className="flex flex-grow pb-2 pl-2">
+          <ListingPage userInfo={userInfo} setUserInfo={setUserInfo} />
         </Box>
 
         {/* MAP & CHAT BOX */} 
-        <Box className="flex flex-col gap-2 w-[50%] h-full pb-2 px-2">
+        <Box className="flex flex-col gap-2 w-1/2 h-full pb-2 px-2">
           <MapPage />
           
           <ChatInterface 

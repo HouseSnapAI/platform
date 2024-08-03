@@ -4,15 +4,6 @@ export type SidebarType = {
     onClick: (e:any) => void
   }
 
-export type ListingType = {
-  image: {S: string},
-  address: {S: string},
-  price: {S: string},
-  bedrooms: {S: string},
-  bathrooms: {S: string},
-  sqft: {S: string}
-}
-
 export type MessageType = {M: {
   role: {S: string},
   content: {S: string},
@@ -123,115 +114,163 @@ export type ListingDetailType = {
   [key: string]: any
 }
 
-type SupaBaseListingType = {
-  agentName: string,
-  agentUrl:string, // bottom of page
-  broker: string,
-  brokerNumber: string, // bottom of page
-  brokerLocation: string, // bottom of page
-  dataSource: string, // bottom of page
-  datSourceCopyright: string, // bottom of page
-  additionalInformation: string // very bottom, footer of page
-  imgs: string[],
-  status: string, // for sale etc etc 
-  price: number,
-  monthlyPrice: number,
-  beds: number,
-  baths: number,
-  halfBaths?: number,
-  sqft: string,
-  acreLot?: string,
-  address: string,
+export type ListingType = {
+  id: string,
+  property_url: string,
+  mls?: string,
+  mls_id?: string,
+  status: 'for_sale' | 'pending' | 'sold' | '',
+  text?: string,
+  property_type: 'LAND' | 'APARTMENT' | 'MOBILE' | 'OTHER' | 'TOWNHOMES' | 'CONDOS' | 'CONDO_TOWNHOME_ROWHOME_COOP' | 'MULTI_FAMILY' | 'SINGLE_FAMILY' | 'COOP' | 'FARM' | 'DUPLEX_TRIPLEX',
+  full_street_line: string,
+  street: string,
+  city: string,
+  state: string,
   zipcode: string,
-  latitude: number,
-  longitude: number,
-  url: string,
-  propertyType: string,
-  garage: string,
-  yearBuilt: string,
-  pricePerSqft: string,
-  propertyDetails:string,
-  propertyHistory: [{
-    date: string,
-    event: string,
-    price: number,
-    pricePerSqft: number,
-    source: string
-  }],
-  propertyTax: [{
-    year?: number,
-    taxes?: number,
-    totalAssesment?: number,
-    land?: number, 
-    additions?: number
-  }]
-  // scrape from yelp if needed
-  nearby: {
-    restaurants: number,
-    daycares: number,
-    cafes: number,
-    nightlife: number,
-    groceries: number,
-    shopping: number,
-    parks: number,
-  }
-  // scrape from FBI? https://github.com/OpenDataDE/FBI-Unified-Crime-Data-Scraper
-  lifeStyle: {
-    quiet: number,
-    vibrant: number,
-  }
-// scrape from somewhere
-  transportation:{
-    driving: number,
-    cycling: number,
-    walking: number,
-    transit: number
-  }
-
-  // potentially scrape from different source, or greatschools/gmaps
-  nearbySchools:SchoolType[]
-
-  elementary: SchoolType[]
-  middle: SchoolType[]
-  high: SchoolType[]
-  private: SchoolType[]
-
-  // scrape from first street foundation
-  flood:{
-    [key:string]:number
-  }
-  fire:{
-    [key:string]:number
-  }
-  heat:{
-    [key:string]:number
-  }
-  wind:{
-    [key:string]:number
-  }
-  air:{
-    [key:string]:number
-  }
-  homeValue?:{
-    [key:string]:number
-  }
-  marketTrends:{
-    listingMedianPrice: number,
-    listingPricePerSqft: number,
-    soldPriceMedian: number,
-    daysOnMarket: number
-  }
-
-  nearbyHomeValues:[{
-    address: string,
-    priceEstimate: number,
-    sqft: number,
-    beds: number,
-    baths: number,
-    lotSqft: number,
-  }]
-
+  list_price: number,
+  beds: number,
+  days_on_mls?: number,
+  full_baths: number,
+  half_baths?: number,
+  sqft: number,
+  year_built?: number,
+  list_date?: string,
+  sold_price?: number,
+  last_sold_date?: string,
+  assessed_value?: number,
+  estimated_vale?: number,
+  lot_sqft?: number,
+  price_per_sqft?: number,
+  latitude?: number,
+  longitude?: number,
+  neighborhoods?: string[],
+  county?: string,
+  fips_code?: string,
+  stories?: string,
+  hoa_fee?: number,
+  parking_garage?: string,
+  agent?: string,
+  agent_email?: string,
+  agent_phones?: any,
+  broker?: string,
+  broker_phone?: string,
+  broker_website?: string,
+  nearby_schools?: string[]
+  primary_photo?: string,
+  alt_photos?: string[]
+  created_at: string,
+  updated_at: string
 }
+
+// type SupaBaseListingType = {
+//   agentName: string,
+//   agentUrl:string, // bottom of page
+//   broker: string,
+//   brokerNumber: string, // bottom of page
+//   brokerLocation: string, // bottom of page
+//   dataSource: string, // bottom of page
+//   datSourceCopyright: string, // bottom of page
+//   additionalInformation: string // very bottom, footer of page
+//   imgs: string[],
+//   status: string, // for sale etc etc 
+//   price: number,
+//   monthlyPrice: number,
+//   beds: number,
+//   baths: number,
+//   halfBaths?: number,
+//   sqft: string,
+//   acreLot?: string,
+//   address: string,
+//   zipcode: string,
+//   latitude: number,
+//   longitude: number,
+//   url: string,
+//   propertyType: string,
+//   garage: string,
+//   yearBuilt: string,
+//   pricePerSqft: string,
+//   propertyDetails:string,
+//   propertyHistory: [{
+//     date: string,
+//     event: string,
+//     price: number,
+//     pricePerSqft: number,
+//     source: string
+//   }],
+//   propertyTax: [{
+//     year?: number,
+//     taxes?: number,
+//     totalAssesment?: number,
+//     land?: number, 
+//     additions?: number
+//   }]
+//   // scrape from yelp if needed
+//   nearby: {
+//     restaurants: number,
+//     daycares: number,
+//     cafes: number,
+//     nightlife: number,
+//     groceries: number,
+//     shopping: number,
+//     parks: number,
+//   }
+//   // scrape from FBI? https://github.com/OpenDataDE/FBI-Unified-Crime-Data-Scraper
+//   lifeStyle: {
+//     quiet: number,
+//     vibrant: number,
+//   }
+// // scrape from somewhere
+//   transportation:{
+//     driving: number,
+//     cycling: number,
+//     walking: number,
+//     transit: number
+//   }
+
+//   // potentially scrape from different source, or greatschools/gmaps
+//   nearbySchools:SchoolType[]
+
+//   elementary: SchoolType[]
+//   middle: SchoolType[]
+//   high: SchoolType[]
+//   private: SchoolType[]
+
+//   // scrape from first street foundation
+//   flood:{
+//     [key:string]:number
+//   }
+//   fire:{
+//     [key:string]:number
+//   }
+//   heat:{
+//     [key:string]:number
+//   }
+//   wind:{
+//     [key:string]:number
+//   }
+//   air:{
+//     [key:string]:number
+//   }
+//   homeValue?:{
+//     [key:string]:number
+//   }
+//   marketTrends:{
+//     listingMedianPrice: number,
+//     listingPricePerSqft: number,
+//     soldPriceMedian: number,
+//     daysOnMarket: number
+//   }
+
+//   nearbyHomeValues:[{
+//     address: string,
+//     priceEstimate: number,
+//     sqft: number,
+//     beds: number,
+//     baths: number,
+//     lotSqft: number,
+//   }]
+
+// }
 
 type SchoolType = {
   schoolName: string,
