@@ -20,7 +20,7 @@ const ChatWindow = ({chatHistory, loading}: ChatWindowProps) => {
   
   return (
     <Box className='w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center'>
-      <Box className='w-[64%] h-full px-4 py-3 gap-8 flex flex-col'>
+      <Box className='w-[90%] h-full py-3 gap-[15px] flex flex-col'>
         {chatHistory.chat_history.map((chat, index) => (
           <Message key={`${chat.role}-${index}`} message={chat} />
         ))}

@@ -23,19 +23,21 @@ const Message = ({ message }: { message: Message }) => {
 
   if (isAssistant) {
     return (
-        <Box className="flex flex-col">
-          <Box className="flex flex-col mr-10">
-            <Typography fontSize={16} className='text-white' mb={1}>Dream<span className="bg-gradient-to-r from-purple-400 via-pink-500 fade-in-on-scroll to-red-500 text-transparent bg-clip-text">RE</span></Typography>
-            <Typography fontSize={16} color='text.secondary'>{message.content}</Typography>
+        <Box className="flex flex-col pb-[15px]">
+          <Box className="flex flex-col justify-start items-start mr-10 ">
+            <Typography fontSize={15} className='text-white ml-[5px]' mb={1}>HouseSnap<span className="bg-gradient-to-r from-purple-400 via-pink-500 fade-in-on-scroll to-red-500 text-transparent bg-clip-text">AI</span></Typography>
+            <Box className='bg-[#222222] py-[10px] pr-[10px] pl-[12px] rounded-md shadow-md'>
+              <Typography align='left' fontSize={13.5} color='text.secondary'>{message.content}</Typography>
+            </Box>
           </Box>
           <div ref={chatEndRef} className='bg-red-500'></div>
         </Box>
     )
   } else if(message.role === 'user') {
       return (
-        <Box className="items-end flex-col flex">
-            <Box className='px-4 py-2' sx={{ backgroundColor: theme.palette.background.paper, border: `1px solid ${theme.palette.divider}` }}>
-              <Typography fontSize={16} color='text.primary'>{message.content}</Typography>
+        <Box className="items-end flex-col flex ml-10 pb-[5px]">
+            <Box className='py-[10px] pr-[10px] pl-[12px] rounded-md' sx={{ backgroundColor: theme.palette.background.paper, border: `1px solid ${theme.palette.divider}` }}>
+              <Typography align='left' fontSize={13.5} color='#d4d4d4'>{message.content}</Typography>
             </Box>
         </Box>
       )

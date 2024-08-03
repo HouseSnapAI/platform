@@ -10,11 +10,11 @@
 
 /* Custom scrollbar styles */
 ::-webkit-scrollbar {
-  width: 8px; /* Adjust the width to make it thinner */
+  width: 7px; /* Adjust the width to make it thinner */
 }
 
 ::-webkit-scrollbar-track {
-  background: #4e4e4e; /* Light background color for the track */
+  background: #141414; /* Light background color for the track */
   border-radius: 10px; /* More curved track */
 }
 
