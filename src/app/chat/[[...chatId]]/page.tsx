@@ -181,7 +181,7 @@ const ChatPage = () => {
         </Box>
 
         {/* MAP & CHAT BOX */} 
-        <Box className="flex flex-col gap-2 w-[460px] h-full pb-2 px-2">
+        <Box className="flex flex-col gap-2 w-[50%] h-full pb-2 px-2">
           <MapPage />
           
           <ChatInterface 
