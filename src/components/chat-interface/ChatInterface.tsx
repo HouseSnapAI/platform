@@ -33,7 +33,7 @@ const ChatInterface = ({ setInputValue, inputValue, chatHistory, handleClick, us
     const theme = useTheme();
 
   return (
-    <Box className={`rounded-lg flex flex-col items-center text-center justify-between w-full h-full shadow-lg shadow-pink-500/20`} sx={{border: `1px solid ${theme.palette.divider}`, backgroundColor: theme.palette.background.paper}}>
+    <Box className={`rounded-lg flex flex-col items-center text-center justify-between w-full h-full shadow-lg`} sx={{ backgroundColor: theme.palette.background.paper}}>
     {/* <Box className={`h-[100vh] p-4 relative flex flex-col items-center text-white w-[calc(100vw-67px)]`}> 
        {userInfo &&  <Box className='w-full flex flex-row items-center justify-center'>
             <Typography variant='subtitle1' color='text.secondary'>{userInfo.chats.find((chat:any) => chat.id === chatId)?.title}</Typography>

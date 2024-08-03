@@ -51,7 +51,6 @@ export default function PersistentDrawer({ open, handleDrawerClose, content }: P
         onClose={handleClose}
         fullWidth
         maxWidth="sm"
-        TransitionComponent={Grow}
         PaperProps={{
           sx: {
             position: 'absolute',
