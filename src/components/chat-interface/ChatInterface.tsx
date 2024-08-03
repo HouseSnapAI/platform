@@ -33,21 +33,20 @@ const ChatInterface = ({ setInputValue, inputValue, chatHistory, handleClick, us
     const theme = useTheme();
 
   return (
-    <Box className={`absolute bottom-4 right-4 rounded-lg flex flex-col items-center text-center justify-between w-[360px] h-[300px] shadow-lg`} sx={{border: `1px solid ${theme.palette.divider}`}}>
-    {/* <Box className={`h-[100vh] p-4 relative flex flex-col items-center text-white w-[calc(100vw-67px)]`}> 
-       {userInfo &&  <Box className='w-full flex flex-row items-center justify-center'>
+    <Box className={`absolute bg-[#141414] bottom-4 right-4 rounded-lg flex flex-col items-center text-center justify-between w-[360px] h-[400px] drop-shadow-lg pt-[10px]`} sx={{border: `1px solid #222`}}>
+       {userInfo &&  <Box className='w-full flex flex-row items-center pl-[20px] pb-[10px]' sx={{borderBottom: `1px solid #222`}}>
             <Typography variant='subtitle1' color='text.secondary'>HouseSnap AI</Typography>
         </Box>}
 
         <ChatWindow chatHistory={chatHistory} loading={loading} />
 
-        <Box className='w-[64%] px-4 py-3 overflow-y-hidden'>
+        <Box className='w-[95%] px-4 overflow-y-hidden'>
             <form
                 onSubmit={(e) => {
                     e.preventDefault();
                     handleClick();
                 }}
-                className='w-full flex flex-row items-center justify-between gap-2 fade-in-on-scroll cursor-pointer border mb-14 rounded-md transition-all ease-in-out duration-300'
+                className='w-full flex flex-row items-center justify-between gap-2 fade-in-on-scroll cursor-pointer mb-10 rounded-md transition-all ease-in-out duration-300'
             >
                 <TextField 
                     value={inputValue} 
@@ -56,8 +55,9 @@ const ChatInterface = ({ setInputValue, inputValue, chatHistory, handleClick, us
                     color='secondary' 
                     fullWidth 
                     autoComplete='false' 
-                    placeholder='Message HouseSnap...'
+                    placeholder='Chat...'
                     InputProps={{
+                        className: 'shadow-md h-[50px] px-[5px] text-white bg-[#181818] rounded-full',
                         endAdornment: 
                         <IconButton
                             type='submit'
@@ -66,7 +66,7 @@ const ChatInterface = ({ setInputValue, inputValue, chatHistory, handleClick, us
                             size='small'
                         >
                             <IconSend 
-                                size={30} 
+                                size={20} 
                                 stroke={2} 
                                 className='text-[white] mr-2 hover:cursor-pointer hover:text-pink-500 transition-all ease-in-out duration-300' 
                             />
@@ -92,7 +92,7 @@ const ChatInterface = ({ setInputValue, inputValue, chatHistory, handleClick, us
                     Get Started!!
                 </TextField>
             </form>
-        </Box>*/}
+        </Box>
     </Box>
   )
 }
