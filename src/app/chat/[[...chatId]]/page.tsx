@@ -171,12 +171,12 @@ const ChatPage = () => {
         content={drawerContent} 
       /> 
 
-      <Box className="flex flex-col w-full h-[100vh]  gap-4 flex-grow">
-        <Box className="flex w-full h-[50px]" sx={{borderBottom: `1px solid ${theme.palette.divider}`, backgroundColor: theme.palette.background.paper}}>
+      <Box className="flex flex-col w-full h-[100vh]  gap-[8px] flex-grow">
+        <Box className="flex w-full h-[50px]" sx={{backgroundColor: theme.palette.background.paper}}>
         </Box>
         <Box className="flex w-full h-full flex-grow">
         {/* Listings + Filter */}
-        <Box className="flex flex-grow pb-2 pl-2">
+        <Box className="flex flex-grow pb-[8px] pl-[8px]">
           <ListingPage />
         </Box>
 

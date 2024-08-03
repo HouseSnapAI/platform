@@ -12,7 +12,7 @@ const ListingPage = () => {
     const theme = useTheme()
 
   return (
-    <Box className={`h-full w-full rounded-lg flex flex-col items-center text-center justify-between shadow-lg`} sx={{border: `1px solid ${theme.palette.divider}`, backgroundColor: theme.palette.background.paper}}>
+    <Box className={`h-full w-full rounded-lg flex flex-col items-center text-center justify-between shadow-lg`} sx={{ backgroundColor: theme.palette.background.paper}}>
         
     </Box>
   )
