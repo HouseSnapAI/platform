@@ -1,8 +1,21 @@
+
+// ** Next Import
 import React from 'react';
-import { Box, Button, Typography, TextField, Popper, ClickAwayListener } from '@mui/material';
+
+// ** MUI Imports
+import Box from '@mui/material/Box';
+// import Button from '@mui/material/Button';
+// import Typography from '@mui/material/Typography';
+// import TextField from '@mui/material/TextField';
+// import Popper from '@mui/material/Popper';
+// import ClickAwayListener from '@mui/material/ClickAwayListener';
+
+// ** Style Imports
 import { useTheme } from '@mui/material/styles';
-import { IconSend } from '@tabler/icons-react';
-import HorizontalScroller from './HorizontalScroller';
+
+// import { IconSend } from '@tabler/icons-react';
+// import HorizontalScroller from './HorizontalScroller';
+
 import { User } from '@/utils/types';
 
 type ChatBoxProps = {
@@ -19,9 +32,9 @@ const Chatbox = ({drawerOpen, setInputValue, inputValue, handleClick, email, set
     const theme = useTheme();
 
     return (
-    <Box className={` h-[100vh] p-4 relative flex flex-col items-center text-center justify-between w-[calc(100vw-67px)]`}>
+    <Box className={`h-[360px] rounded-lg flex flex-col items-center text-center justify-between w-[400px] shadow-lg shadow-pink-500/20`} sx={{border: `1px solid ${theme.palette.divider}`, backgroundColor: theme.palette.background.paper}}>
 
-      <Typography variant='h5' mt={2} ml={2} className={`text-[white] font-bold absolute top-0 left-0`}>
+      {/* <Typography variant='h5' mt={2} ml={2} className={`text-[white] font-bold absolute top-0 left-0`}>
         Dream<span className="bg-gradient-to-r from-purple-400 via-pink-500  to-red-500 text-transparent bg-clip-text">RE</span>
       </Typography>
 
@@ -32,10 +45,8 @@ const Chatbox = ({drawerOpen, setInputValue, inputValue, handleClick, email, set
       </Box>
 
 
-      {/* HORIZONTAL SCROLLER */}
       <HorizontalScroller setInputValue={setInputValue} email={email} userInfo={userInfo} setUserInfo={setUserInfo} />
 
-      {/* TODO: ON SUBMIT QUERY THE MODEL */}
       <Box className='w-[64%] px-4 py-3'>
         <form>
           <Box id='finput' className='w-full flex flex-row items-center justify-between gap-2  cursor-pointer border mb-14 mt-10  rounded-md transition-all ease-in-out duration-300 ' >
@@ -72,15 +83,15 @@ const Chatbox = ({drawerOpen, setInputValue, inputValue, handleClick, email, set
               Get Started!!
             </TextField>
           </Box>
-        </form>
-      </Box>
+        </form> 
+      </Box>*/}
 
       {/* FOOTER */}
-      <Box className="absolute bottom-0 left-0 w-full p-4 bg-transparent">
+      {/* <Box className="absolute bottom-0 left-0 w-full p-4 bg-transparent">
         <Typography variant='body2' className="text-[white]/50 text-left">
           Made with <span className="text-red-500">❤️</span> by Vish and Nitin
         </Typography>
-      </Box>
+      </Box> */}
     </Box>
   );
 };

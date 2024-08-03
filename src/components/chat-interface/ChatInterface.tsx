@@ -4,13 +4,20 @@ import { useState } from 'react'
 // ** MUI Imports
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
+import IconButton from '@mui/material/IconButton'
+
+// ** Icon Imports
 import { IconSend } from '@tabler/icons-react'
 
 // ** Custom Imports
 import ChatWindow from './ChatWindow'
-import { Chat, User, } from '@/utils/types'
-import Typography from '@mui/material/Typography'
-import IconButton from '@mui/material/IconButton'
+
+// ** Types Imports
+import { Chat, User} from '@/utils/types'
+
+// ** Style Imports
+import { useTheme } from '@mui/material/styles'
 
 type ChatInterfaceProps = {
     setInputValue: (value: string) => void
@@ -23,17 +30,17 @@ type ChatInterfaceProps = {
   }
 const ChatInterface = ({ setInputValue, inputValue, chatHistory, handleClick, userInfo, chatId, loading}: ChatInterfaceProps) => {
 
+    const theme = useTheme();
+
   return (
-    <Box className={`h-[100vh] p-4 relative flex flex-col items-center text-white w-[calc(100vw-67px)]`}>
-        {/* CHAT TITLE */}
+    <Box className={`absolute bottom-4 right-4 rounded-lg flex flex-col items-center text-center justify-between w-[360px] h-[300px] shadow-lg`} sx={{border: `1px solid ${theme.palette.divider}`}}>
+    {/* <Box className={`h-[100vh] p-4 relative flex flex-col items-center text-white w-[calc(100vw-67px)]`}> 
        {userInfo &&  <Box className='w-full flex flex-row items-center justify-center'>
             <Typography variant='subtitle1' color='text.secondary'>HouseSnap AI</Typography>
         </Box>}
 
-        {/* CHAT WINDOW */}
         <ChatWindow chatHistory={chatHistory} loading={loading} />
 
-        {/* INPUT */}
         <Box className='w-[64%] px-4 py-3 overflow-y-hidden'>
             <form
                 onSubmit={(e) => {
@@ -85,7 +92,7 @@ const ChatInterface = ({ setInputValue, inputValue, chatHistory, handleClick, us
                     Get Started!!
                 </TextField>
             </form>
-        </Box>
+        </Box>*/}
     </Box>
   )
 }
