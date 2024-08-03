@@ -16,6 +16,9 @@ import Chatbox from '@/components/chatbox/Chatbox';
 // ** Type Imports
 import { ChatHistoryType, UserType, UserPreferencesType, DrawerContentType, User, Chat } from '@/utils/types';
 
+// ** Style Imports
+import { useTheme } from '@mui/material/styles';
+
 // ** Auth Imports
 import { useUser } from '@auth0/nextjs-auth0/client';
 import ChatInterface from '@/components/chat-interface/ChatInterface';
@@ -23,6 +26,8 @@ import { chatStarter, initChat } from '@/utils/vars';
 
 // ** UUID Imports
 import { createNewChat, fetchChat, fetchUserInfo, updateChat } from '@/utils/db';
+import ListingPage from '@/components/listing/ListingPage';
+import MapPage from '@/components/map/MapPage';
 
 const ChatPage = () => {
 
@@ -50,6 +55,7 @@ const ChatPage = () => {
   })
   const [loading, setLoading] = useState(false);
 
+  const theme = useTheme();
 
   // Fetch user information from DB
   useEffect(() => {
@@ -163,33 +169,36 @@ const ChatPage = () => {
         open={drawerOpen} 
         handleDrawerClose={handleDrawerClose} 
         content={drawerContent} 
-      />   
+      /> 
 
-      {/* CHAT BOX */}
-      {chatHistory.chat_history.length === 1 ? 
-        <Chatbox 
-          drawerOpen={drawerOpen} 
-          userInfo={userInfo}
-          setInputValue={setInputValue} 
-          inputValue={inputValue} 
-          handleClick={handleClick}
-          email={user?.email}
-          setUserInfo={setUserInfo}
-        />
-      : 
-        <ChatInterface 
-          key={JSON.stringify(chatHistory)}
-          setInputValue={setInputValue} 
-          inputValue={inputValue} 
-          chatHistory={chatHistory}
-          handleClick={handleClick}
-          userInfo={userInfo}
-          chatId={chatId[0]}
-          loading={loading}
-        />
-      }
+      <Box className="flex flex-col w-full h-[100vh]  gap-4 flex-grow">
+        <Box className="flex w-full h-[50px]" sx={{borderBottom: `1px solid ${theme.palette.divider}`, backgroundColor: theme.palette.background.paper}}>
+        </Box>
+        <Box className="flex w-full h-full flex-grow">
+        {/* Listings + Filter */}
+        <Box className="flex flex-grow pb-2 pl-2">
+          <ListingPage />
+        </Box>
 
-      {/* CHAT INTERFACE */}
+        {/* MAP & CHAT BOX */} 
+        <Box className="flex flex-col gap-2 w-[460px] h-full pb-2 px-2">
+          <MapPage />
+          
+          <ChatInterface 
+            key={JSON.stringify(chatHistory)}
+            setInputValue={setInputValue} 
+            inputValue={inputValue} 
+            chatHistory={chatHistory}
+            handleClick={handleClick}
+            userInfo={userInfo}
+            chatId={chatId[0]}
+            loading={loading}
+            />
+          
+        </Box>
+        </Box>
+      </Box>
+
       
     </Box> : 
     <Box className="flex w-[100vw] h-[100vh] overflow-hidden flex-row bg-black relative">
