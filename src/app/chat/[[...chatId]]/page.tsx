@@ -14,7 +14,7 @@ import PersistentDrawer from '@/components/sidebar/PersistentDrawer';
 import Chatbox from '@/components/chatbox/Chatbox';
 
 // ** Type Imports
-import { ChatHistoryType, UserType, UserPreferencesType, DrawerContentType, User, Chat } from '@/utils/types';
+import { DrawerContentType, User, Chat, ListingType } from '@/utils/types';
 
 // ** Style Imports
 import { useTheme } from '@mui/material/styles';
@@ -22,10 +22,10 @@ import { useTheme } from '@mui/material/styles';
 // ** Auth Imports
 import { useUser } from '@auth0/nextjs-auth0/client';
 import ChatInterface from '@/components/chat-interface/ChatInterface';
-import { chatStarter, initChat } from '@/utils/vars';
+import { chatStarter, exampleLiistingIds, initChat } from '@/utils/vars';
 
 // ** UUID Imports
-import { createNewChat, fetchChat, fetchUserInfo, updateChat } from '@/utils/db';
+import { createNewChat, fetchChat, fetchListing, fetchUserInfo, updateChat } from '@/utils/db';
 import ListingPage from '@/components/listing/ListingPage';
 import MapPage from '@/components/map/MapPage';
 
@@ -38,11 +38,11 @@ const ChatPage = () => {
   const params = useParams();
   const chatId = (params.chatId || ['newChat']) as string[];
   const query = useSearchParams();
-
+  
   // ** Drawer States
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerContent, setDrawerContent] = useState<DrawerContentType>({title: '', component: '', props: {}});
-
+  
   // Chat Message States
   const [inputValue, setInputValue] = useState<string>(query.get('initialMessage') || '')
   const [chatHistory, setChatHistory] = useState<Chat>({
@@ -55,6 +55,9 @@ const ChatPage = () => {
   })
   const [loading, setLoading] = useState(false);
 
+  // Listing States
+  const [listings, setListings] = useState<ListingType[]>([])
+  
   const theme = useTheme();
 
   // Fetch user information from DB
@@ -106,7 +109,6 @@ const ChatPage = () => {
 
   // If enter is clicked
   const handleClick = async () => {
-    console.log("IN")
     setLoading(true);
     // If New chat
     if (chatId[0] === "newChat" && userInfo) {
@@ -159,6 +161,29 @@ const ChatPage = () => {
   }
 }
 
+// Fetch Listings
+  
+    
+useEffect(() => {
+    const fetchListingData = async (ids: string[]) => {
+        const fetchedListings = await fetchListing({ids})
+        
+        console.log("fetched", fetchedListings)
+        
+        if (fetchedListings.status === 200) {
+            setListings(fetchedListings.data || [])
+        } else {
+            console.error('Error fetching listings:', fetchedListings.message)
+            setListings([])
+        }
+    }
+    
+    if (exampleLiistingIds.length > 0) {
+        fetchListingData(exampleLiistingIds)
+    }
+}, [])
+
+
   return (
     userInfo ? 
     <Box className="flex w-[100vw] h-[100vh] overflow-hidden flex-row bg-black relative">
@@ -174,18 +199,19 @@ const ChatPage = () => {
         content={drawerContent} 
       /> 
 
-      <Box className="flex flex-col w-full h-[100vh]  gap-[8px] flex-grow">
-        <Box className="flex w-full h-[50px]" sx={{backgroundColor: theme.palette.background.paper}}>
+      <Box className="flex flex-col w-full h-[100vh] gap-4 flex-grow">
+        <Box className="flex w-full h-[50px]" sx={{borderBottom: `1px solid ${theme.palette.divider}`, backgroundColor: theme.palette.background.paper}}>
         </Box>
+        
         <Box className="flex w-full h-full flex-grow">
         {/* Listings + Filter */}
-        <Box className="flex flex-grow pb-[8px] pl-[8px]">
-          <ListingPage />
+        <Box className="flex flex-grow w-1/2 pb-2 pl-2">
+          <ListingPage userInfo={userInfo} setUserInfo={setUserInfo} listings={listings} />
         </Box>
 
         {/* MAP & CHAT BOX */} 
-        <Box className="flex flex-col gap-2 w-[50%] h-full pb-2 px-2">
-          <MapPage />
+        <Box className="flex flex-col gap-2 w-1/2 h-full pb-2 px-2">
+          <MapPage listings={listings} />
           
           <ChatInterface 
             key={JSON.stringify(chatHistory)}

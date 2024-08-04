@@ -6,7 +6,7 @@ import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
-import { IconArrowsDiagonal2, IconX, IconArrowsDiagonalMinimize, IconBrandHipchat } from '@tabler/icons-react';
+import { IconArrowsDiagonal2, IconX, IconArrowsDiagonalMinimize, IconMessage } from '@tabler/icons-react';
 
 // ** Icon Imports
 import { IconSend } from '@tabler/icons-react'
@@ -113,7 +113,7 @@ const ChatInterface = ({ setInputValue, inputValue, chatHistory, handleClick, us
     </Box>
     :
     <Box className='absolute bg-[#222222] bottom-4 right-4 rounded-xl flex items-center justify-center w-[70px] h-[70px] drop-shadow-lg hover:cursor-pointer hover:drop-shadow-xl'>
-        <IconBrandHipchat size={40} className='text-[#989898] hover:cursor-pointer hover:text-[#c8c8c8] hover:shadow-xl transition-all ease-in-out duration-300' onClick={() => setOpen(true)} />
+        <IconMessage size={40} className='text-[#989898] hover:cursor-pointer hover:text-[#c8c8c8] hover:shadow-xl transition-all ease-in-out duration-300' onClick={() => setOpen(true)} />
     </Box>
   )
 }
