@@ -1,5 +1,5 @@
 // ** Next Imports
-import React from 'react'
+import React, { useEffect } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -18,9 +18,14 @@ type ChatWindowProps = {
 
 const ChatWindow = ({chatHistory, loading}: ChatWindowProps) => {
   
+  useEffect(() => {
+    console.log(chatHistory)
+  }, [])
+
   return (
     <Box className='w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center'>
       <Box className='w-[90%] h-full py-3 gap-[15px] flex flex-col'>
+        
         {chatHistory.chat_history.map((chat, index) => (
           <Message key={`${chat.role}-${index}`} message={chat} />
         ))}

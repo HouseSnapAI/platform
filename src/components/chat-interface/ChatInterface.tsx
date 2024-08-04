@@ -33,13 +33,13 @@ const ChatInterface = ({ setInputValue, inputValue, chatHistory, handleClick, us
 
     const theme = useTheme();
     const [expanded, setExpanded] = useState(false);
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(true);
 
   return (
     open ?
     <Box className={expanded ? `absolute bg-[#141414] bottom-4 right-4 rounded-lg flex flex-col items-center text-center justify-between w-[450px] h-[580px] drop-shadow-lg` : `absolute bg-[#141414] bottom-4 right-4 rounded-lg flex flex-col items-center text-center justify-between w-[380px] h-[440px] drop-shadow-lg`} sx={{border: `1px solid #222`}}>
        {userInfo &&  <Box className='w-full flex flex-row items-center py-[5px] justify-between' sx={{borderBottom: `1px solid #222`}}>
-            <Typography className='pl-[20px]' variant='subtitle1' color='text.secondary'>HouseSnap AI</Typography>
+            <Typography className='pl-[20px]' variant='subtitle1' color='text.secondary'>Chat</Typography>
             <Box>
                 <IconButton className='' onClick={() => setExpanded(!expanded)}>
                     {!expanded ? 
