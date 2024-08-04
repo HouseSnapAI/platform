@@ -1,4 +1,4 @@
-import {Chat, ChatHistoryType, User, UserType } from "./types";
+import {Chat, ChatHistoryType, ListingType, User, UserType } from "./types";
 import { v4 as uuidv4 } from 'uuid';
 import { HumanMessage } from '@langchain/core/messages';
 
@@ -121,7 +121,7 @@ return response.trim();
 
 type UpdateEngagementsParams = {
   id: string;
-  zipcode: string;
+  listing: ListingType;
   viewed: boolean;
   clicked: boolean;
   user: User;
@@ -129,7 +129,7 @@ type UpdateEngagementsParams = {
 
 export const updateEngagements = async ({
   id,
-  zipcode,
+  listing,
   viewed,
   clicked,
   user
@@ -156,6 +156,20 @@ export const updateEngagements = async ({
         clicked: [...user.clicked || [], { engage_date: new Date().toISOString(), id: id }]
       };
       localStorage.setItem('userInfo', JSON.stringify(updatedUser));
+
+      if (viewed || clicked) {
+      const listingResponse = await fetch('/api/listing/update', {
+        method: 'POST',
+        body: JSON.stringify({ id: listing.id, num_views: listing.num_views + (viewed ? 1 : 0), num_clicks: listing.num_clicks + (clicked ? 1 : 0) }),
+      });
+
+      if (listingResponse.status !== 200) {
+        console.error('Error updating listing');
+      }
+    
+    }
+
+
       return updatedUser;
     } else {
       const data = await userUpdateResponse.json();
@@ -168,7 +182,7 @@ export const updateEngagements = async ({
   }
 };
 
-export const saveHouse = async ({id, user}: {id:string, user: User}) => {
+export const saveHouse = async ({id, user, listing}: {id:string, user: User, listing: ListingType}) => {
   try {
     const response = await fetch('/api/auth/user/update', {
       method: 'PATCH',
@@ -182,6 +196,16 @@ export const saveHouse = async ({id, user}: {id:string, user: User}) => {
         saved: [...user.saved || [], { engage_date: new Date().toISOString(), id: id }]
       };
       localStorage.setItem('userInfo', JSON.stringify(updatedUser));
+
+      const listingResponse = await fetch('/api/listing/update', {
+        method: 'POST',
+        body: JSON.stringify({ id: listing.id, num_saved: listing.num_saved + 1 }),
+      });
+
+      if (listingResponse.status !== 200) {
+        console.error('Error updating listing');
+      }
+
       return updatedUser;
     } else {
       const data = await response.json();
@@ -194,7 +218,7 @@ export const saveHouse = async ({id, user}: {id:string, user: User}) => {
   }
 }
 
-export const deleteSavedHouse = async ({id, user}: {id:string, user: User}) => {
+export const deleteSavedHouse = async ({id, user, listing}: {id:string, user: User, listing: ListingType}) => {
   try {
     const response = await fetch('/api/auth/user/update', {
       method: 'PATCH',
@@ -208,6 +232,16 @@ export const deleteSavedHouse = async ({id, user}: {id:string, user: User}) => {
         saved: user.saved.filter((house: any) => house.id !== id)
       };
       localStorage.setItem('userInfo', JSON.stringify(updatedUser));
+
+      const listingResponse = await fetch('/api/listing/update', {
+        method: 'POST',
+        body: JSON.stringify({ id: listing.id, num_saved: listing.num_saved - 1 }),
+      });
+
+      if (listingResponse.status !== 200) {
+        console.error('Error updating listing');
+      }
+
       return updatedUser;
     } else {
       const data = await response.json();
@@ -219,3 +253,32 @@ export const deleteSavedHouse = async ({id, user}: {id:string, user: User}) => {
     return user;
   }
 }
+
+// LISTING FUNCTIONS
+
+type FetchListingType = {
+  id: string;
+};
+
+export const fetchListing = async ({ id }: FetchListingType) => {
+  try {
+    const response = await fetch('/api/listing/fetch', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id }),
+    });
+
+    if (response.status === 200) {
+      const data = await response.json();
+      return data;
+    } else {
+      console.error('Error fetching listing');
+      return null;
+    }
+  } catch (error) {
+    console.error('Error fetching listing:', error);
+    return null;
+  }
+};

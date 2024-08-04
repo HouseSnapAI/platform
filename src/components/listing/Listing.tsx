@@ -7,7 +7,7 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 
 // ** Types Imports
-import { ListingDetailType, User } from '@/utils/types'
+import { ListingDetailType, ListingType, User } from '@/utils/types'
 
 // ** Components Imports
 import ListingDrawer from './ListingDrawer'
@@ -16,7 +16,7 @@ const formatPrice = (price: number): string => {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(price);
 }
 
-const Listing = ({listing, email, userInfo, setUserInfo}: {listing: ListingDetailType, email: string|null|undefined, userInfo: User |undefined, setUserInfo: (data:User)=>void | undefined}) => {
+const Listing = ({listing, email, userInfo, setUserInfo}: {listing: ListingType, email: string|null|undefined, userInfo: User |undefined, setUserInfo: (data:User)=>void | undefined}) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const handleOpenDrawer = () => {
@@ -33,12 +33,12 @@ const Listing = ({listing, email, userInfo, setUserInfo}: {listing: ListingDetai
         onClick={handleOpenDrawer}
       >
         <Box sx={{ width: 148.8*2, height: 94*2, position: 'relative' }}>
-            <Image src={listing?.property_images?.L[listing?.property_images?.L.length-1]?.S || ""} alt='listing image' layout='fill' objectFit='cover' />
+            <Image src={listing?.primary_photo || ""} alt='listing image' layout='fill' objectFit='cover' />
         </Box>
         <Typography variant='subtitle1' className='text-center text-white/70 group-hover:text-white ease-in-out duration-300'>
-          {listing?.listings_detail_label?.S}
+          {`${listing?.full_street_line} `}
         </Typography>
-        <Typography variant='subtitle2' className='text-center text-white/70 group-hover:text-white ease-in-out duration-300'>{listing?.bedrooms?.N} Bed {listing?.bathrooms?.N} Bath {listing?.square_footage?.N} sqft - <span className="font-semibold text-md">{formatPrice(Number(listing?.listing_detail_price?.N))}</span></Typography>
+        <Typography variant='subtitle2' className='text-center text-white/70 group-hover:text-white ease-in-out duration-300'>{listing?.beds} Bed {listing?.full_baths + (listing?.half_baths || 0)} Bath {listing?.sqft} sqft - <span className="font-semibold text-md">{formatPrice(Number(listing?.list_price))}</span></Typography>
       </Box>
       <ListingDrawer open={drawerOpen} onClose={handleCloseDrawer} listing={listing} email={email} userInfo={userInfo} setUserInfo={setUserInfo} />
     </>

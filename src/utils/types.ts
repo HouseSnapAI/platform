@@ -159,7 +159,10 @@ export type ListingType = {
   primary_photo?: string,
   alt_photos?: string[]
   created_at: string,
-  updated_at: string
+  updated_at: string,
+  num_clicks: number,
+  num_views: number,
+  num_saved: number,
 }
 
 // type SupaBaseListingType = {
