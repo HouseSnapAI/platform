@@ -9,12 +9,4 @@ export const sidebar = (setDrawerContent: (content: DrawerContentType) => void, 
             window.location.href = '/chat';
         } 
     }, 
-    { 
-        icon: <IconMessageCircle size={27} stroke={1.5} className='text-[#6f6f6f] hover:text-white transition-colors ease-in-out duration-300 m-2' />, 
-        title: 'Chat History', 
-        onClick: (e) => {
-            setDrawerContent({title: 'Chat History', component: 'ChatHistory', props: userInfo||{}});
-            setDrawerOpen(true);
-        }
-    }, 
 ];
