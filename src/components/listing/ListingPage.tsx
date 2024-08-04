@@ -3,37 +3,52 @@ import React, { useState, useEffect } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
-import Slider from '@mui/material/Slider'
-import Select from '@mui/material/Select'
-import MenuItem from '@mui/material/MenuItem'
-import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
+import Typography from '@mui/material/Typography'
 
-// ** Theme IMports
+// ** Theme Imports
 import { useTheme } from '@mui/material/styles'
 
 // ** Type Imports
-import { User } from '@/utils/types';
+import { ListingType, User } from '@/utils/types';
+
+// Util Imports
+import {exampleLiistingIds} from '@/utils/vars';
+import { fetchListing } from '@/utils/db';
+
+// ** Custom Components
 import Filter from './filter'
+import Listing from './Listing';
 
 type ListingPageProps = {
-    userInfo: User
-    setUserInfo: (userInfo: User) => void
+    userInfo: User | null
+    setUserInfo: (userInfo: User | null) => void
+    listings: ListingType[]
 }
 
-const ListingPage = ({userInfo, setUserInfo}: ListingPageProps) => {
-  
+const ListingPage = ({userInfo, setUserInfo, listings}: ListingPageProps) => {
+
+    
     const theme = useTheme()
 
-    const [budget, setBudget] = useState<[number, number]>([userInfo?.min_budget || 0, userInfo?.max_budget || 5000000])
-    const [location, setLocation] = useState<string>(userInfo?.location?.[0] || '')
-    const [beds, setBeds] = useState<number>(userInfo?.beds || 0)
-    const [baths, setBaths] = useState<number>(userInfo?.baths || 0)
-    const [propertyType, setPropertyType] = useState<string>(userInfo?.property_types?.[0] || '')
-
-  return (
-    <Box className={`h-full w-full rounded-lg flex p-2 flex-col items-center text-center justify-between shadow-lg`} sx={{ backgroundColor: theme.palette.background.paper}}>
+    return (
+    <Box key={listings.length} className={`h-full w-full rounded-lg flex p-2 flex-col items-center text-center shadow-lg`} sx={{ backgroundColor: theme.palette.background.paper}}>
         <Filter userInfo={userInfo} setUserInfo={setUserInfo} />
+        
+        <Box className='flex flex-row flex-wrap gap-2 items-start justify-center w-full overflow-y-auto'>
+
+            {(listings as ListingType[]).length > 0 ? (listings as ListingType[]).map((listing) => (
+                <Listing
+                key={listing.id}
+                listing={listing}
+                email={userInfo?.email}
+                userInfo={userInfo || undefined}
+                setUserInfo={setUserInfo}
+                />
+            )) : (
+                <Typography>No listings available</Typography>
+            )}
+        </Box>
     </Box>
   )
 }

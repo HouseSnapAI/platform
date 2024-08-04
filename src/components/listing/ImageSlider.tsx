@@ -6,7 +6,7 @@ import Box from '@mui/material/Box';
 const ImageSlider = ({listing}: {listing: ListingType}) => {
   return (
     <Carousel className='transition-all duration-0' autoPlay={false}>
-        {[ listing.primary_photo, ...(listing.alt_photos || [])].map((image, index) => (
+        {(listing.alt_photos || []).map((image, index) => (
         <Box key={index} sx={{ position: 'relative', height: 400 }}>
             <img
             src={image}

@@ -159,7 +159,7 @@ export const updateEngagements = async ({
 
       if (viewed || clicked) {
       const listingResponse = await fetch('/api/listing/update', {
-        method: 'POST',
+        method: 'PATCH',
         body: JSON.stringify({ id: listing.id, num_views: listing.num_views + (viewed ? 1 : 0), num_clicks: listing.num_clicks + (clicked ? 1 : 0) }),
       });
 
@@ -198,7 +198,7 @@ export const saveHouse = async ({id, user, listing}: {id:string, user: User, lis
       localStorage.setItem('userInfo', JSON.stringify(updatedUser));
 
       const listingResponse = await fetch('/api/listing/update', {
-        method: 'POST',
+        method: 'PATCH',
         body: JSON.stringify({ id: listing.id, num_saved: listing.num_saved + 1 }),
       });
 
@@ -234,7 +234,7 @@ export const deleteSavedHouse = async ({id, user, listing}: {id:string, user: Us
       localStorage.setItem('userInfo', JSON.stringify(updatedUser));
 
       const listingResponse = await fetch('/api/listing/update', {
-        method: 'POST',
+        method: 'PATCH',
         body: JSON.stringify({ id: listing.id, num_saved: listing.num_saved - 1 }),
       });
 
@@ -257,28 +257,29 @@ export const deleteSavedHouse = async ({id, user, listing}: {id:string, user: Us
 // LISTING FUNCTIONS
 
 type FetchListingType = {
-  id: string;
+  ids: string[];
 };
 
-export const fetchListing = async ({ id }: FetchListingType) => {
+export const fetchListing = async ({ ids }: FetchListingType) => {
   try {
     const response = await fetch('/api/listing/fetch', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ id }),
+      body: JSON.stringify({ ids }),
     });
 
+    const data = await response.json();
+
     if (response.status === 200) {
-      const data = await response.json();
-      return data;
+      return { status: 200, data };
     } else {
       console.error('Error fetching listing');
-      return null;
+      return { status: response.status, message: data.message || 'Error fetching listing' };
     }
   } catch (error) {
     console.error('Error fetching listing:', error);
-    return null;
+    return { status: 500, message: 'Internal server error' };
   }
 };

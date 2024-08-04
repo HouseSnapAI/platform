@@ -64,10 +64,10 @@ const ListingDrawer = ({ open, onClose, listing, email, setUserInfo, userInfo }:
   }, [open])  
   const saveListing = async () => {
     if (saved && listing && userInfo?.email && userInfo?.id) {
+      setSaved(false);
       const updatedUser = await deleteSavedHouse({ id: listing.id, user: userInfo, listing: listing });
       if (updatedUser) {
         setUserInfo(updatedUser);
-        setSaved(false);
         toast('Listing unsaved', {
           position: "bottom-right",
           autoClose: 2000,
@@ -82,10 +82,10 @@ const ListingDrawer = ({ open, onClose, listing, email, setUserInfo, userInfo }:
       }
     } else {
       if (listing && userInfo?.email && userInfo?.id) {
+        setSaved(true);
         const updatedUser = await saveHouse({ id: listing.id, user: userInfo, listing: listing });
         if (updatedUser) {
           setUserInfo(updatedUser);
-          setSaved(true);
           toast('Listing saved', {
             position: "bottom-right",
             autoClose: 2000,

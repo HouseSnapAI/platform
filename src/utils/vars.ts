@@ -604,3 +604,9 @@ export const exampleListings: ListingDetailType[] = [
   window_features: { S: "Dual Pane Partial" },
   year_built: { S: "1907" }
 }];
+
+export const exampleLiistingIds: string[] = [
+  "00015dfb-37a8-48cc-892f-d1681802c98c",
+  "0001fb2e-8e89-4b9a-b67d-8addf2cbd6d5",
+  "00024ab6-1c58-4e4c-ab59-a84f0ce78eba",
+  "0002df75-3fe2-41d9-9a82-a13b37ea42cb"]

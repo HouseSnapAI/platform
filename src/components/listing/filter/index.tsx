@@ -100,8 +100,7 @@ const Filter = ({userInfo, setUserInfo}:{userInfo: User | null, setUserInfo: (us
     }, [popupActive])
 
     return (
-        <Box className="h-[40px] rounded-lg px-4 flex items-center justify-center overflow-x-auto scrollbar-hide">
-            <Box className="flex items-center justify-center gap-4 min-w-max">
+        <Box className="h-[40px] w-full rounded-lg px-4 flex items-center justify-center gap-2 bg-black mb-2 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
                 <Button
                     onClick={(e) => handleClick(e, 'propertyType')}
                     className="flex flex-row items-center justify-center hover:text-white whitespace-nowrap"
@@ -172,7 +171,6 @@ const Filter = ({userInfo, setUserInfo}:{userInfo: User | null, setUserInfo: (us
                 >
                     <Typography fontSize={10} noWrap>Description</Typography>
                 </Button>
-            </Box>
 
             <FilterPopup
                 type={popupActive}

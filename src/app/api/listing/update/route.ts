@@ -67,12 +67,12 @@ export const PATCH = withApiAuthRequired(async function handler(req: NextRequest
 
   try {
     const { data, error } = await supabase
-      .from('Listings')
+      .from('listings')
       .update(updateFields)
       .eq('id', id);
 
     if (error) {
-      console.error('Error updating listing:', error);
+      console.error('Error updating listing:', error, data);
       return NextResponse.json({ message: 'Error updating listing' }, { status: 500 });
     }
 
