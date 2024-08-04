@@ -6,6 +6,7 @@ import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
+import { IconArrowsDiagonal2, IconX, IconArrowsDiagonalMinimize, IconBrandHipchat } from '@tabler/icons-react';
 
 // ** Icon Imports
 import { IconSend } from '@tabler/icons-react'
@@ -31,23 +32,37 @@ type ChatInterfaceProps = {
 const ChatInterface = ({ setInputValue, inputValue, chatHistory, handleClick, userInfo, chatId, loading}: ChatInterfaceProps) => {
 
     const theme = useTheme();
+    const [expanded, setExpanded] = useState(false);
+    const [open, setOpen] = useState(true);
 
   return (
-    <Box className={`absolute bottom-4 right-4 rounded-lg flex flex-col items-center text-center justify-between w-[360px] h-[300px] shadow-lg`} sx={{border: `1px solid ${theme.palette.divider}`}}>
-    {/* <Box className={`h-[100vh] p-4 relative flex flex-col items-center text-white w-[calc(100vw-67px)]`}> 
-       {userInfo &&  <Box className='w-full flex flex-row items-center justify-center'>
-            <Typography variant='subtitle1' color='text.secondary'>{userInfo.chats.find((chat:any) => chat.id === chatId)?.title}</Typography>
+    open ?
+    <Box className={expanded ? `absolute bg-[#141414] bottom-4 right-4 rounded-lg flex flex-col items-center text-center justify-between w-[450px] h-[580px] drop-shadow-lg` : `absolute bg-[#141414] bottom-4 right-4 rounded-lg flex flex-col items-center text-center justify-between w-[380px] h-[440px] drop-shadow-lg`} sx={{border: `1px solid #222`}}>
+       {userInfo &&  <Box className='w-full flex flex-row items-center py-[5px] justify-between' sx={{borderBottom: `1px solid #222`}}>
+            <Typography className='pl-[20px]' variant='subtitle1' color='text.secondary'>Chat</Typography>
+            <Box>
+                <IconButton className='' onClick={() => setExpanded(!expanded)}>
+                    {!expanded ? 
+                        <IconArrowsDiagonal2 className={`text-[#989898] hover:cursor-pointer hover:text-[#c8c8c8] hover:shadow-xl transition-all ease-in-out duration-300`} size={20} />
+                    :
+                        <IconArrowsDiagonalMinimize className={`text-[#989898] hover:cursor-pointer hover:text-[#c8c8c8] hover:shadow-xl transition-all ease-in-out duration-300`} size={20} />
+                    }
+                </IconButton>
+                <IconButton className='mr-[10px] ' onClick={() => setOpen(false)}>
+                    <IconX className={`text-[#989898] hover:cursor-pointer hover:text-[#c8c8c8] hover:shadow-xl transition-all ease-in-out duration-300`} size={20} />
+                </IconButton>
+            </Box>
         </Box>}
 
         <ChatWindow chatHistory={chatHistory} loading={loading} />
 
-        <Box className='w-[64%] px-4 py-3 overflow-y-hidden'>
+        <Box className='w-[95%] px-4 overflow-y-hidden'>
             <form
                 onSubmit={(e) => {
                     e.preventDefault();
                     handleClick();
                 }}
-                className='w-full flex flex-row items-center justify-between gap-2 fade-in-on-scroll cursor-pointer border mb-14 rounded-md transition-all ease-in-out duration-300'
+                className='w-full flex flex-row items-center justify-between gap-2 fade-in-on-scroll cursor-pointer mb-10 rounded-md transition-all ease-in-out duration-300'
             >
                 <TextField 
                     value={inputValue} 
@@ -56,18 +71,21 @@ const ChatInterface = ({ setInputValue, inputValue, chatHistory, handleClick, us
                     color='secondary' 
                     fullWidth 
                     autoComplete='false' 
+                    placeholder='Chat...'
                     InputProps={{
+                        className: 'shadow-md h-[50px] px-[5px] text-white bg-[#181818] rounded-full',
                         endAdornment: 
                         <IconButton
                             type='submit'
                             onClick={handleClick}
                             color='secondary'
                             size='small'
+                            className='w-[40px] h-[40px]  flex items-center justify-center rounded-full'
                         >
                             <IconSend 
-                                size={30} 
+                                size={20} 
                                 stroke={2} 
-                                className='text-[white] mr-2 hover:cursor-pointer hover:text-pink-500 transition-all ease-in-out duration-300' 
+                                className='text-[#8f8f8f] mr-1 hover:cursor-pointer hover:text-pink-500 transition-all ease-in-out duration-300' 
                             />
                         </IconButton>
                     }}
@@ -84,14 +102,18 @@ const ChatInterface = ({ setInputValue, inputValue, chatHistory, handleClick, us
                             },
                         },
                         '& .MuiInputBase-input': {
-                            color: 'white',
+                            color: '#999',
                         },
                     }}
                 >
                     Get Started!!
                 </TextField>
             </form>
-        </Box>*/}
+        </Box>
+    </Box>
+    :
+    <Box className='absolute bg-[#222222] bottom-4 right-4 rounded-xl flex items-center justify-center w-[70px] h-[70px] drop-shadow-lg hover:cursor-pointer hover:drop-shadow-xl'>
+        <IconBrandHipchat size={40} className='text-[#989898] hover:cursor-pointer hover:text-[#c8c8c8] hover:shadow-xl transition-all ease-in-out duration-300' onClick={() => setOpen(true)} />
     </Box>
   )
 }

@@ -50,7 +50,12 @@ const Chatbox = ({drawerOpen, setInputValue, inputValue, handleClick, email, set
       <Box className='w-[64%] px-4 py-3'>
         <form>
           <Box id='finput' className='w-full flex flex-row items-center justify-between gap-2  cursor-pointer border mb-14 mt-10  rounded-md transition-all ease-in-out duration-300 ' >
-            <TextField value={inputValue} onChange={(e) => setInputValue(e.target.value)} variant='outlined' color='secondary' fullWidth autoComplete='false' placeholder='Start Typing...'
+            <TextField onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleClick();
+              }
+            }} value={inputValue} onChange={(e) => setInputValue(e.target.value)} variant='outlined' color='secondary' fullWidth autoComplete='false' placeholder='Start Typing...'
               InputProps={{
                 endAdornment: <IconSend type='submit' onClick={(e)=>{
                   e.preventDefault()
