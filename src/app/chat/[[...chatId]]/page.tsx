@@ -28,6 +28,7 @@ import { chatStarter, exampleLiistingIds, initChat } from '@/utils/vars';
 import { createNewChat, fetchChat, fetchListing, fetchUserInfo, updateChat } from '@/utils/db';
 import ListingPage from '@/components/listing/ListingPage';
 import MapPage from '@/components/map/MapPage';
+import { Typography } from '@mui/material';
 
 const ChatPage = () => {
 
@@ -200,7 +201,8 @@ useEffect(() => {
       /> 
 
       <Box className="flex flex-col w-full h-[100vh] gap-4 flex-grow">
-        <Box className="flex w-full h-[50px]" sx={{borderBottom: `1px solid ${theme.palette.divider}`, backgroundColor: theme.palette.background.paper}}>
+        <Box className="flex w-full h-[50px] items-center justify-center" sx={{borderBottom: `1px solid ${theme.palette.divider}`, backgroundColor: theme.palette.background.paper}}>
+          <Typography fontSize={16} className='text-[#c1c1c1]' >HouseSnap<span className="bg-gradient-to-r from-purple-400 via-pink-500 fade-in-on-scroll to-red-500 text-transparent bg-clip-text">AI</span></Typography>
         </Box>
         
         <Box className="flex w-full h-full flex-grow">
