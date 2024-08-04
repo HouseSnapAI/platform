@@ -119,6 +119,20 @@ const FilterPopup = ({ type, anchorEl, open, onClose, value, setValue }: FilterP
             />
           </Box>
         );
+      case 'houseDescription':
+        return (
+          <Box>
+            <Typography color='text.secondary' fontSize={14}>House Description</Typography>
+            <TextField
+              multiline
+              rows={4}
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              fullWidth
+              variant="outlined"
+            />
+          </Box>
+        );
       default:
         return null;
     }

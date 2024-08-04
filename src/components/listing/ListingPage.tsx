@@ -31,11 +31,6 @@ const ListingPage = ({userInfo, setUserInfo}: ListingPageProps) => {
     const [baths, setBaths] = useState<number>(userInfo?.baths || 0)
     const [propertyType, setPropertyType] = useState<string>(userInfo?.property_types?.[0] || '')
 
-    const handleSave = () => {
-        // Implement save functionality here
-        console.log('Saving filters:', { budget, location, beds, baths, propertyType })
-    }
-
   return (
     <Box className={`h-full w-full rounded-lg flex p-2 flex-col items-center text-center justify-between shadow-lg`} sx={{ backgroundColor: theme.palette.background.paper}}>
         <Filter userInfo={userInfo} setUserInfo={setUserInfo} />

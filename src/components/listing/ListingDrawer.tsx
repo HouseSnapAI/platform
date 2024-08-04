@@ -30,7 +30,7 @@ type ListingDrawerProps = {
   listing: ListingType | null;
   email: string | null | undefined;
   setUserInfo: (userInfo: User) => void | undefined;
-  userInfo: User |undefined;
+  userInfo: User | undefined;
 };
 
 const ListingDrawer = ({ open, onClose, listing, email, setUserInfo, userInfo }: ListingDrawerProps) => {
@@ -47,7 +47,7 @@ const ListingDrawer = ({ open, onClose, listing, email, setUserInfo, userInfo }:
 
   useEffect(() => {
     if (open && listing && email && userInfo?.id) {
-      updateEngagements({ id: listing.id, zipcode: listing.zipcode, viewed: true, clicked: true, user: userInfo })
+      updateEngagements({ id: listing.id, listing: listing, viewed: true, clicked: true, user: userInfo })
         .then(updatedUser => {
           if (updatedUser) setUserInfo(updatedUser);
         });
@@ -64,7 +64,7 @@ const ListingDrawer = ({ open, onClose, listing, email, setUserInfo, userInfo }:
   }, [open])  
   const saveListing = async () => {
     if (saved && listing && userInfo?.email && userInfo?.id) {
-      const updatedUser = await deleteSavedHouse({ id: listing.id, user: userInfo });
+      const updatedUser = await deleteSavedHouse({ id: listing.id, user: userInfo, listing: listing });
       if (updatedUser) {
         setUserInfo(updatedUser);
         setSaved(false);
@@ -82,7 +82,7 @@ const ListingDrawer = ({ open, onClose, listing, email, setUserInfo, userInfo }:
       }
     } else {
       if (listing && userInfo?.email && userInfo?.id) {
-        const updatedUser = await saveHouse({ id: listing.id, user: userInfo });
+        const updatedUser = await saveHouse({ id: listing.id, user: userInfo, listing: listing });
         if (updatedUser) {
           setUserInfo(updatedUser);
           setSaved(true);
