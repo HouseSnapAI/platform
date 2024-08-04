@@ -29,34 +29,6 @@ export const POST = withApiAuthRequired(async function handler(req: NextRequest)
       throw chatUpdateError;
     }
 
-    // Fetch user
-    const { data: userData, error: userFetchError } = await supabase
-      .from('User')
-      .select('*')
-      .eq('id', chat.user_id)
-      .single();
-
-    if (userFetchError) {
-      throw userFetchError;
-    }
-
-    // Update user's chat
-    const updatedChats = userData.chats ? userData.chats.map((existingChat: any) => {
-      if (existingChat.id === chat.id) {
-        return { ...existingChat, updated_at: new Date().toISOString() };
-      }
-      return existingChat;
-    }) : [{ ...chat, updated_at: new Date().toISOString() }];
-
-    const { error: userUpdateError } = await supabase
-      .from('User')
-      .update({ chats: updatedChats })
-      .eq('id', userData.id);
-
-    if (userUpdateError) {
-      throw userUpdateError;
-    }
-
     return NextResponse.json({ message: 'Chat history and user updated successfully' }, { status: 200 });
   } catch (error) {
     console.error('Error updating chat history in Supabase:', error);

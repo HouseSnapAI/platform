@@ -30,7 +30,6 @@ export type UserType = {
   profileimgUrl?: {S: string};
   createdAt?: {S: string};
   updatedAt?: {S: string};
-  chats?: {L: UserChatType[]};
   [key: string]: any;
 };
 
@@ -311,11 +310,6 @@ export type User ={
   clicked: ListingRecordType[],
   viewed: ListingRecordType[],
   saved: ListingRecordType[],
-  chats: {
-    id: string,
-    updated_at: string,
-    title: string
-  }[]
 }
 
 export type Message = {

@@ -51,23 +51,6 @@ export const createNewChat = async ({ user, initialMessage }: createNewChatType)
     console.log("Error creating chat")
   } else {
     const data = await response.json();
-    const userUpdateResponse = await fetch('/api/auth/user/update', {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        // change to supabase user
-        id: user.id,
-        // TODO: change listings_detail_label to listing_id after supabase listings table is updated
-        chats: [...user.chats||[], { updated_at: new Date().toISOString(), id: data.chat.id }]
-      }),
-    });
-    if (userUpdateResponse.status !== 200) {
-      console.error('Error updating user chats');
-    }
-    
-    localStorage.setItem('userInfo', JSON.stringify({...user, chats: [...user.chats||[], { updated_at: new Date().toISOString(), id: data.chat.id }]}));
     window.location.href = `/chat/${data.chat.id}?initialMessage=${initialMessage}`;
   }
 
@@ -76,23 +59,6 @@ export const createNewChat = async ({ user, initialMessage }: createNewChatType)
 type DeleteUserChatType ={
   id: string,
   user: User
-}
-
-export const deleteUserChat = async ({ id, user }: DeleteUserChatType) => {
-  const response = await fetch('/api/auth/user/update', {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ id: user.id, chats: user.chats.filter((chat: any) => chat.id !== id) }),
-  });
-
-  if (response.status === 200) {
-    console.log('Chat deleted successfully')
-    localStorage.setItem('userInfo', JSON.stringify({...user, chats: user.chats.filter((chat: any) => chat.id !== id) }));
-  } else {
-    console.error('Error deleting chat')
-  }
 }
 
 export const updateChat = async (chat: Chat) => {
