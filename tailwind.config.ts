@@ -15,6 +15,22 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    function ({ addUtilities }: { addUtilities: (utilities: Record<string, any>) => void }) {
+      const newUtilities = {
+        '.hide-scrollbar': {
+          /* Hide scrollbar for Chrome, Safari, and Opera */
+          '-webkit-overflow-scrolling': 'touch',
+          '&::-webkit-scrollbar': {
+            display: 'none',
+          },
+          /* Hide scrollbar for IE, Edge, and Firefox */
+          '-ms-overflow-style': 'none', /* IE and Edge */
+          'scrollbar-width': 'none', /* Firefox */
+        },
+      };
+      addUtilities(newUtilities);
+    },
+  ],
 };
 export default config;

@@ -37,7 +37,6 @@ const ChatPage = () => {
   const [userInfo, setUserInfo] = useState<User | null>(null)
 
   const params = useParams();
-  const chatId = (params.chatId || ['newChat']) as string[];
   const query = useSearchParams();
   
   // ** Drawer States
@@ -47,7 +46,7 @@ const ChatPage = () => {
   // Chat Message States
   const [inputValue, setInputValue] = useState<string>(query.get('initialMessage') || '')
   const [chatHistory, setChatHistory] = useState<Chat>({
-    id: chatId[0] as string,
+    id: "new chat",
     user_id: userInfo?.id as string,
     chat_history: [initChat],
     title: "New Chat",
@@ -58,6 +57,7 @@ const ChatPage = () => {
 
   // Listing States
   const [listings, setListings] = useState<ListingType[]>([])
+  const [listing, setListing] = useState("None");
   
   const theme = useTheme();
 
@@ -75,33 +75,32 @@ const ChatPage = () => {
     }
   }, [user?.email])
 
+  const fetchChatHistory = () => {
+      let chat = sessionStorage.getItem('chatHistory');
+      if (chat) {
+        setChatHistory(JSON.parse(chat));
+      }
+  }
+
+  const resetChat = () => {
+    setChatHistory({
+      id: "new chat",
+      user_id: userInfo?.id as string,
+      chat_history: [initChat],
+      title: "New Chat",
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    });
+    sessionStorage.removeItem('chatHistory');
+    sessionStorage.removeItem('chatId');
+    setInputValue('');
+    setLoading(false);
+  }
+
   // Fetch Chat History
   useEffect(() => {
-    //EVENTUALLY WILL INCLUDE SESSION STORAGE TO SAVE REGULAT + CURRENT LISTING CHAT
-
-    // const fetchChatData = async () => {
-    //   if (chatId[0] !== 'newChat' && userInfo?.id) {
-    //     setLoading(true);
-    //     const chatData = await fetchChat({chat_id: chatId[0], user_id: userInfo?.id});
-    //     if (chatData) {
-    //       setChatHistory(chatData);
-    //     }
-    //     setLoading(false);
-    //   }
-    // };
-
-    // if (userInfo?.id) {
-    //   fetchChatData();
-    // }
-
-    // If the query has an initial message, handle the click
-    if (query.get('initialMessage') && userInfo?.email) {
-      handleClick();
-      const url = new URL(window.location.href);
-      url.search = '';
-      window.history.replaceState({}, document.title, url.toString());
-    }
-  }, [chatId[0], userInfo?.id, query.get('initialMessage')]);
+    fetchChatHistory();
+  }, [])
 
   // Drawer open/close
   const handleDrawerClose = () => {
@@ -109,26 +108,40 @@ const ChatPage = () => {
   };
 
   // If enter is clicked
-  const handleClick = async () => {
+  const handleClick = async (newChat: boolean) => {
     setLoading(true);
+    let chatId: string | null = null;
     // If New chat
-    if (chatId[0] === "newChat" && userInfo) {
+    if (newChat && userInfo) {
       console.log("new chat ", userInfo, inputValue)
-      createNewChat({ user: userInfo, initialMessage: inputValue })
+      chatId = await createNewChat({ user: userInfo, initialMessage: inputValue })
+      sessionStorage.setItem('chatId', chatId!!);
       // Normal handle click
-    } else if(user) {
+    } else if (userInfo) {
+      chatId = sessionStorage.getItem('chatId')!!;
+    }
+    if(user && chatId) {
       console.log("responding")
 
       setInputValue('')
       
+      console.log(chatId)
+
       // Update chat history first
-      setChatHistory({
-          ...chatHistory,
-            chat_history: [...chatHistory.chat_history, 
-                { role: "user", content: inputValue, listings: []}
-            ]
-        }
-      );
+      let temp = {
+        created_at: chatHistory.created_at,
+        title: chatHistory.title,
+        updated_at: chatHistory.updated_at,
+        user_id: chatHistory.user_id,
+        chat_history: [...chatHistory.chat_history, 
+            { role: "user", content: inputValue, listings: []}
+        ],
+        id: chatId,
+    }
+      setChatHistory(temp);
+
+      console.log(temp);
+      console.log(chatHistory)
 
       // get response
       const response = await fetch(`/api/chat/response`, {
@@ -136,7 +149,7 @@ const ChatPage = () => {
           headers: {
               'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ 
+          body: JSON.stringify({
               prompt: inputValue, 
               chat: chatHistory, 
               user: userInfo
@@ -146,22 +159,28 @@ const ChatPage = () => {
       const data = await response.json()
       console.log("GOT DATA", data)
 
-
-    const updatedChat = await updateChat({
-      ...chatHistory,
-        chat_history: [...chatHistory.chat_history, 
+      const chatObj = {
+        ...temp,
+        chat_history: [...chatHistory.chat_history,
             { role: "user", content: inputValue, listings: []},
             data
         ],
         user_id: userInfo!!.id
-    });
+      };
 
-    setChatHistory(updatedChat) // Double check if chat isnt updated properly
+      console.log(chatObj)
+      console.log(userInfo!!.id)
 
+      let updatedChat = chatObj;
+      if (!newChat) {
+        updatedChat = await updateChat(chatObj);
+      } 
+
+      setChatHistory(updatedChat) // Double check if chat isnt updated properly
+      sessionStorage.setItem('chatHistory', JSON.stringify(updatedChat));
+    }
     setLoading(false);
-  }
 }
-
 // Fetch Listings
   
     
@@ -222,8 +241,8 @@ useEffect(() => {
             chatHistory={chatHistory}
             handleClick={handleClick}
             userInfo={userInfo}
-            chatId={chatId[0]}
             loading={loading}
+            resetChat={resetChat}
             />
           
         </Box>

@@ -51,7 +51,7 @@ export const createNewChat = async ({ user, initialMessage }: createNewChatType)
     console.log("Error creating chat")
   } else {
     const data = await response.json();
-    window.location.href = `/chat/${data.chat.id}?initialMessage=${initialMessage}`;
+    return (data.chat.id);
   }
 
 }
@@ -62,6 +62,8 @@ type DeleteUserChatType ={
 }
 
 export const updateChat = async (chat: Chat) => {
+
+  console.log(chat)
 
   const response = await fetch('/api/chat/update', {
     method: 'POST',
