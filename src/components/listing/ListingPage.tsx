@@ -41,7 +41,7 @@ const ListingPage = ({userInfo, setUserInfo, listings, setIds, onHover, hoveredL
     <Box key={listings.length} className={`h-full w-full rounded-lg flex p-2 flex-col items-center text-center shadow-lg`} sx={{ backgroundColor: theme.palette.background.paper}}>
         <Filter userInfo={userInfo} setUserInfo={setUserInfo} setIds={setIds} />
         
-        <Box className='flex flex-row flex-wrap gap-2 items-start justify-center w-full overflow-y-auto'>
+        <Box className='flex flex-row flex-wrap gap-2 items-start justify-center w-full h-full overflow-y-auto'>
 
             {(listings as ListingType[]).length > 0 ? (listings as ListingType[]).map((listing) => (
                 <div key={listing.id} ref={(el: HTMLDivElement | null) => { listingRefs.current[listing.id] = el }}>
