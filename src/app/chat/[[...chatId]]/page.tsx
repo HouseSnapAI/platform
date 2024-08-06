@@ -22,7 +22,7 @@ import { useTheme } from '@mui/material/styles';
 // ** Auth Imports
 import { useUser } from '@auth0/nextjs-auth0/client';
 import ChatInterface from '@/components/chat-interface/ChatInterface';
-import { chatStarter, exampleLiistingIds, initChat } from '@/utils/vars';
+import { chatStarter, initChat } from '@/utils/vars';
 
 // ** UUID Imports
 import { createNewChat, fetchChat, fetchListing, fetchUserInfo, updateChat } from '@/utils/db';
@@ -57,7 +57,7 @@ const ChatPage = () => {
 
   // Listing States
   const [listings, setListings] = useState<ListingType[]>([])
-  const [ids, setIds] = useState<string[]>(exampleLiistingIds)
+  const [ids, setIds] = useState<string[]>([])
   const [hoveredListing, setHoveredListing] = useState<ListingType | null>(null);
   
   const theme = useTheme();
@@ -69,11 +69,33 @@ const ChatPage = () => {
       const data = await fetchUserInfo(email);
       console.log("USER DATA SUPA", data)
       setUserInfo(data)
+
+
+      const idData = await fetch('/api/listing/search-engine/query', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({user: data}),
+    });
+
+    
+    if (idData.status !== 200) {
+        setIds([])
+    } else {
+        console.log("ID DATA", idData)
+        const responseData = await idData.json()
+        console.log("RES", responseData)
+        setIds(responseData.listings.map((listing: {id: string, similarity: number}) => listing.id))
+        console.log("FETCHED LISTINGS")
+      }
     }
 
     if (user?.email) {
       fetchUser(user.email)
     }
+
+
   }, [user?.email])
 
   // Fetch Chat History
@@ -214,12 +236,17 @@ useEffect(() => {
             listings={listings} 
             setIds={setIds} 
             onHover={setHoveredListing}
+            hoveredListing={hoveredListing}
           />
         </Box>
 
         {/* MAP & CHAT BOX */} 
         <Box className="flex flex-col gap-2 w-1/2 h-full pb-2 px-2">
-          <MapPage listings={listings} hoveredListing={hoveredListing} />
+          <MapPage 
+            listings={listings} 
+            hoveredListing={hoveredListing} 
+            onMarkerHover={setHoveredListing} 
+          />
           
           <ChatInterface 
             key={JSON.stringify(chatHistory)}

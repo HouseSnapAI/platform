@@ -14,7 +14,7 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 // ** Types
 import { ListingType } from '@/utils/types'
 
-const MapPage = ({listings, hoveredListing}: {listings: ListingType[], hoveredListing: ListingType | null}) => {
+const MapPage = ({listings, hoveredListing, onMarkerHover}: {listings: ListingType[], hoveredListing: ListingType | null, onMarkerHover: (listing: ListingType | null) => void}) => {
   const theme = useTheme()
   const mapRef = useRef<any>(null)
   const mapBoxToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!
@@ -46,12 +46,17 @@ const MapPage = ({listings, hoveredListing}: {listings: ListingType[], hoveredLi
         mapStyle={"mapbox://styles/mapbox/dark-v11"}
       >
         {listings.length > 0 && listings.map((listing) => (
-          <Marker
+          <Box
             key={listing.id}
-            longitude={listing.longitude}
-            latitude={listing.latitude}
-            color={hoveredListing && hoveredListing.id === listing.id ? "blue" : "red"}
-          />
+            onMouseEnter={() => onMarkerHover(listing)}
+            onMouseLeave={() => onMarkerHover(null)}
+          >
+            <Marker
+              longitude={listing.longitude}
+              latitude={listing.latitude}
+              color={hoveredListing && hoveredListing.id === listing.id ? "blue" : "red"}
+            />
+          </Box>
         ))}
         <NavigationControl position="top-right" />
       </Map>
