@@ -22,7 +22,7 @@ const MapPage = ({listings, hoveredListing, onMarkerHover}: {listings: ListingTy
   useEffect(() => {
     if (mapRef.current && hoveredListing) {
       mapRef.current.flyTo({
-        center: [hoveredListing.longitude, hoveredListing.latitude],
+        center: [hoveredListing.longitude || -77.0364, hoveredListing.latitude || 38.8951],
         zoom: 9,
         duration: 1000
       });
@@ -38,8 +38,8 @@ const MapPage = ({listings, hoveredListing, onMarkerHover}: {listings: ListingTy
         ref={mapRef}
         mapboxAccessToken={mapBoxToken}
         initialViewState={{
-          longitude: listings[0]?.longitude || 0,
-          latitude: listings[0]?.latitude || 0,
+          longitude: listings[0]?.longitude || -77.0364,
+          latitude: listings[0]?.latitude || 38.8951,
           zoom: 9
         }}
         style={{width: '100%', height: '100%', borderRadius: '8px'}}
