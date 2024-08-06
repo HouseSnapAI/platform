@@ -57,6 +57,8 @@ const ChatPage = () => {
 
   // Listing States
   const [listings, setListings] = useState<ListingType[]>([])
+  const [ids, setIds] = useState<string[]>(exampleLiistingIds)
+  const [hoveredListing, setHoveredListing] = useState<ListingType | null>(null);
   
   const theme = useTheme();
 
@@ -178,10 +180,10 @@ useEffect(() => {
         }
     }
     
-    if (exampleLiistingIds.length > 0) {
-        fetchListingData(exampleLiistingIds)
+    if (ids.length > 0) {
+        fetchListingData(ids)
     }
-}, [])
+}, [ids])
 
 
   return (
@@ -206,12 +208,18 @@ useEffect(() => {
         <Box className="flex w-full h-full flex-grow">
         {/* Listings + Filter */}
         <Box className="flex flex-grow w-1/2 pb-2 pl-2">
-          <ListingPage userInfo={userInfo} setUserInfo={setUserInfo} listings={listings} />
+          <ListingPage 
+            userInfo={userInfo} 
+            setUserInfo={setUserInfo} 
+            listings={listings} 
+            setIds={setIds} 
+            onHover={setHoveredListing}
+          />
         </Box>
 
         {/* MAP & CHAT BOX */} 
         <Box className="flex flex-col gap-2 w-1/2 h-full pb-2 px-2">
-          <MapPage listings={listings} />
+          <MapPage listings={listings} hoveredListing={hoveredListing} />
           
           <ChatInterface 
             key={JSON.stringify(chatHistory)}

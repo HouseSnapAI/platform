@@ -14,21 +14,20 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 // ** Types
 import { ListingType } from '@/utils/types'
 
-const MapPage = ({listings}: {listings: ListingType[]}) => {
+const MapPage = ({listings, hoveredListing}: {listings: ListingType[], hoveredListing: ListingType | null}) => {
   const theme = useTheme()
   const mapRef = useRef<any>(null)
   const mapBoxToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!
 
   useEffect(() => {
-    console.log("in")
-    if (mapRef.current && listings.length > 0) {
+    if (mapRef.current && hoveredListing) {
       mapRef.current.flyTo({
-        center: [listings[0].longitude, listings[0].latitude],
-        zoom: 12,
-        duration: 2000
+        center: [hoveredListing.longitude, hoveredListing.latitude],
+        zoom: 9,
+        duration: 1000
       });
     }
-  }, [listings]);
+  }, [hoveredListing]);
 
   return (
     <Box 
@@ -39,19 +38,19 @@ const MapPage = ({listings}: {listings: ListingType[]}) => {
         ref={mapRef}
         mapboxAccessToken={mapBoxToken}
         initialViewState={{
-          longitude: listings[0].longitude,
-          latitude: listings[0].latitude,
+          longitude: listings[0]?.longitude || 0,
+          latitude: listings[0]?.latitude || 0,
           zoom: 9
         }}
         style={{width: '100%', height: '100%', borderRadius: '8px'}}
         mapStyle={"mapbox://styles/mapbox/dark-v11"}
       >
-        {listings.map((listing, index) => (
+        {listings.length > 0 && listings.map((listing) => (
           <Marker
-            key={index}
+            key={listing.id}
             longitude={listing.longitude}
             latitude={listing.latitude}
-            color="red"
+            color={hoveredListing && hoveredListing.id === listing.id ? "blue" : "red"}
           />
         ))}
         <NavigationControl position="top-right" />

@@ -20,7 +20,7 @@ import Typography from '@mui/material/Typography'
 // ** Custom Component Imports
 import FilterPopup from './FilterPopup'
 
-const Filter = ({userInfo, setUserInfo}:{userInfo: User | null, setUserInfo: (userInfo: User | null) => void}) => {
+const Filter = ({userInfo, setUserInfo, setIds}:{userInfo: User | null, setUserInfo: (userInfo: User | null) => void, setIds: (ids: string[]) => void}) => {
     
     const theme = useTheme()
 
@@ -81,6 +81,26 @@ const Filter = ({userInfo, setUserInfo}:{userInfo: User | null, setUserInfo: (us
                         console.log('User preferences updated successfully');
                         setUserInfo({...userInfo, ...userPreferences});
                         localStorage.setItem('userInfo', JSON.stringify({...userInfo, ...userPreferences}));
+                        
+                        // Listings query
+                        const data = await fetch('/api/listing/search-engine/query', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({user: userInfo}),
+                        });
+
+                        
+                        if (data.status !== 200) {
+                            setIds([])
+                        } else {
+                            console.log("DATA", data)
+                            const responseData = await data.json()
+                            console.log("RES", responseData)
+                            setIds(responseData.listings.map((listing: {id: string, similarity: number}) => listing.id))
+                            console.log("FETCHED LISTINGS")
+                        }
                     } else {
                         console.error('Error updating user preferences');
                     }

@@ -12,10 +12,6 @@ import { useTheme } from '@mui/material/styles'
 // ** Type Imports
 import { ListingType, User } from '@/utils/types';
 
-// Util Imports
-import {exampleLiistingIds} from '@/utils/vars';
-import { fetchListing } from '@/utils/db';
-
 // ** Custom Components
 import Filter from './filter'
 import Listing from './Listing';
@@ -24,16 +20,18 @@ type ListingPageProps = {
     userInfo: User | null
     setUserInfo: (userInfo: User | null) => void
     listings: ListingType[]
+    setIds: (data: string[]) => void
+    onHover: (listing: ListingType | null) => void
 }
 
-const ListingPage = ({userInfo, setUserInfo, listings}: ListingPageProps) => {
+const ListingPage = ({userInfo, setUserInfo, listings, setIds, onHover}: ListingPageProps) => {
 
     
     const theme = useTheme()
 
     return (
     <Box key={listings.length} className={`h-full w-full rounded-lg flex p-2 flex-col items-center text-center shadow-lg`} sx={{ backgroundColor: theme.palette.background.paper}}>
-        <Filter userInfo={userInfo} setUserInfo={setUserInfo} />
+        <Filter userInfo={userInfo} setUserInfo={setUserInfo} setIds={setIds} />
         
         <Box className='flex flex-row flex-wrap gap-2 items-start justify-center w-full overflow-y-auto'>
 
@@ -44,6 +42,7 @@ const ListingPage = ({userInfo, setUserInfo, listings}: ListingPageProps) => {
                 email={userInfo?.email}
                 userInfo={userInfo || undefined}
                 setUserInfo={setUserInfo}
+                onHover={onHover}
                 />
             )) : (
                 <Typography>No listings available</Typography>
