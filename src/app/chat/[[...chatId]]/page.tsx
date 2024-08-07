@@ -59,7 +59,8 @@ const ChatPage = () => {
   const [listings, setListings] = useState<ListingType[]>([])
   const [ids, setIds] = useState<string[]>([])
   const [hoveredListing, setHoveredListing] = useState<ListingType | null>(null);
-  
+  const [selectedListing, setSelectedListing] = useState<ListingType | null>(null); // New state
+
   const theme = useTheme();
 
   // Fetch user information from DB
@@ -278,8 +279,10 @@ useEffect(() => {
             setUserInfo={setUserInfo} 
             listings={listings} 
             setIds={setIds} 
-            onHover={setHoveredListing}
+            onHover={setHoveredListing} 
             hoveredListing={hoveredListing}
+            selectedListing={selectedListing} // Pass selectedListing
+            setSelectedListing={setSelectedListing} // Pass setSelectedListing
           />
         </Box>
 
