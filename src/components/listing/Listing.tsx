@@ -53,7 +53,7 @@ const Listing = ({ listing, email, userInfo, setUserInfo, onHover, lastHoveredLi
     if (hoverTimeoutRef.current) {
       clearTimeout(hoverTimeoutRef.current);
     }
-    onHover(null);
+    // onHover(null);
   };
 
   const handleClick = () => {

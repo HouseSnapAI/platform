@@ -24,8 +24,7 @@ const HousesHistoryPopup = ({ anchorEl, open, onClose, userInfo }: HousesHistory
   const [housesHistory, setHousesHistory] = useState<ListingRecordType[] | undefined>([]);
 
   useEffect(() => {
-    console.log(userInfo?.saved)
-    setHousesHistory(userInfo?.saved);
+    setHousesHistory(userInfo?.clicked);
   }, [])
 
   return (

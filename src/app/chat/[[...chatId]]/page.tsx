@@ -292,6 +292,7 @@ useEffect(() => {
             listings={listings} 
             hoveredListing={hoveredListing} 
             onMarkerHover={setHoveredListing} 
+            selectedListing={selectedListing}
           />
           
           <ChatInterface 

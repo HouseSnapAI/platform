@@ -14,12 +14,13 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 // ** Types
 import { ListingType } from '@/utils/types'
 
-const MapPage = ({listings, hoveredListing, onMarkerHover}: {listings: ListingType[], hoveredListing: ListingType | null, onMarkerHover: (listing: ListingType | null) => void}) => {
+const MapPage = ({listings, hoveredListing, onMarkerHover, selectedListing}: {listings: ListingType[], hoveredListing: ListingType | null, onMarkerHover: (listing: ListingType | null) => void, selectedListing: ListingType | null}) => {
   const theme = useTheme()
   const mapRef = useRef<any>(null)
   const mapBoxToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!
 
   useEffect(() => {
+    console.log("hoveredListing", hoveredListing)
     if (mapRef.current && hoveredListing) {
       mapRef.current.flyTo({
         center: [hoveredListing.longitude || -77.0364, hoveredListing.latitude || 38.8951],
@@ -28,6 +29,16 @@ const MapPage = ({listings, hoveredListing, onMarkerHover}: {listings: ListingTy
       });
     }
   }, [hoveredListing]);
+
+  useEffect(() => {
+    if (mapRef.current && selectedListing) {
+      mapRef.current.flyTo({
+        center: [selectedListing.longitude || -77.0364, selectedListing.latitude || 38.8951],
+        zoom: 9,
+        duration: 1000
+      });
+    }
+  }, [selectedListing]);
 
   return (
     <Box 
@@ -47,14 +58,14 @@ const MapPage = ({listings, hoveredListing, onMarkerHover}: {listings: ListingTy
       >
         {listings.length > 0 && listings.map((listing) => (
           <Box
-            key={listing.id}
+            key={(hoveredListing?.id || "") + (selectedListing?.id || "") + listing.id}
             onMouseEnter={() => onMarkerHover(listing)}
-            onMouseLeave={() => onMarkerHover(null)}
+            // onMouseLeave={() => onMarkerHover(null)}
           >
             <Marker
               longitude={listing.longitude}
               latitude={listing.latitude}
-              color={hoveredListing && hoveredListing.id === listing.id ? "blue" : "red"}
+              color={selectedListing && selectedListing.id === listing.id ? "blue" : hoveredListing && hoveredListing.id === listing.id ? "red" : "green"}
             />
           </Box>
         ))}
