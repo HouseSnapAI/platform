@@ -14,21 +14,20 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 // ** Types
 import { ListingType } from '@/utils/types'
 
-const MapPage = ({listings}: {listings: ListingType[]}) => {
+const MapPage = ({listings, hoveredListing, onMarkerHover}: {listings: ListingType[], hoveredListing: ListingType | null, onMarkerHover: (listing: ListingType | null) => void}) => {
   const theme = useTheme()
   const mapRef = useRef<any>(null)
   const mapBoxToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!
 
   useEffect(() => {
-    console.log("in")
-    if (mapRef.current && listings.length > 0) {
+    if (mapRef.current && hoveredListing) {
       mapRef.current.flyTo({
-        center: [listings[0].longitude, listings[0].latitude],
-        zoom: 12,
-        duration: 2000
+        center: [hoveredListing.longitude || -77.0364, hoveredListing.latitude || 38.8951],
+        zoom: 9,
+        duration: 1000
       });
     }
-  }, [listings]);
+  }, [hoveredListing]);
 
   return (
     <Box 
@@ -39,20 +38,25 @@ const MapPage = ({listings}: {listings: ListingType[]}) => {
         ref={mapRef}
         mapboxAccessToken={mapBoxToken}
         initialViewState={{
-          longitude: listings[0].longitude,
-          latitude: listings[0].latitude,
+          longitude: listings[0]?.longitude || -77.0364,
+          latitude: listings[0]?.latitude || 38.8951,
           zoom: 9
         }}
         style={{width: '100%', height: '100%', borderRadius: '8px'}}
         mapStyle={"mapbox://styles/mapbox/dark-v11"}
       >
-        {listings.map((listing, index) => (
-          <Marker
-            key={index}
-            longitude={listing.longitude}
-            latitude={listing.latitude}
-            color="red"
-          />
+        {listings.length > 0 && listings.map((listing) => (
+          <Box
+            key={listing.id}
+            onMouseEnter={() => onMarkerHover(listing)}
+            onMouseLeave={() => onMarkerHover(null)}
+          >
+            <Marker
+              longitude={listing.longitude}
+              latitude={listing.latitude}
+              color={hoveredListing && hoveredListing.id === listing.id ? "blue" : "red"}
+            />
+          </Box>
         ))}
         <NavigationControl position="top-right" />
       </Map>

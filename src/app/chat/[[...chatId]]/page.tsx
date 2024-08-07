@@ -22,7 +22,7 @@ import { useTheme } from '@mui/material/styles';
 // ** Auth Imports
 import { useUser } from '@auth0/nextjs-auth0/client';
 import ChatInterface from '@/components/chat-interface/ChatInterface';
-import { chatStarter, exampleLiistingIds, initChat } from '@/utils/vars';
+import { chatStarter, initChat } from '@/utils/vars';
 
 // ** UUID Imports
 import { createNewChat, fetchChat, fetchListing, fetchUserInfo, updateChat } from '@/utils/db';
@@ -57,7 +57,8 @@ const ChatPage = () => {
 
   // Listing States
   const [listings, setListings] = useState<ListingType[]>([])
-  const [listing, setListing] = useState("None");
+  const [ids, setIds] = useState<string[]>([])
+  const [hoveredListing, setHoveredListing] = useState<ListingType | null>(null);
   
   const theme = useTheme();
 
@@ -68,18 +69,57 @@ const ChatPage = () => {
       const data = await fetchUserInfo(email);
       console.log("USER DATA SUPA", data)
       setUserInfo(data)
+
+
+      const idData = await fetch('/api/listing/search-engine/query', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({user: data}),
+    });
+
+    
+    if (idData.status !== 200) {
+        setIds([])
+    } else {
+        console.log("ID DATA", idData)
+        const responseData = await idData.json()
+        console.log("RES", responseData)
+        setIds(responseData.listings.map((listing: {id: string, similarity: number}) => listing.id))
+        console.log("FETCHED LISTINGS")
+      }
     }
 
     if (user?.email) {
       fetchUser(user.email)
     }
+
+
   }, [user?.email])
 
   const fetchChatHistory = () => {
-      let chat = sessionStorage.getItem('chatHistory');
-      if (chat) {
-        setChatHistory(JSON.parse(chat));
+      let currentListing = sessionStorage.getItem('listing');
+      if(currentListing == null) {
+        currentListing = "HomePage"
       }
+      let obj = JSON.parse(sessionStorage.getItem(currentListing)!!);
+      if(!obj) {
+        setChatHistory({
+          id: "new chat",
+          user_id: userInfo?.id as string,
+          chat_history: [initChat],
+          title: "New Chat",
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        });
+      } else {
+        const chat = obj.chat;
+        if (chat) {
+          setChatHistory(chat);
+        }
+      }
+      
   }
 
   const resetChat = () => {
@@ -91,8 +131,11 @@ const ChatPage = () => {
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     });
-    sessionStorage.removeItem('chatHistory');
-    sessionStorage.removeItem('chatId');
+    let currentListing = sessionStorage.getItem('listing');
+    if(currentListing == null) {
+      currentListing = "HomePage"
+    }
+    sessionStorage.removeItem(currentListing as string);
     setInputValue('');
     setLoading(false);
   }
@@ -111,21 +154,26 @@ const ChatPage = () => {
   const handleClick = async (newChat: boolean) => {
     setLoading(true);
     let chatId: string | null = null;
+    let currentListing = sessionStorage.getItem('listing');
+    if(currentListing == null) {
+      currentListing = "HomePage"
+    }
+    console.log("CURRENT LISTING ", currentListing)
     // If New chat
     if (newChat && userInfo) {
       console.log("new chat ", userInfo, inputValue)
       chatId = await createNewChat({ user: userInfo, initialMessage: inputValue })
-      sessionStorage.setItem('chatId', chatId!!);
+      sessionStorage.setItem(currentListing, JSON.stringify({chatId: chatId!!, chat: ""}));
+      console.log(Object.values(sessionStorage));
       // Normal handle click
     } else if (userInfo) {
-      chatId = sessionStorage.getItem('chatId')!!;
+      chatId = JSON.parse(sessionStorage.getItem(currentListing)!!).chatId;
+      console.log(chatId)
     }
     if(user && chatId) {
-      console.log("responding")
+      const storedChatObj = JSON.parse(sessionStorage.getItem(currentListing)!!)
 
       setInputValue('')
-      
-      console.log(chatId)
 
       // Update chat history first
       let temp = {
@@ -139,9 +187,6 @@ const ChatPage = () => {
         id: chatId,
     }
       setChatHistory(temp);
-
-      console.log(temp);
-      console.log(chatHistory)
 
       // get response
       const response = await fetch(`/api/chat/response`, {
@@ -177,7 +222,9 @@ const ChatPage = () => {
       } 
 
       setChatHistory(updatedChat) // Double check if chat isnt updated properly
-      sessionStorage.setItem('chatHistory', JSON.stringify(updatedChat));
+      storedChatObj.chat = updatedChat;
+      sessionStorage.setItem(currentListing, JSON.stringify(storedChatObj));
+      console.log(storedChatObj)
     }
     setLoading(false);
 }
@@ -198,10 +245,10 @@ useEffect(() => {
         }
     }
     
-    if (exampleLiistingIds.length > 0) {
-        fetchListingData(exampleLiistingIds)
+    if (ids.length > 0) {
+        fetchListingData(ids)
     }
-}, [])
+}, [ids])
 
 
   return (
@@ -220,19 +267,30 @@ useEffect(() => {
       /> 
 
       <Box className="flex flex-col w-full h-[100vh] gap-4 flex-grow">
-        <Box className="flex w-full h-[50px] items-center justify-center" sx={{borderBottom: `1px solid ${theme.palette.divider}`, backgroundColor: theme.palette.background.paper}}>
+        <Box className="flex w-full h-[60px] items-center justify-center" sx={{borderBottom: `1px solid ${theme.palette.divider}`, backgroundColor: theme.palette.background.paper}}>
           <Typography fontSize={16} className='text-[#c1c1c1]' >HouseSnap<span className="bg-gradient-to-r from-purple-400 via-pink-500 fade-in-on-scroll to-red-500 text-transparent bg-clip-text">AI</span></Typography>
         </Box>
         
-        <Box className="flex w-full h-full flex-grow">
+        <Box className="flex w-full h-[calc(100vh-60px)] flex-grow">
         {/* Listings + Filter */}
         <Box className="flex flex-grow w-1/2 pb-2 pl-2">
-          <ListingPage userInfo={userInfo} setUserInfo={setUserInfo} listings={listings} />
+          <ListingPage 
+            userInfo={userInfo} 
+            setUserInfo={setUserInfo} 
+            listings={listings} 
+            setIds={setIds} 
+            onHover={setHoveredListing}
+            hoveredListing={hoveredListing}
+          />
         </Box>
 
         {/* MAP & CHAT BOX */} 
         <Box className="flex flex-col gap-2 w-1/2 h-full pb-2 px-2">
-          <MapPage listings={listings} />
+          <MapPage 
+            listings={listings} 
+            hoveredListing={hoveredListing} 
+            onMarkerHover={setHoveredListing} 
+          />
           
           <ChatInterface 
             key={JSON.stringify(chatHistory)}

@@ -37,3 +37,12 @@
      }
     to { transform: translateX(0); }
   }
+
+  @keyframes blink-background-accelerate {
+    0%, 100% { background-color: transparent; }
+    50% { background-color: rgba(74, 74, 74, 0.5); }
+  }
+  
+  .blink-rapidly {
+    animation: blink-background-accelerate 2s ease-in-out infinite;
+  }

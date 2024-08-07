@@ -128,6 +128,7 @@ const ProfilePopup = () => {
             <Box mt={1} pl={1} pr={1} pb={1} className='flex w-full gap-2 items-center justify-evenly' sx={{borderBottom: `1px solid ${theme.palette.divider}`}}> 
                 <Button
                     onClick={() => {
+                        sessionStorage.clear();
                         window.location.href = '/api/auth/logout';
                     }}
                     sx={{ 
