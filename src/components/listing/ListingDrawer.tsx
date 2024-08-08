@@ -48,7 +48,8 @@ const ListingDrawerContent = ({ listing, email, setUserInfo, userInfo, onClose }
     'created_at',
     'updated_at',
     'primary_photo',
-    'alt_photos'
+    'alt_photos',
+    'geom'
   ];
 
   useEffect(() => {
