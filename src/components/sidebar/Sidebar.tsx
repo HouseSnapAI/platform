@@ -41,7 +41,7 @@ const SideBar = ({ setDrawerContent, setDrawerOpen, userInfo }: SideBarProps) =>
   );
 
   return (
-    <Box className="w-[67px] h-[100vh] border-r bg-[#111111] border-[#3a3939]  overflow-x-hidden flex flex-col items-center pt-4" sx={{ zIndex: 2 }}>
+    <Box className="w-[67px] h-[100vh] bg-[#111111]  overflow-x-hidden flex flex-col items-center pt-4" sx={{ zIndex: 2 }}>
           
         {/* Profile */}
         <Box 

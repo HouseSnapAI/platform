@@ -5,6 +5,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
+import IconButton from '@mui/material/IconButton'
 
 // ** Theme Imports
 import { useTheme } from '@mui/material/styles'
@@ -15,6 +16,11 @@ import { ListingType, User } from '@/utils/types';
 // ** Custom Components
 import Filter from './filter'
 import Listing from './Listing';
+import ImageSlider from './ImageSlider'
+import ListingDrawer from './ListingDrawer';
+
+// ** Icon Imports
+import { IconChevronLeft } from '@tabler/icons-react'
 
 type ListingPageProps = {
     userInfo: User | null
@@ -23,9 +29,11 @@ type ListingPageProps = {
     setIds: (data: string[]) => void
     onHover: (listing: ListingType | null) => void
     hoveredListing: ListingType | null
+    selectedListing: ListingType | null
+    setSelectedListing: (listing: ListingType | null) => void
 }
 
-const ListingPage = ({userInfo, setUserInfo, listings, setIds, onHover, hoveredListing}: ListingPageProps) => {
+const ListingPage = ({userInfo, setUserInfo, listings, setIds, onHover, hoveredListing, selectedListing, setSelectedListing}: ListingPageProps) => {
 
     const theme = useTheme()
     const [lastHoveredListing, setLastHoveredListing] = useState<ListingType | null>(null)
@@ -43,20 +51,31 @@ const ListingPage = ({userInfo, setUserInfo, listings, setIds, onHover, hoveredL
         
         <Box className='flex flex-row flex-wrap gap-2 items-start justify-center w-full h-full overflow-y-auto'>
 
-            {(listings as ListingType[]).length > 0 ? (listings as ListingType[]).map((listing) => (
-                <div key={listing.id} ref={(el: HTMLDivElement | null) => { listingRefs.current[listing.id] = el }}>
-                    <Listing
-                    listing={listing}
+            {selectedListing ? (
+                <ListingDrawer
+                    listing={selectedListing}
                     email={userInfo?.email}
-                    userInfo={userInfo || undefined}
                     setUserInfo={setUserInfo}
-                    onHover={onHover}
-                    lastHoveredListing={lastHoveredListing}
-                    setLastHoveredListing={setLastHoveredListing}
-                    />
-                </div>
-            )) : (
-                <Typography>No listings available</Typography>
+                    userInfo={userInfo || undefined}
+                    onClose={() => setSelectedListing(null)}
+                />
+            ) : (
+                (listings as ListingType[]).length > 0 ? (listings as ListingType[]).map((listing) => (
+                    <div key={listing.id} ref={(el: HTMLDivElement | null) => { listingRefs.current[listing.id] = el }}>
+                        <Listing
+                            listing={listing}
+                            email={userInfo?.email}
+                            userInfo={userInfo || undefined}
+                            setUserInfo={setUserInfo}
+                            onHover={onHover}
+                            lastHoveredListing={lastHoveredListing}
+                            setLastHoveredListing={setLastHoveredListing}
+                            setSelectedListing={setSelectedListing}
+                        />
+                    </div>
+                )) : (
+                    <Typography>No listings available</Typography>
+                )
             )}
         </Box>
     </Box>

@@ -27,14 +27,15 @@ const BlinkingBox = styled(Box)(({ theme }) => ({
   },
 }));
 
-const Listing = ({listing, email, userInfo, setUserInfo, onHover, lastHoveredListing, setLastHoveredListing}: {
-  listing: ListingType, 
-  email: string|null|undefined, 
-  userInfo: User |undefined, 
-  setUserInfo: (data:User)=>void | undefined,
+const Listing = ({ listing, email, userInfo, setUserInfo, onHover, lastHoveredListing, setLastHoveredListing, setSelectedListing }: {
+  listing: ListingType,
+  email: string | null | undefined,
+  userInfo: User | undefined,
+  setUserInfo: (data: User) => void | undefined,
   onHover: (listing: ListingType | null) => void,
   lastHoveredListing: ListingType | null,
-  setLastHoveredListing: (listing: ListingType | null) => void
+  setLastHoveredListing: (listing: ListingType | null) => void,
+  setSelectedListing: (listing: ListingType | null) => void
 }) => {
   const [isHovering, setIsHovering] = useState(false);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -52,17 +53,11 @@ const Listing = ({listing, email, userInfo, setUserInfo, onHover, lastHoveredLis
     if (hoverTimeoutRef.current) {
       clearTimeout(hoverTimeoutRef.current);
     }
-    onHover(null);
+    // onHover(null);
   };
 
-  const [drawerOpen, setDrawerOpen] = useState(false);
-
-  const handleOpenDrawer = () => {
-    setDrawerOpen(true);
-  };
-
-  const handleCloseDrawer = () => {
-    setDrawerOpen(false);
+  const handleClick = () => {
+    setSelectedListing(listing);
   };
 
   return (
@@ -72,7 +67,7 @@ const Listing = ({listing, email, userInfo, setUserInfo, onHover, lastHoveredLis
         sx={{
           backgroundColor: 'transparent',
         }}
-        onClick={handleOpenDrawer}
+        onClick={handleClick}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
@@ -89,7 +84,6 @@ const Listing = ({listing, email, userInfo, setUserInfo, onHover, lastHoveredLis
           </Typography>
         )}
       </BlinkingBox>
-      <ListingDrawer open={drawerOpen} onClose={handleCloseDrawer} listing={listing} email={email} userInfo={userInfo} setUserInfo={setUserInfo} />
     </>
   )
 }
