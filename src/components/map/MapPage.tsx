@@ -14,6 +14,7 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 
 // ** Types
 import { ListingType } from '@/utils/types'
+import { fetchListing } from '@/utils/db'
 
 type MapPageProps = {
   listings: ListingType[];
@@ -27,10 +28,72 @@ const MapPage = ({ listings, hoveredListing, setSelectedListing, selectedListing
   const mapRef = useRef<any>(null)
   const mapBoxToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!
   
-  const [tooltipOpen, setTooltipOpen] = useState(false);
+  const [mapFetchedListings, setMapFetchedListings] = useState<ListingType[]>([])
+
+  const fetchListingIdsWithinBounds = async (minLat: number, maxLat: number, minLng: number, maxLng: number) => {
+    console.log('Fetching listing IDs within bounds:', { minLat, maxLat, minLng, maxLng });
+    const response = await fetch('/api/listing/map', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        min_latitude: minLat,
+        max_latitude: maxLat,
+        min_longitude: minLng,
+        max_longitude: maxLng,
+      }),
+    });
+
+    if (response.ok) {
+      const listingIds = await response.json();
+      console.log('Fetched listing IDs:', listingIds);
+      return listingIds;
+    } else {
+      console.error('Error fetching listing IDs:', response.statusText);
+      return [];
+    }
+  };
+
+  const fetchListingsByIds = async (ids: string[]) => {
+    console.log('Fetching listings by IDs:', ids);
+    const response = await fetchListing({ids})
+
+    if (response.status === 200) {
+      const listings = await response.data;
+      console.log('Fetched listings:', listings);
+      return listings;
+    } else {
+      console.error('Error fetching listings:', response.message);
+      return [];
+    }
+  };
+
+  const updateListingsWithinBounds = async () => {
+    if (mapRef.current) {
+      const bounds = mapRef.current.getBounds();
+      const minLat = bounds.getSouth();
+      const maxLat = bounds.getNorth();
+      const minLng = bounds.getWest();
+      const maxLng = bounds.getEast();
+
+      console.log('Map bounds:', { minLat, maxLat, minLng, maxLng });
+
+      const listingIds = await fetchListingIdsWithinBounds(minLat, maxLat, minLng, maxLng);
+      const listings = await fetchListingsByIds(listingIds);
+      if (listings.length > 0) {
+        setMapFetchedListings(listings);
+      }
+    }
+  };
 
   useEffect(() => {
-    console.log("hoveredListing", hoveredListing)
+    console.log('Component mounted or map moved');
+    updateListingsWithinBounds();
+  }, []);
+
+  useEffect(() => {
+    console.log('Hovered listing changed:', hoveredListing);
     if (mapRef.current && hoveredListing) {
       mapRef.current.flyTo({
         center: [hoveredListing.longitude || -77.0364, hoveredListing.latitude || 38.8951],
@@ -41,6 +104,7 @@ const MapPage = ({ listings, hoveredListing, setSelectedListing, selectedListing
   }, [hoveredListing]);
 
   useEffect(() => {
+    console.log('Selected listing changed:', selectedListing);
     if (mapRef.current && selectedListing) {
       mapRef.current.flyTo({
         center: [selectedListing.longitude || -77.0364, selectedListing.latitude || 38.8951],
@@ -51,7 +115,8 @@ const MapPage = ({ listings, hoveredListing, setSelectedListing, selectedListing
   }, [selectedListing]);
 
   useEffect(() => {
-    if (mapRef.current && selectedListing) {
+    console.log('Listings changed:', listings);
+    if (mapRef.current && listings.length > 0) {
       mapRef.current.flyTo({
         center: [listings[0].longitude || -77.0364, listings[0].latitude || 38.8951],
         zoom: 9,
@@ -75,8 +140,9 @@ const MapPage = ({ listings, hoveredListing, setSelectedListing, selectedListing
         }}
         style={{width: '100%', height: '100%', borderRadius: '8px'}}
         mapStyle={"mapbox://styles/mapbox/dark-v11"}
+        onMoveEnd={updateListingsWithinBounds}
       >
-        {listings.length > 0 && listings.map((listing) => (
+        {(listings.length > 0 || mapFetchedListings.length > 0) && [...listings, ...mapFetchedListings].map((listing) => (
           <Marker longitude={listing.longitude} latitude={listing.latitude}>
             <Tooltip
               title={listing.full_street_line}
@@ -97,7 +163,7 @@ const MapPage = ({ listings, hoveredListing, setSelectedListing, selectedListing
         ))}
         <NavigationControl position="top-right" />
       </Map>
-     {/* TODO: No borders, transparent vingette around map */}
+     {/* TODO: No borders, transparent vignette around map */}
     </Box>
   )
 }
