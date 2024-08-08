@@ -57,7 +57,11 @@ const ListingPage = ({userInfo, setUserInfo, listings, setIds, onHover, hoveredL
                     email={userInfo?.email}
                     setUserInfo={setUserInfo}
                     userInfo={userInfo || undefined}
-                    onClose={() => setSelectedListing(null)}
+                    onClose={() => {
+                      setSelectedListing(null)
+                      sessionStorage.removeItem('listing')
+                      sessionStorage.removeItem('listingObj')
+                    }}
                 />
             ) : (
                 (listings as ListingType[]).length > 0 ? (listings as ListingType[]).map((listing) => (
