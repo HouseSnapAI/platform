@@ -11,7 +11,6 @@ import Skeleton from '@mui/material/Skeleton';
 // ** Custom Imports
 import SideBar from '@/components/sidebar/Sidebar';
 import PersistentDrawer from '@/components/sidebar/PersistentDrawer';
-import Chatbox from '@/components/chatbox/Chatbox';
 
 // ** Type Imports
 import { DrawerContentType, User, Chat, ListingType } from '@/utils/types';
@@ -267,7 +266,7 @@ useEffect(() => {
       /> 
 
       <Box className="flex flex-col w-full h-[100vh] gap-2 flex-grow">
-        <Box className="flex w-full h-[45px] items-center justify-center" sx={{borderBottom: `1px solid ${theme.palette.divider}`, backgroundColor: theme.palette.background.paper}}>
+        <Box className="flex w-full h-[45px] items-center justify-center" sx={{backgroundColor: theme.palette.background.paper}}>
           <Typography fontSize={16} className='text-[#c1c1c1]' >HouseSnap<span className="bg-gradient-to-r from-purple-400 via-pink-500 fade-in-on-scroll to-red-500 text-transparent bg-clip-text">AI</span></Typography>
         </Box>
         

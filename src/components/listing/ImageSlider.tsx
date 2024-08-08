@@ -4,6 +4,9 @@ import Carousel from 'react-material-ui-carousel';
 import Box from '@mui/material/Box';
 
 const ImageSlider = ({listing}: {listing: ListingType}) => {
+
+  console.log("listing", listing)
+
   return (
     <Carousel className='transition-all duration-0' autoPlay={false}>
         {(listing.alt_photos || []).map((image, index) => (

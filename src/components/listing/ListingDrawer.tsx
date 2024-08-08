@@ -42,7 +42,13 @@ const ListingDrawerContent = ({ listing, email, setUserInfo, userInfo, onClose }
     'bathrooms',
     'bedrooms',
     'square_footage',
-    'listing_detail_price'
+    'listing_detail_price',
+    'id',
+    'embedding',
+    'created_at',
+    'updated_at',
+    'primary_photo',
+    'alt_photos'
   ];
 
   useEffect(() => {
@@ -104,11 +110,15 @@ const ListingDrawerContent = ({ listing, email, setUserInfo, userInfo, onClose }
   };
 
   return (
-    <Box className={`flex flex-col gap-2 p-2`} sx={{ background: 'black', border: `1px solid ${theme.palette.divider}` }}>
-      <Typography variant="h6">{listing?.full_street_line} - {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(listing?.list_price))}</Typography>
+    <Box className={`flex flex-col gap-2 p-2`}>
+      <Typography variant="h6" color='white' style={{ whiteSpace: 'pre-wrap' }}>
+        {listing?.full_street_line} - {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(listing?.list_price))}
+      </Typography>
       <Box className='flex justify-between'>
-        <Typography variant="body1">{listing?.beds} Bed {listing?.full_baths + (listing?.half_baths || 0)} Bath {listing?.sqft} sqft</Typography>
-        <IconButton onClick={saveListing}>
+        <Typography fontSize={14} className='text-white' color='white' style={{ whiteSpace: 'pre-wrap' }}>
+          {listing?.beds}  Bed {listing?.full_baths + (listing?.half_baths || 0)} Bath {listing?.sqft} sqft
+        </Typography>
+        <IconButton onClick={saveListing} >
           {saved ? <IconBookmarkFilled color='white' /> : <IconBookmark color='white' />}
         </IconButton>
       </Box>
@@ -117,7 +127,9 @@ const ListingDrawerContent = ({ listing, email, setUserInfo, userInfo, onClose }
         if (!excludedFields.includes(key)) {
           const value: any = listing?.[key as keyof ListingType];
           if (value) {
-            return <Typography key={key} variant="body2">{key}: {value}</Typography>;
+            return <Typography key={key} fontSize={12} className='text-wrap' style={{ whiteSpace: 'pre-wrap' }}>
+              {key}: {value}
+            </Typography>;
           }
         }
         return null;
