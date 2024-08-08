@@ -32,6 +32,17 @@ const MapPage = ({ listings, hoveredListing, setSelectedListing, selectedListing
   const [fetchTimeout, setFetchTimeout] = useState<NodeJS.Timeout | null>(null)
   const [countdown, setCountdown] = useState<number>(0)
   const [loading, setLoading] = useState<boolean>(false);
+  const [previousBounds, setPreviousBounds] = useState<{ minLat: number, maxLat: number, minLng: number, maxLng: number } | null>(null);
+
+  const boundsChangedSignificantly = (newBounds: any, oldBounds: any) => {
+    const threshold = 0.001; // Define a threshold for significant change
+    return (
+      Math.abs(newBounds.getSouth() - oldBounds.minLat) > threshold ||
+      Math.abs(newBounds.getNorth() - oldBounds.maxLat) > threshold ||
+      Math.abs(newBounds.getWest() - oldBounds.minLng) > threshold ||
+      Math.abs(newBounds.getEast() - oldBounds.maxLng) > threshold
+    );
+  };
 
   const fetchListingIdsWithinBounds = async (minLat: number, maxLat: number, minLng: number, maxLng: number) => {
     console.log('Fetching listing IDs within bounds:', { minLat, maxLat, minLng, maxLng });
@@ -74,26 +85,34 @@ const MapPage = ({ listings, hoveredListing, setSelectedListing, selectedListing
 
   const updateListingsWithinBounds = async () => {
     if (mapRef.current && !loading) {
-      setLoading(true);
       const bounds = mapRef.current.getBounds();
-      const minLat = bounds.getSouth();
-      const maxLat = bounds.getNorth();
-      const minLng = bounds.getWest();
-      const maxLng = bounds.getEast();
+      const newBounds = {
+        minLat: bounds.getSouth(),
+        maxLat: bounds.getNorth(),
+        minLng: bounds.getWest(),
+        maxLng: bounds.getEast(),
+      };
 
-      console.log('Map bounds:', { minLat, maxLat, minLng, maxLng });
+      if (previousBounds && !boundsChangedSignificantly(bounds, previousBounds)) {
+        console.log('Bounds change is minimal, not updating listings.');
+        return;
+      }
 
-      const listingIds = await fetchListingIdsWithinBounds(minLat, maxLat, minLng, maxLng);
+      setLoading(true);
+      console.log('Map bounds:', newBounds);
+
+      const listingIds = await fetchListingIdsWithinBounds(newBounds.minLat, newBounds.maxLat, newBounds.minLng, newBounds.maxLng);
       const listings = await fetchListingsByIds(listingIds);
       if (listings.length > 0) {
         setMapFetchedListings(listings);
       }
       setLoading(false);
+      setPreviousBounds(newBounds);
     }
   };
 
   const handleMapMoveEnd = () => {
-    if (loading) return;
+    if (loading || !boundsChangedSignificantly(mapRef.current.getBounds(), previousBounds)) return;
     if (fetchTimeout) {
       clearTimeout(fetchTimeout);
     }
