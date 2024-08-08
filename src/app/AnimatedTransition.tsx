@@ -13,15 +13,17 @@ const AnimatedTransition = ({ children }: { children: React.ReactNode }) => {
     }, [pathname]);
 
     useEffect(() => {
-        const handleBeforeUnload = () => {
-            localStorage.clear();
-        };
-
-        window.addEventListener('beforeunload', handleBeforeUnload);
-
-        return () => {
-            window.removeEventListener('beforeunload', handleBeforeUnload);
-        };
+        if (window){
+            const handleBeforeUnload = () => {
+                localStorage.clear();
+            };
+    
+            window.addEventListener('beforeunload', handleBeforeUnload);
+    
+            return () => {
+                window.removeEventListener('beforeunload', handleBeforeUnload);
+            };
+        }
     }, []);
 
     return (
