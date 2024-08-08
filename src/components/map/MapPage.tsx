@@ -29,6 +29,9 @@ const MapPage = ({ listings, hoveredListing, setSelectedListing, selectedListing
   const mapBoxToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!
   
   const [mapFetchedListings, setMapFetchedListings] = useState<ListingType[]>([])
+  const [fetchTimeout, setFetchTimeout] = useState<NodeJS.Timeout | null>(null)
+  const [countdown, setCountdown] = useState<number>(0)
+  const [loading, setLoading] = useState<boolean>(false);
 
   const fetchListingIdsWithinBounds = async (minLat: number, maxLat: number, minLng: number, maxLng: number) => {
     console.log('Fetching listing IDs within bounds:', { minLat, maxLat, minLng, maxLng });
@@ -70,7 +73,8 @@ const MapPage = ({ listings, hoveredListing, setSelectedListing, selectedListing
   };
 
   const updateListingsWithinBounds = async () => {
-    if (mapRef.current) {
+    if (mapRef.current && !loading) {
+      setLoading(true);
       const bounds = mapRef.current.getBounds();
       const minLat = bounds.getSouth();
       const maxLat = bounds.getNorth();
@@ -84,8 +88,29 @@ const MapPage = ({ listings, hoveredListing, setSelectedListing, selectedListing
       if (listings.length > 0) {
         setMapFetchedListings(listings);
       }
+      setLoading(false);
     }
   };
+
+  const handleMapMoveEnd = () => {
+    if (loading) return;
+    if (fetchTimeout) {
+      clearTimeout(fetchTimeout);
+    }
+    setCountdown(2);
+    const timeout = setTimeout(() => {
+      updateListingsWithinBounds();
+      setCountdown(0);
+    }, 2000);
+    setFetchTimeout(timeout);
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCountdown(prev => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     console.log('Component mounted or map moved');
@@ -97,10 +122,11 @@ const MapPage = ({ listings, hoveredListing, setSelectedListing, selectedListing
     if (mapRef.current && hoveredListing) {
       mapRef.current.flyTo({
         center: [hoveredListing.longitude || -77.0364, hoveredListing.latitude || 38.8951],
-        zoom: 9,
+        zoom: 14,
         duration: 1000
       });
     }
+    updateListingsWithinBounds(); // Fetch listings regardless of loading state
   }, [hoveredListing]);
 
   useEffect(() => {
@@ -108,10 +134,11 @@ const MapPage = ({ listings, hoveredListing, setSelectedListing, selectedListing
     if (mapRef.current && selectedListing) {
       mapRef.current.flyTo({
         center: [selectedListing.longitude || -77.0364, selectedListing.latitude || 38.8951],
-        zoom: 9,
+        zoom: 14,
         duration: 1000
       });
     }
+    updateListingsWithinBounds(); // Fetch listings regardless of loading state
   }, [selectedListing]);
 
   useEffect(() => {
@@ -119,10 +146,11 @@ const MapPage = ({ listings, hoveredListing, setSelectedListing, selectedListing
     if (mapRef.current && listings.length > 0) {
       mapRef.current.flyTo({
         center: [listings[0].longitude || -77.0364, listings[0].latitude || 38.8951],
-        zoom: 9,
+        zoom: 14,
         duration: 1000
       });
     }
+    updateListingsWithinBounds(); // Fetch listings regardless of loading state
   }, [listings]);
 
   return (
@@ -136,11 +164,11 @@ const MapPage = ({ listings, hoveredListing, setSelectedListing, selectedListing
         initialViewState={{
           longitude: listings[0]?.longitude || -77.0364,
           latitude: listings[0]?.latitude || 38.8951,
-          zoom: 9
+          zoom: 14
         }}
         style={{width: '100%', height: '100%', borderRadius: '8px'}}
         mapStyle={"mapbox://styles/mapbox/dark-v11"}
-        onMoveEnd={updateListingsWithinBounds}
+        onMoveEnd={handleMapMoveEnd}
       >
         {(listings.length > 0 || mapFetchedListings.length > 0) && [...listings, ...mapFetchedListings].map((listing) => (
           <Marker longitude={listing.longitude} latitude={listing.latitude}>
@@ -162,6 +190,38 @@ const MapPage = ({ listings, hoveredListing, setSelectedListing, selectedListing
         </Marker>
         ))}
         <NavigationControl position="top-right" />
+        {countdown > 0 && (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '10px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              color: 'white',
+              padding: '5px 10px',
+              borderRadius: '5px',
+            }}
+          >
+            Fetching new listings in {countdown}...
+          </Box>
+        )}
+        {loading && (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              color: 'white',
+              padding: '10px 20px',
+              borderRadius: '5px',
+            }}
+          >
+            Loading listings...
+          </Box>
+        )}
       </Map>
      {/* TODO: No borders, transparent vignette around map */}
     </Box>
