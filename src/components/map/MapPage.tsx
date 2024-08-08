@@ -1,23 +1,33 @@
 // ** React Imports
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
+import Tooltip from '@mui/material/Tooltip'
 
 // ** Theme Imports
 import { useTheme } from '@mui/material/styles'
 
 // ** Map Imports
-import Map, { NavigationControl, Marker } from 'react-map-gl'
+import Map, { NavigationControl, Marker, Popup } from 'react-map-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 
 // ** Types
 import { ListingType } from '@/utils/types'
 
-const MapPage = ({listings, hoveredListing, onMarkerHover, selectedListing}: {listings: ListingType[], hoveredListing: ListingType | null, onMarkerHover: (listing: ListingType | null) => void, selectedListing: ListingType | null}) => {
+type MapPageProps = {
+  listings: ListingType[];
+  hoveredListing: ListingType | null;
+  setSelectedListing: (listing: ListingType | null) => void;
+  selectedListing: ListingType | null;
+}
+
+const MapPage = ({ listings, hoveredListing, setSelectedListing, selectedListing }: MapPageProps) => {
   const theme = useTheme()
   const mapRef = useRef<any>(null)
   const mapBoxToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!
+  
+  const [tooltipOpen, setTooltipOpen] = useState(false);
 
   useEffect(() => {
     console.log("hoveredListing", hoveredListing)
@@ -40,6 +50,16 @@ const MapPage = ({listings, hoveredListing, onMarkerHover, selectedListing}: {li
     }
   }, [selectedListing]);
 
+  useEffect(() => {
+    if (mapRef.current && selectedListing) {
+      mapRef.current.flyTo({
+        center: [listings[0].longitude || -77.0364, listings[0].latitude || 38.8951],
+        zoom: 9,
+        duration: 1000
+      });
+    }
+  }, [listings]);
+
   return (
     <Box 
       className={`h-full w-full rounded-lg flex flex-col items-center text-center justify-between shadow-lg scale-100`} 
@@ -57,17 +77,23 @@ const MapPage = ({listings, hoveredListing, onMarkerHover, selectedListing}: {li
         mapStyle={"mapbox://styles/mapbox/dark-v11"}
       >
         {listings.length > 0 && listings.map((listing) => (
-          <Box
-            key={(hoveredListing?.id || "") + (selectedListing?.id || "") + listing.id}
-            onMouseEnter={() => onMarkerHover(listing)}
-            // onMouseLeave={() => onMarkerHover(null)}
-          >
-            <Marker
-              longitude={listing.longitude}
-              latitude={listing.latitude}
-              color={selectedListing && selectedListing.id === listing.id ? "blue" : hoveredListing && hoveredListing.id === listing.id ? "red" : "green"}
+          <Marker longitude={listing.longitude} latitude={listing.latitude}>
+            <Tooltip
+              title={listing.full_street_line}
+            >
+            <Box
+              className="hover:bg-red-500"
+              sx={{
+                width: '25px',
+                height: '25px',
+                borderRadius: '50%',
+                backgroundColor: selectedListing && selectedListing.id === listing.id ? "blue" : hoveredListing && hoveredListing.id === listing.id ? "red" : "green",
+                cursor: 'pointer',
+              }}
+              onClick={() => setSelectedListing(listing)} // Set selected listing on click
             />
-          </Box>
+          </Tooltip>
+        </Marker>
         ))}
         <NavigationControl position="top-right" />
       </Map>
