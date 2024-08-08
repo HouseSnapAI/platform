@@ -1,7 +1,7 @@
 "use client"
 
 // ** Next Imports
-import {useState, useEffect} from 'react'
+import {useState, useEffect, SetStateAction} from 'react'
 import { useParams, useSearchParams } from 'next/navigation';
 
 // ** MUI Imports
@@ -100,10 +100,13 @@ const ChatPage = () => {
 
   const fetchChatHistory = () => {
       let currentListing = sessionStorage.getItem('listing');
-      if(currentListing == null) {
+      console.log(typeof currentListing)
+      if(currentListing == null || currentListing == "undefined") {
         currentListing = "HomePage"
       }
+      console.log(currentListing)
       let obj = JSON.parse(sessionStorage.getItem(currentListing)!!);
+      console.log(obj)
       if(!obj) {
         setChatHistory({
           id: "new chat",
@@ -131,7 +134,7 @@ const ChatPage = () => {
       updated_at: new Date().toISOString(),
     });
     let currentListing = sessionStorage.getItem('listing');
-    if(currentListing == null) {
+    if(currentListing == null || currentListing == "undefined") {
       currentListing = "HomePage"
     }
     sessionStorage.removeItem(currentListing as string);
@@ -154,15 +157,22 @@ const ChatPage = () => {
     setLoading(true);
     let chatId: string | null = null;
     let currentListing = sessionStorage.getItem('listing');
-    if(currentListing == null) {
+
+    console.log("CURRENT LISTING ", currentListing)
+
+    if(currentListing == null || currentListing == "undefined") {
       currentListing = "HomePage"
     }
+
     console.log("CURRENT LISTING ", currentListing)
+
     // If New chat
     if (newChat && userInfo) {
       console.log("new chat ", userInfo, inputValue)
+
       chatId = await createNewChat({ user: userInfo, initialMessage: inputValue })
       sessionStorage.setItem(currentListing, JSON.stringify({chatId: chatId!!, chat: ""}));
+
       console.log(Object.values(sessionStorage));
       // Normal handle click
     } else if (userInfo) {
@@ -249,6 +259,43 @@ useEffect(() => {
     }
 }, [ids])
 
+  useEffect(() => {
+    const listingId = sessionStorage.getItem('listing');
+    const listingObj = JSON.parse(sessionStorage.getItem('listingObj')!!);
+    if(listingId == null || listingId == "undefined" || listingObj == null || listingObj == "undefined") {
+      sessionStorage.removeItem('listing');
+      sessionStorage.removeItem('listingObj');
+    } else {
+      setSelectedListing(listingObj);
+    }
+  }, [])
+
+  const setCurrentListing = (listing: ListingType | null) => {
+    console.log(listing)
+    console.log(Object.keys(sessionStorage))
+    sessionStorage.setItem('listing', listing?.id as string);
+    sessionStorage.setItem('listingObj', JSON.stringify(listing));
+    if (listing) {
+      if (Object.keys(sessionStorage).includes(listing.id)) {
+        fetchChatHistory();
+      } else {
+        setChatHistory({
+          id: "new chat",
+          user_id: userInfo?.id as string,
+          chat_history: [initChat],
+          title: "New Chat",
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        });
+        sessionStorage.setItem(listing.id, JSON.stringify({chatId: "", chat: ""}));
+        console.log(Object.values(sessionStorage));
+      }
+    } else {
+      fetchChatHistory();
+    }
+    setSelectedListing(listing);
+  }
+
 
   return (
     userInfo ? 
@@ -281,7 +328,7 @@ useEffect(() => {
             onHover={setHoveredListing} 
             hoveredListing={hoveredListing}
             selectedListing={selectedListing} // Pass selectedListing
-            setSelectedListing={setSelectedListing} // Pass setSelectedListing
+            setSelectedListing={setCurrentListing} // Pass setSelectedListing
           />
         </Box>
 
