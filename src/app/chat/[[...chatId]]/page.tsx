@@ -100,13 +100,13 @@ const ChatPage = () => {
 
   const fetchChatHistory = () => {
       let currentListing = sessionStorage.getItem('listing');
-      console.log(typeof currentListing)
+      console.log(currentListing)
       if(currentListing == null || currentListing == "undefined") {
         currentListing = "HomePage"
       }
-      console.log(currentListing)
+
       let obj = JSON.parse(sessionStorage.getItem(currentListing)!!);
-      console.log(obj)
+
       if(!obj) {
         setChatHistory({
           id: "new chat",
@@ -137,7 +137,8 @@ const ChatPage = () => {
     if(currentListing == null || currentListing == "undefined") {
       currentListing = "HomePage"
     }
-    sessionStorage.removeItem(currentListing as string);
+    sessionStorage.removeItem(currentListing);
+    console.log(sessionStorage)
     setInputValue('');
     setLoading(false);
   }
@@ -158,8 +159,6 @@ const ChatPage = () => {
     let chatId: string | null = null;
     let currentListing = sessionStorage.getItem('listing');
 
-    console.log("CURRENT LISTING ", currentListing)
-
     if(currentListing == null || currentListing == "undefined") {
       currentListing = "HomePage"
     }
@@ -173,7 +172,6 @@ const ChatPage = () => {
       chatId = await createNewChat({ user: userInfo, initialMessage: inputValue })
       sessionStorage.setItem(currentListing, JSON.stringify({chatId: chatId!!, chat: ""}));
 
-      console.log(Object.values(sessionStorage));
       // Normal handle click
     } else if (userInfo) {
       chatId = JSON.parse(sessionStorage.getItem(currentListing)!!).chatId;
@@ -232,8 +230,8 @@ const ChatPage = () => {
 
       setChatHistory(updatedChat) // Double check if chat isnt updated properly
       storedChatObj.chat = updatedChat;
+
       sessionStorage.setItem(currentListing, JSON.stringify(storedChatObj));
-      console.log(storedChatObj)
     }
     setLoading(false);
 }
@@ -271,8 +269,6 @@ useEffect(() => {
   }, [])
 
   const setCurrentListing = (listing: ListingType | null) => {
-    console.log(listing)
-    console.log(Object.keys(sessionStorage))
     sessionStorage.setItem('listing', listing?.id as string);
     sessionStorage.setItem('listingObj', JSON.stringify(listing));
     if (listing) {
@@ -287,8 +283,6 @@ useEffect(() => {
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         });
-        sessionStorage.setItem(listing.id, JSON.stringify({chatId: "", chat: ""}));
-        console.log(Object.values(sessionStorage));
       }
     } else {
       fetchChatHistory();
