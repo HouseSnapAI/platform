@@ -13,7 +13,7 @@ import SideBar from '@/components/sidebar/Sidebar';
 import PersistentDrawer from '@/components/sidebar/PersistentDrawer';
 
 // ** Type Imports
-import { DrawerContentType, User, Chat, ListingType } from '@/utils/types';
+import { DrawerContentType, User, Chat, ListingType, Message } from '@/utils/types';
 
 // ** Style Imports
 import { useTheme } from '@mui/material/styles';
@@ -107,7 +107,31 @@ const ChatPage = () => {
 
       let obj = JSON.parse(sessionStorage.getItem(currentListing)!!);
 
+      
+
       if(!obj) {
+        if(currentListing != "HomePage") {
+
+          let listObj = JSON.parse(sessionStorage.getItem('listingObj')!!);
+          console.log(listObj)
+          
+          const init: Message = {
+            role: listObj.full_street_line,
+            content: "You are an ai real estate agent who is helping users find the perfect home. You are also a helpful assistant that can help users with their questions. Answer professionally and in 1-2 sentences. Additionally use any and all of the data about the user provided to you to help make ur descision",
+            listings: []
+          }
+  
+          setChatHistory({
+            id: "new chat",
+            user_id: userInfo?.id as string,
+            chat_history: [init],
+            title: "New Chat",
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          });
+          
+          return;
+        }
         setChatHistory({
           id: "new chat",
           user_id: userInfo?.id as string,
@@ -125,20 +149,13 @@ const ChatPage = () => {
   }
 
   const resetChat = () => {
-    setChatHistory({
-      id: "new chat",
-      user_id: userInfo?.id as string,
-      chat_history: [initChat],
-      title: "New Chat",
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    });
+    
     let currentListing = sessionStorage.getItem('listing');
     if(currentListing == null || currentListing == "undefined") {
       currentListing = "HomePage"
     }
     sessionStorage.removeItem(currentListing);
-    console.log(sessionStorage)
+    fetchChatHistory();
     setInputValue('');
     setLoading(false);
   }
@@ -272,18 +289,7 @@ useEffect(() => {
     sessionStorage.setItem('listing', listing?.id as string);
     sessionStorage.setItem('listingObj', JSON.stringify(listing));
     if (listing) {
-      if (Object.keys(sessionStorage).includes(listing.id)) {
         fetchChatHistory();
-      } else {
-        setChatHistory({
-          id: "new chat",
-          user_id: userInfo?.id as string,
-          chat_history: [initChat],
-          title: "New Chat",
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        });
-      }
     } else {
       fetchChatHistory();
     }
