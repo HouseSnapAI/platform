@@ -18,22 +18,9 @@ export const POST = withApiAuthRequired(async function handler(req: NextRequest)
       return NextResponse.json({ message: 'Invalid request body' }, { status: 400 });
     }
 
-    // Create a string representation of the user object
-    const userString = JSON.stringify({
-      location: user.location,
-      property_types: user.property_types,
-      beds: user.beds,
-      baths: user.baths,
-      min_budget: user.min_budget,
-      max_budget: user.max_budget,
-      min_size_of_house: user.min_size_of_house,
-      max_size_of_house: user.max_size_of_house,
-      house_description: user.house_description
-    });
-
     //@ts-ignore
     const classifier = await PipelineSingleton.getInstance();
-    const userEmbeddingObj = await classifier(userString);
+    const userEmbeddingObj = await classifier( user.house_description);
 
     // Ensure the embedding is the correct size
     const userEmbedding = Array.from(userEmbeddingObj.data).slice(0, 384);
@@ -41,8 +28,14 @@ export const POST = withApiAuthRequired(async function handler(req: NextRequest)
       throw new Error('Invalid embedding size');
     }
 
-    // Perform vector search in Supabase
-    const { data: similarListings, error } = await supabase.rpc('match_listings', {
+    // Perform vector search in Supabase using the new function
+    const { data: similarListings, error } = await supabase.rpc('fetch_filtered_listings', {
+      target_zip_codes: user.location, // Assuming user.location contains zip_codes array
+      target_property_type: user.property_types,
+      min_budget: user.min_budget,
+      max_budget: user.max_budget,
+      min_size: user.min_size_of_house,
+      max_size: user.max_size_of_house,
       query_embedding: userEmbedding,
       match_threshold: 0.7,
       match_count: 20
