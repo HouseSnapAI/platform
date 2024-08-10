@@ -127,7 +127,7 @@ const ListingDrawerContent = ({ listing, email, setUserInfo, userInfo, onClose }
         <Typography variant="h6" color='white' style={{ whiteSpace: 'pre-wrap' }}>
           {listing?.full_street_line} - {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(listing?.list_price))}
         </Typography>
-        <Box></Box>
+        </Box>
       </Box>
       <Box className='flex justify-between'>
         <Typography fontSize={14} className='text-white' color='white' style={{ whiteSpace: 'pre-wrap' }}>
