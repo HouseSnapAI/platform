@@ -2,12 +2,15 @@ import { withApiAuthRequired } from '@auth0/nextjs-auth0';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { supabase } from '@/supabase/client';
+import { ListingType } from '@/utils/types';
 
 const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/;
 
 const schema = z.object({
   ids: z.array(z.string().regex(uuidRegex, 'Invalid UUID format')),
 });
+
+const BATCH_SIZE = 50; // Adjust the batch size as needed
 
 export const POST = withApiAuthRequired(async function handler(
   req: NextRequest
@@ -20,20 +23,25 @@ export const POST = withApiAuthRequired(async function handler(
     const body = await req.json();
     const { ids } = schema.parse(body);
 
-    const { data: listings, error: listingError } = await supabase
-      .from('listings')
-      .select('*')
-      .in('id', ids);
+    let allListings: ListingType[] = [];
+    for (let i = 0; i < ids.length; i += BATCH_SIZE) {
+      const batchIds = ids.slice(i, i + BATCH_SIZE);
+      const { data: listings, error: listingError } = await supabase
+        .from('listings')
+        .select('*')
+        .in('id', batchIds);
 
-    if (listingError) {
-      console.error('Error fetching listings:', listingError);
-      return NextResponse.json({ message: 'Error fetching listings' }, { status: 500 });
+      if (listingError) {
+        console.error('Error fetching listings:', listingError);
+        return NextResponse.json({ message: 'Error fetching listings' }, { status: 500 });
+      }
+
+      // Filter out any null or undefined listings
+      const foundListings = listings?.filter(listing => listing !== null && listing !== undefined) || [];
+      allListings = allListings.concat(foundListings);
     }
 
-    // Filter out any null or undefined listings
-    const foundListings = listings?.filter(listing => listing !== null && listing !== undefined) || [];
-
-    return NextResponse.json(foundListings, { status: 200 });
+    return NextResponse.json(allListings, { status: 200 });
   } catch (error) {
     if (error instanceof z.ZodError) {
       // Handle validation errors

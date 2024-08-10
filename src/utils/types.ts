@@ -163,6 +163,8 @@ export type ListingType = {
   num_clicks: number,
   num_views: number,
   num_saved: number,
+  geom: any,
+  embedding: any
 }
 
 // type SupaBaseListingType = {
