@@ -10,7 +10,7 @@ import Skeleton from '@mui/material/Skeleton';
 import Button  from '@mui/material/Button';
 
 // ** Type Imports
-import { User } from '@/utils/types';
+import { ListingRecordType, User } from '@/utils/types';
 
 // ** Style Imports
 import { useTheme } from '@mui/material/styles';
@@ -39,6 +39,7 @@ const ProfilePopup = () => {
             const data = await fetchUserInfo(email);
             console.log("DATA", data)
             setUserInfo(data);
+            getHousesHistory(data)
           };
           
           if (user?.email) {
@@ -61,6 +62,7 @@ const ProfilePopup = () => {
     const [savedHousesOpen, setSavedHousesOpen] = useState(false);
     const [housesHistoryOpen, setHousesHistoryOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+    const [housesHistory, setHousesHistory] = useState<ListingRecordType[]>([]);
 
     const handleSettingsClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget.parentElement); 
@@ -92,6 +94,22 @@ const ProfilePopup = () => {
         setAnchorEl(null);
     };
 
+    const getHousesHistory = (data: User) => {
+        if(data?.clicked == null || data?.clicked == undefined) {
+            return;
+        }
+        let temp: ListingRecordType[] = [];
+        let idTracker: string[] = [];
+
+        data.clicked.forEach((element) => {
+        if (!idTracker.includes(element.id)) {
+            temp.push((element));
+            idTracker.push(element.id);
+        }
+        })
+        setHousesHistory(temp);
+    }
+
     return (
     <Box className=' flex w-full flex-col'>
       {userInfo?.name && userInfo?.email ? (
@@ -121,7 +139,7 @@ const ProfilePopup = () => {
                     <Typography fontSize={10} noWrap className='text-[#6f6f6f]'>Saved Houses</Typography>
                 </Button>
                 <Button onClick={handleHousesHistoryClick} sx={{textTransform: 'none', borderColor: theme.palette.divider }} className='flex flex-col' variant='outlined'>
-                    <Typography fontSize={14} noWrap textAlign={'left'}>{userInfo?.clicked?.length||0}</Typography>
+                    <Typography fontSize={14} noWrap textAlign={'left'}>{housesHistory.length||0}</Typography>
                     <Typography fontSize={10} noWrap className='text-[#6f6f6f]'>Houses History</Typography>
                 </Button>
             </Box>
@@ -249,7 +267,7 @@ const ProfilePopup = () => {
             </Box>
             <SettingsPopup anchorEl={anchorEl} open={settingsOpen} onClose={handleSettingsClose} userInfo={userInfo} setUserInfo={setUserInfo} />
             {savedHousesOpen && <SavedHousesPopup userInfo={userInfo} anchorEl={anchorEl} open={savedHousesOpen} onClose={handleSavedHousesClose} />}
-            {housesHistoryOpen && <HousesHistoryPopup userInfo={userInfo} anchorEl={anchorEl} open={housesHistoryOpen} onClose={handleHousesHistoryClose} />}
+            {housesHistoryOpen && <HousesHistoryPopup housesHistory={housesHistory} userInfo={userInfo} anchorEl={anchorEl} open={housesHistoryOpen} onClose={handleHousesHistoryClose} />}
         </>
           
       ) : (

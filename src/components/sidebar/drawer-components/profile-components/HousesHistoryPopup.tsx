@@ -17,16 +17,30 @@ interface HousesHistoryPopupProps {
   open: boolean;
   onClose: () => void;
   userInfo: User | null;
+  housesHistory: ListingRecordType[] | undefined;
 }
 
-const HousesHistoryPopup = ({ anchorEl, open, onClose, userInfo }: HousesHistoryPopupProps) => {
+const HousesHistoryPopup = ({ anchorEl, open, onClose, userInfo, housesHistory }: HousesHistoryPopupProps) => {
   const theme = useTheme();
-  const [housesHistory, setHousesHistory] = useState<ListingRecordType[] | undefined>([]);
 
   useEffect(() => {
-    setHousesHistory(userInfo?.clicked);
-  }, [])
+    // if(userInfo?.clicked == null || userInfo?.clicked == undefined) {
+    //   return;
+    // }
 
+    // let temp: ListingRecordType[] = [];
+    // let idTracker: string[] = [];
+
+    // userInfo.clicked.forEach((element) => {
+    //   if (!idTracker.includes(element.id)) {
+    //     temp.push((element));
+    //     idTracker.push(element.id);
+    //   }
+    // })
+    // setHousesHistory(temp);
+    // console.log(userInfo.clicked);
+    // console.log(temp);
+  }, [])
   return (
     <Popover
       open={open}
@@ -72,7 +86,6 @@ const HousesHistoryPopup = ({ anchorEl, open, onClose, userInfo }: HousesHistory
                               </Box>
 
                           )
-                      return null;
                   })
               }
             
