@@ -20,7 +20,12 @@ export const POST = withApiAuthRequired(async function handler(req: NextRequest)
 
     //@ts-ignore
     const classifier = await PipelineSingleton.getInstance();
-    const userEmbeddingObj = await classifier( user.house_description);
+    const userEmbeddingObj = await classifier(JSON.stringify({
+      description: user.house_description,
+      baths: user.baths,
+      beds: user.beds,
+      location: user.location
+    }));
 
     // Ensure the embedding is the correct size
     const userEmbedding = Array.from(userEmbeddingObj.data).slice(0, 384);
@@ -28,18 +33,22 @@ export const POST = withApiAuthRequired(async function handler(req: NextRequest)
       throw new Error('Invalid embedding size');
     }
 
-    // Perform vector search in Supabase using the new function
-    const { data: similarListings, error } = await supabase.rpc('fetch_filtered_listings', {
-      target_zip_codes: user.location, // Assuming user.location contains zip_codes array
-      target_property_type: user.property_types,
+    const queryObj = {
       min_budget: user.min_budget,
       max_budget: user.max_budget,
-      min_size: user.min_size_of_house,
-      max_size: user.max_size_of_house,
-      query_embedding: userEmbedding,
-      match_threshold: 0.7,
-      match_count: 20
-    });
+      min_size_of_house: user.min_size_of_house,
+      max_size_of_house: user.max_size_of_house,
+      property_types: user.property_types,
+      zip_codes: user.location,
+      user_embedding: userEmbedding,
+      match_threshold: 0.8,
+      match_number: 50
+    };
+
+    console.log("queryObj", queryObj);
+
+    // Perform vector search in Supabase using the new function
+    const { data: similarListings, error } = await supabase.rpc('filter_listings', queryObj);
 
     if (error) {
       console.error('Error performing vector search:', error);
@@ -47,6 +56,7 @@ export const POST = withApiAuthRequired(async function handler(req: NextRequest)
     }
 
     if (!similarListings || similarListings.length === 0) {
+      console.log("No similar listings found", similarListings);
       return NextResponse.json({ message: 'No similar listings found' }, { status: 404 });
     }
 
@@ -55,4 +65,4 @@ export const POST = withApiAuthRequired(async function handler(req: NextRequest)
     console.error('Error processing request:', error);
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
   }
-})
+});

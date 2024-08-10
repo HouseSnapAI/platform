@@ -36,6 +36,9 @@ const MapPage = ({ listings, hoveredListing, setSelectedListing, selectedListing
 
   const boundsChangedSignificantly = (newBounds: any, oldBounds: any) => {
     const threshold = 0.001; // Define a threshold for significant change
+    console.log('newBounds:', newBounds);
+    console.log('oldBounds:', oldBounds);
+    if(oldBounds === null) return true;
     return (
       Math.abs(newBounds.getSouth() - oldBounds.minLat) > threshold ||
       Math.abs(newBounds.getNorth() - oldBounds.maxLat) > threshold ||
