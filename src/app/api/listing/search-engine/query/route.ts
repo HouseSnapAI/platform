@@ -42,7 +42,7 @@ export const POST = withApiAuthRequired(async function handler(req: NextRequest)
       zip_codes: user.location,
       user_embedding: userEmbedding,
       match_threshold: 0.8,
-      match_number: 20
+      match_number: 50
     };
 
     console.log("queryObj", queryObj);
