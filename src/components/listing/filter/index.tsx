@@ -98,7 +98,7 @@ const Filter = ({userInfo, setUserInfo, setIds}:{userInfo: User | null, setUserI
                             console.log("DATA", data)
                             const responseData = await data.json()
                             console.log("RES", responseData)
-                            setIds(responseData.listings.map((listing: {id: string, similarity: number}) => listing.id))
+                            setIds(responseData.listings.map((listing: {listing_id: string, match_score: number}) => listing.listing_id))
                             console.log("FETCHED LISTINGS")
                         }
                     } else {

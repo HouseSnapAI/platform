@@ -86,7 +86,7 @@ const ChatPage = () => {
         console.log("ID DATA", idData)
         const responseData = await idData.json()
         console.log("RES", responseData)
-        setIds(responseData.listings.map((listing: {id: string, similarity: number}) => listing.id))
+        setIds(responseData.listings.map((listing: {listing_id: string, match_score: number}) => listing.listing_id))
         console.log("FETCHED LISTINGS")
       }
     }
@@ -239,22 +239,22 @@ const ChatPage = () => {
   
     
 useEffect(() => {
-    const fetchListingData = async (ids: string[]) => {
-        const fetchedListings = await fetchListing({ids})
-        
-        console.log("fetched", fetchedListings)
-        
-        if (fetchedListings.status === 200) {
-            setListings(fetchedListings.data || [])
-        } else {
-            console.error('Error fetching listings:', fetchedListings.message)
-            setListings([])
-        }
+  const fetchListingData = async (ids: string[]) => {
+    const fetchedListings = await fetchListing({ ids });
+
+    console.log("fetched", fetchedListings);
+
+    if (fetchedListings.status === 200) {
+      setListings(fetchedListings.data || []);
+    } else {
+      console.error('Error fetching listings:', fetchedListings.message);
+      setListings([]);
     }
-    
-    if (ids.length > 0) {
-        fetchListingData(ids)
-    }
+  };
+
+  if (ids.length > 0) {
+    fetchListingData(ids);
+  }
 }, [ids])
 
   useEffect(() => {

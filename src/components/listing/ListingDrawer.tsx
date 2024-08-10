@@ -24,6 +24,7 @@ import { toast, Bounce } from 'react-toastify';
 // ** Style Imports
 import { useTheme } from '@mui/material/styles';
 import 'react-toastify/dist/ReactToastify.css';
+import MortgageMonthlyCalc from './MortgageMonthlyCalc';
 
 type ListingDrawerContentProps = {
   listing: ListingType;
@@ -37,19 +38,19 @@ const ListingDrawerContent = ({ listing, email, setUserInfo, userInfo, onClose }
   const theme = useTheme();
   const [saved, setSaved] = useState<boolean>(false);
 
-  const excludedFields = [
-    'listings_detail_label',
-    'bathrooms',
-    'bedrooms',
-    'square_footage',
-    'listing_detail_price',
+  const excludedFields: (keyof ListingType)[] = [
+    'full_baths',
+    'half_baths',
+    'sqft',
+    'list_price',
     'id',
     'embedding',
     'created_at',
     'updated_at',
     'primary_photo',
     'alt_photos',
-    'geom'
+    'geom',
+    'property_url',
   ];
 
   useEffect(() => {
@@ -111,6 +112,13 @@ const ListingDrawerContent = ({ listing, email, setUserInfo, userInfo, onClose }
   };
 
   return (
+    <Box className={`flex flex-col gap-2 p-2 relative`}>
+      <IconButton className='absolute top-2 right-2' onClick={onClose}>
+        <IconChevronLeft color='white' />
+      </IconButton>
+      <Typography variant="h6" color='white' style={{ whiteSpace: 'pre-wrap' }}>
+        {listing?.full_street_line} - {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(listing?.list_price))}
+      </Typography>
     <Box className={`flex flex-col gap-2 p-2`}>
       <Box className='flex justify-between items-center'>
         <Box className='bg-[#343434] rounded-lg w-[40px] pr-[2px] h-[35px] shadow-lg hover:shadow-xl hover:bg-[#303030] transition-all ease-in-out duration-300 hover:cursor-pointer flex justify-center items-center' onClick={onClose}>
@@ -119,7 +127,7 @@ const ListingDrawerContent = ({ listing, email, setUserInfo, userInfo, onClose }
         <Typography variant="h6" color='white' style={{ whiteSpace: 'pre-wrap' }}>
           {listing?.full_street_line} - {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(listing?.list_price))}
         </Typography>
-        <Box></Box>
+        </Box>
       </Box>
       <Box className='flex justify-between'>
         <Typography fontSize={14} className='text-white' color='white' style={{ whiteSpace: 'pre-wrap' }}>
@@ -130,9 +138,10 @@ const ListingDrawerContent = ({ listing, email, setUserInfo, userInfo, onClose }
         </IconButton>
       </Box>
       <ImageSlider listing={listing} />
-      {Object.keys(listing || {}).map((key: string) => {
-        if (!excludedFields.includes(key)) {
-          const value: any = listing?.[key as keyof ListingType];
+      {Object.keys(listing || {}).map((key) => {
+        const typedKey = key as keyof ListingType;
+        if (!excludedFields.includes(typedKey)) {
+          const value: any = listing?.[typedKey];
           if (value) {
             return <Typography key={key} fontSize={12} className='text-wrap' style={{ whiteSpace: 'pre-wrap' }}>
               {key}: {value}
@@ -141,7 +150,8 @@ const ListingDrawerContent = ({ listing, email, setUserInfo, userInfo, onClose }
         }
         return null;
       })}
-      
+      <MortgageMonthlyCalc listing={listing} />
+
     </Box>
   );
 };

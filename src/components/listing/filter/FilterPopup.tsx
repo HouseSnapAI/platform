@@ -42,12 +42,18 @@ const FilterPopup = ({ type, anchorEl, open, onClose, value, setValue }: FilterP
                 </Box>
               )}
             >
-              <MenuItem value="single family">Single Family</MenuItem>
-              <MenuItem value="town home">Town Home</MenuItem>
-              <MenuItem value="condominium">Condominium</MenuItem>
-              <MenuItem value="multi family">Multi Family</MenuItem>
-              <MenuItem value="mobile">Mobile</MenuItem>
-              <MenuItem value="new construction">New Construction</MenuItem>
+              <MenuItem value="APARTMENT">Apartment</MenuItem>
+              <MenuItem value="CONDOS">Condos</MenuItem>
+              <MenuItem value="CONDO_TOWNHOME_ROWHOME_COOP">Condo/Townhome/Rowhome/Co-op</MenuItem>
+              <MenuItem value="COOP">Co-op</MenuItem>
+              <MenuItem value="DUPLEX_TRIPLEX">Duplex/Triplex</MenuItem>
+              <MenuItem value="FARM">Farm</MenuItem>
+              <MenuItem value="LAND">Land</MenuItem>
+              <MenuItem value="MOBILE">Mobile</MenuItem>
+              <MenuItem value="MULTI_FAMILY">Multi Family</MenuItem>
+              <MenuItem value="OTHER">Other</MenuItem>
+              <MenuItem value="SINGLE_FAMILY">Single Family</MenuItem>
+              <MenuItem value="TOWNHOMES">Townhomes</MenuItem>
             </Select>
           </Box>
         );
