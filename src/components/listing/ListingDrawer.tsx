@@ -12,6 +12,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Chip from '@mui/material/Chip';
 import Link from '@mui/material/Link';
+import Button from '@mui/material/Button';
 
 // ** Icon Imports
 import { IconChevronLeft, IconBookmark, IconBookmarkFilled, IconTools, IconBuildingCommunity, IconSchool, IconCar, IconCalendar, IconMoneybag, IconRuler, IconMapPin, IconHome } from '@tabler/icons-react';
@@ -118,12 +119,16 @@ const ListingDrawerContent = ({ listing, email, setUserInfo, userInfo, onClose }
     }
   };
 
+  const handleGetConnected = () => {
+    // Logic to handle the "Get Connected to an Expert" action
+    console.log("Get Connected to an Expert button clicked");
+  };
 
   console.log("LISTING HOA FEE",listing.hoa_fee)
 
   return (
-    <Box className={`flex flex-col gap-2 p-2 relative w-full`} sx={{ backgroundColor: '#121212', color: 'white' }}>
-      <Box className='w-full' sx={{ width: 300, padding: 2, backgroundColor: '#1e1e1e', borderRadius: 2 }}>
+    <Box className="flex flex-col gap-2 p-2 relative w-full" sx={{ backgroundColor: '#121212', color: 'white', height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <Box className="w-full" sx={{ width: 300, padding: 2, backgroundColor: '#1e1e1e', borderRadius: 2, flex: '1 1 auto', overflowY: 'auto' }}>
         <Box className={`flex flex-col gap-2 w-full mb-2`}>
           <Box className='flex justify-between items-center'>
             <Box className='flex gap-2'>
@@ -153,7 +158,7 @@ const ListingDrawerContent = ({ listing, email, setUserInfo, userInfo, onClose }
             </Box>
             <Box className='flex items-center'>
               <Chip label={listing.property_type.split('_').map(word => word.charAt(0).toUpperCase() + word.toLowerCase().slice(1)).join(' ')} sx={{ marginRight: 1, backgroundColor: '#444', color: 'white' }} />
-              <Chip label={listing.status.charAt(0).toUpperCase() + listing.status.toLowerCase().slice(1)} sx={{ marginRight: 1, backgroundColor: '#444', color: 'white' }} />
+              <Chip label={listing.status.split('_').map(word => word.charAt(0).toUpperCase() + word.toLowerCase().slice(1)).join(' ')} sx={{ marginRight: 1, backgroundColor: '#444', color: 'white' }} />
               <IconButton onClick={saveListing} className='mr-[-12px]' >
                 {saved ? <IconBookmarkFilled color='white' /> : <IconBookmark color='white' />}
               </IconButton>
@@ -192,6 +197,11 @@ const ListingDrawerContent = ({ listing, email, setUserInfo, userInfo, onClose }
           </Box>
         </Box>
         <Divider sx={{ backgroundColor: '#444' }} />
+        <Box sx={{ backgroundColor: theme.palette.background.paper, borderRadius: 2, padding: 2, marginTop: 2, boxShadow: 3 }}>
+          <Typography variant="body1" sx={{ color: 'white', lineHeight: 1.6, textAlign: 'left' }}>
+            {listing.text}
+          </Typography>
+        </Box>
         <List>
           <ListItem>
             <ListItemIcon> <IconTools color={theme.palette.text.secondary} stroke={1.5}/></ListItemIcon>
@@ -215,7 +225,10 @@ const ListingDrawerContent = ({ listing, email, setUserInfo, userInfo, onClose }
           </ListItem>
           <ListItem>
             <ListItemIcon> <IconCalendar color={theme.palette.text.secondary} stroke={1.5}/></ListItemIcon>
-            <ListItemText primary={`List Date: ${listing.list_date}`} primaryTypographyProps={{ color: 'white' }} />
+            <ListItemText 
+              primary={`List Date: ${new Date(listing?.list_date || '').toLocaleDateString()}`} 
+              primaryTypographyProps={{ color: 'white' }} 
+            />
           </ListItem>
           {listing.sold_price && (
             <ListItem>
@@ -226,7 +239,7 @@ const ListingDrawerContent = ({ listing, email, setUserInfo, userInfo, onClose }
           {listing.last_sold_date && (
             <ListItem>
                 <ListItemIcon> <IconCalendar color={theme.palette.text.secondary} stroke={1.5}/></ListItemIcon>
-                <ListItemText primary={`Last Sold Date: ${listing.last_sold_date}`} primaryTypographyProps={{ color: 'white' }} />
+                <ListItemText primary={`Last Sold Date: ${new Date(listing?.last_sold_date || '').toLocaleDateString()}`} primaryTypographyProps={{ color: 'white' }} />
             </ListItem>
           )}
           {listing.assessed_value && (
@@ -259,12 +272,10 @@ const ListingDrawerContent = ({ listing, email, setUserInfo, userInfo, onClose }
                 <ListItemText primary={`County: ${listing.county}`} primaryTypographyProps={{ color: 'white' }} />
             </ListItem>
           )}
-          {/* {listing.hoa_fee !== -1.0 || listing.hoa_fee !== undefined && ( */}
-            <ListItem>
-                <ListItemIcon> <IconHome color={theme.palette.text.secondary} stroke={1.5}/></ListItemIcon>
-                <ListItemText primary={`HOA Fees: $${listing?.hoa_fee?.toLocaleString()}`} primaryTypographyProps={{ color: 'white' }} />
-            </ListItem>
-          {/* )} */}
+          <ListItem>
+              <ListItemIcon> <IconHome color={theme.palette.text.secondary} stroke={1.5}/></ListItemIcon>
+              <ListItemText primary={`HOA Fees: $${listing?.hoa_fee?.toLocaleString()}`} primaryTypographyProps={{ color: 'white' }} />
+          </ListItem>
         </List>
         <Divider sx={{ backgroundColor: '#444' }} />
         <Box className="text-center items-center justify-between gap-2 mt-2 flex">
@@ -297,8 +308,26 @@ const ListingDrawerContent = ({ listing, email, setUserInfo, userInfo, onClose }
             <Typography fontSize={12} variant="body2" noWrap color="textSecondary">{listing.broker_phone}</Typography>
           </Box>
         </Box>
+        <MortgageMonthlyCalc listing={listing} />
       </Box>
-      <MortgageMonthlyCalc listing={listing} />
+      <Box
+        sx={{
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'flex-end',
+          padding: 2,
+          backgroundColor: '#121212',
+        }}
+      >
+        <Button 
+          variant="contained" 
+          color="primary" 
+          onClick={handleGetConnected}
+          sx={{ backgroundColor: '#1e88e5', color: 'white', textTransform: 'none' }}
+        >
+          Get Connected to an Expert
+        </Button>
+      </Box>
     </Box>
   );
 };
