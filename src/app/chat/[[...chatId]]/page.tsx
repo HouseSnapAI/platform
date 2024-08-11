@@ -83,11 +83,8 @@ const ChatPage = () => {
     if (idData.status !== 200) {
         setIds([])
     } else {
-        console.log("ID DATA", idData)
         const responseData = await idData.json()
-        console.log("RES", responseData)
         setIds(responseData.listings.map((listing: {listing_id: string, match_score: number}) => listing.listing_id))
-        console.log("FETCHED LISTINGS")
       }
     }
 
