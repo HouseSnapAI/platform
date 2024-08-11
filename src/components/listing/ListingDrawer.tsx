@@ -119,11 +119,6 @@ const ListingDrawerContent = ({ listing, email, setUserInfo, userInfo, onClose }
     }
   };
 
-  const handleGetConnected = () => {
-    // Logic to handle the "Get Connected to an Expert" action
-    console.log("Get Connected to an Expert button clicked");
-  };
-
   console.log("LISTING HOA FEE",listing.hoa_fee)
 
   return (
@@ -309,23 +304,6 @@ const ListingDrawerContent = ({ listing, email, setUserInfo, userInfo, onClose }
           </Box>
         </Box>
         <MortgageMonthlyCalc listing={listing} />
-      </Box>
-      <Box
-        sx={{
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'flex-end',
-          backgroundColor: '#121212',
-        }}
-      >
-        <Button 
-          variant="contained" 
-          color="primary" 
-          onClick={handleGetConnected}
-          sx={{ backgroundColor: '#1e88e5', color: 'white', textTransform: 'none' }}
-        >
-          Get Connected to an Expert
-        </Button>
       </Box>
     </Box>
   );
