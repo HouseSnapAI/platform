@@ -315,7 +315,6 @@ const ListingDrawerContent = ({ listing, email, setUserInfo, userInfo, onClose }
           width: '100%',
           display: 'flex',
           justifyContent: 'flex-end',
-          padding: 2,
           backgroundColor: '#121212',
         }}
       >
