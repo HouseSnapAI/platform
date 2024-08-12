@@ -67,7 +67,6 @@ const ChatPage = () => {
 
     const fetchUser = async (email: string) =>{
       const data = await fetchUserInfo(email);
-      console.log("USER DATA SUPA", data)
       setUserInfo(data)
 
 
@@ -164,8 +163,6 @@ const ChatPage = () => {
 
     // If New chat
     if (newChat && userInfo) {
-      console.log("new chat ", userInfo, inputValue)
-
       chatId = await createNewChat({ user: userInfo, initialMessage: inputValue })
       sessionStorage.setItem(currentListing, JSON.stringify({chatId: chatId!!, chat: ""}));
 
@@ -206,7 +203,6 @@ const ChatPage = () => {
       })
 
       const data = await response.json()
-      console.log("GOT DATA", data)
 
       const chatObj = {
         ...temp,
@@ -238,8 +234,6 @@ const ChatPage = () => {
 useEffect(() => {
   const fetchListingData = async (ids: string[]) => {
     const fetchedListings = await fetchListing({ ids });
-
-    console.log("fetched", fetchedListings);
 
     if (fetchedListings.status === 200) {
       setListings(fetchedListings.data || []);

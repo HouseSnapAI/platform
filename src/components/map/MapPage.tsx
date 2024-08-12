@@ -47,7 +47,6 @@ const MapPage = ({ listings, hoveredListing, setSelectedListing, selectedListing
   };
 
   const fetchListingIdsWithinBounds = async (minLat: number, maxLat: number, minLng: number, maxLng: number) => {
-    console.log('Fetching listing IDs within bounds:', { minLat, maxLat, minLng, maxLng });
     const response = await fetch('/api/listing/map', {
       method: 'POST',
       headers: {
@@ -63,7 +62,6 @@ const MapPage = ({ listings, hoveredListing, setSelectedListing, selectedListing
 
     if (response.ok) {
       const listingIds = await response.json();
-      console.log('Fetched listing IDs:', listingIds);
       return listingIds;
     } else {
       console.error('Error fetching listing IDs:', response.statusText);
@@ -76,7 +74,6 @@ const MapPage = ({ listings, hoveredListing, setSelectedListing, selectedListing
 
     if (response.status === 200) {
       const listings = await response.data;
-      console.log('Fetched listings:', listings);
       return listings;
     } else {
       console.error('Error fetching listings:', response.message);
@@ -95,12 +92,11 @@ const MapPage = ({ listings, hoveredListing, setSelectedListing, selectedListing
       };
 
       if (previousBounds && !boundsChangedSignificantly(bounds, previousBounds)) {
-        console.log('Bounds change is minimal, not updating listings.');
+        ('Bounds change is minimal, not updating listings.');
         return;
       }
 
       setLoading(true);
-      console.log('Map bounds:', newBounds);
 
       const listingIds = await fetchListingIdsWithinBounds(newBounds.minLat, newBounds.maxLat, newBounds.minLng, newBounds.maxLng);
       const listings = await fetchListingsByIds(listingIds);
@@ -133,12 +129,10 @@ const MapPage = ({ listings, hoveredListing, setSelectedListing, selectedListing
   }, []);
 
   useEffect(() => {
-    console.log('Component mounted or map moved');
     updateListingsWithinBounds();
   }, []);
 
   useEffect(() => {
-    console.log('Hovered listing changed:', hoveredListing);
     if (mapRef.current && hoveredListing) {
       mapRef.current.flyTo({
         center: [hoveredListing.longitude || -77.0364, hoveredListing.latitude || 38.8951],
@@ -150,7 +144,6 @@ const MapPage = ({ listings, hoveredListing, setSelectedListing, selectedListing
   }, [hoveredListing]);
 
   useEffect(() => {
-    console.log('Selected listing changed:', selectedListing);
     if (mapRef.current && selectedListing && selectedListing !== 'loading') {
       mapRef.current.flyTo({
         center: [selectedListing.longitude || -77.0364, selectedListing.latitude || 38.8951],
@@ -162,7 +155,6 @@ const MapPage = ({ listings, hoveredListing, setSelectedListing, selectedListing
   }, [selectedListing]);
 
   useEffect(() => {
-    console.log('Listings changed:', listings);
     if (mapRef.current && listings.length > 0) {
       mapRef.current.flyTo({
         center: [listings[0].longitude || -77.0364, listings[0].latitude || 38.8951],

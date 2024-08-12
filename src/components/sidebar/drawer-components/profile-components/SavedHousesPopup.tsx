@@ -24,7 +24,6 @@ const SavedHousesPopup = ({ anchorEl, open, onClose, userInfo }: SavedHousesPopu
   const [savedHouses, setSavedHouses] = useState<ListingRecordType[] | undefined>([]);
 
   useEffect(() => {
-    console.log(userInfo?.saved)
     setSavedHouses(userInfo?.saved);
   }, [])
 

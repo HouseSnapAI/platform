@@ -37,7 +37,6 @@ const ProfilePopup = () => {
     useEffect(() => {
         const fetchUserInfoData = async (email:string)=>{
             const data = await fetchUserInfo(email);
-            console.log("DATA", data)
             setUserInfo(data);
             getHousesHistory(data)
           };
