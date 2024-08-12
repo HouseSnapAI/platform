@@ -37,7 +37,7 @@ const FilterPopup = ({ type, anchorEl, open, onClose, value, setValue }: FilterP
               renderValue={(selected) => (
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                   {(selected as string[]).map((value: string) => (
-                    <Chip key={value} label={value} />
+                    <Chip key={value} label={value.split('_').map(word => word.charAt(0).toUpperCase() + word.toLowerCase().slice(1)).join(' ')} />
                   ))}
                 </Box>
               )}

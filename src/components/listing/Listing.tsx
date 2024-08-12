@@ -2,6 +2,10 @@
 import React, { useState, useRef, useEffect } from 'react'
 import Image from "next/legacy/image"
 
+// ** Toast Imports
+import { toast } from 'react-toastify';
+import { Bounce } from 'react-toastify';
+
 // ** MUI Imports
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
@@ -9,9 +13,6 @@ import { styled } from '@mui/system';
 
 // ** Types Imports
 import { ListingType, User } from '@/utils/types'
-
-// ** Components Imports
-import ListingDrawer from './ListingDrawer'
 
 const formatPrice = (price: number): string => {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(price);
@@ -27,7 +28,7 @@ const BlinkingBox = styled(Box)(({ theme }) => ({
   },
 }));
 
-const Listing = ({ listing, email, userInfo, setUserInfo, onHover, lastHoveredListing, setLastHoveredListing, setSelectedListing }: {
+const Listing = ({ listing, onHover, lastHoveredListing, setLastHoveredListing, setSelectedListing }: {
   listing: ListingType,
   email: string | null | undefined,
   userInfo: User | undefined,
@@ -35,7 +36,7 @@ const Listing = ({ listing, email, userInfo, setUserInfo, onHover, lastHoveredLi
   onHover: (listing: ListingType | null) => void,
   lastHoveredListing: ListingType | null,
   setLastHoveredListing: (listing: ListingType | null) => void,
-  setSelectedListing: (listing: ListingType | null) => void
+  setSelectedListing: (listing: ListingType | 'loading' | null) => void
 }) => {
   const [isHovering, setIsHovering] = useState(false);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -56,8 +57,38 @@ const Listing = ({ listing, email, userInfo, setUserInfo, onHover, lastHoveredLi
     // onHover(null);
   };
 
-  const handleClick = () => {
-    setSelectedListing(listing);
+  const handleClick = async () => {
+    setSelectedListing('loading');
+    try {
+      const response = await fetch('/api/listing/fetch/single', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: listing.id }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const fetchedListing = await response.json();
+      setSelectedListing(fetchedListing);
+    } catch (error) {
+      console.error('Failed to fetch listing:', error);
+      toast('Error fetching listing. Please try again.', {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Bounce,
+      });
+      setSelectedListing(null);
+    }
   };
 
   return (

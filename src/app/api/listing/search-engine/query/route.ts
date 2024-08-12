@@ -45,8 +45,6 @@ export const POST = withApiAuthRequired(async function handler(req: NextRequest)
       match_number: 50
     };
 
-    console.log("queryObj", queryObj);
-
     // Perform vector search in Supabase using the new function
     const { data: similarListings, error } = await supabase.rpc('filter_listings', queryObj);
 

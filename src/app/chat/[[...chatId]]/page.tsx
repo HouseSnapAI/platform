@@ -55,10 +55,10 @@ const ChatPage = () => {
   const [loading, setLoading] = useState(false);
 
   // Listing States
-  const [listings, setListings] = useState<ListingType[]>([])
+  const [listings, setListings] = useState<Partial<ListingType>[]>([])
   const [ids, setIds] = useState<string[]>([])
-  const [hoveredListing, setHoveredListing] = useState<ListingType | null>(null);
-  const [selectedListing, setSelectedListing] = useState<ListingType | null>(null); // New state
+  const [hoveredListing, setHoveredListing] = useState<Partial<ListingType> | null>(null);
+  const [selectedListing, setSelectedListing] = useState<ListingType | 'loading' | null>(null); // New state
 
   const theme = useTheme();
 
@@ -67,7 +67,6 @@ const ChatPage = () => {
 
     const fetchUser = async (email: string) =>{
       const data = await fetchUserInfo(email);
-      console.log("USER DATA SUPA", data)
       setUserInfo(data)
 
 
@@ -83,11 +82,8 @@ const ChatPage = () => {
     if (idData.status !== 200) {
         setIds([])
     } else {
-        console.log("ID DATA", idData)
         const responseData = await idData.json()
-        console.log("RES", responseData)
         setIds(responseData.listings.map((listing: {listing_id: string, match_score: number}) => listing.listing_id))
-        console.log("FETCHED LISTINGS")
       }
     }
 
@@ -184,8 +180,6 @@ const ChatPage = () => {
 
     // If New chat
     if (newChat && userInfo) {
-      console.log("new chat ", userInfo, inputValue)
-
       chatId = await createNewChat({ user: userInfo, initialMessage: inputValue })
       sessionStorage.setItem(currentListing, JSON.stringify({chatId: chatId!!, chat: ""}));
 
@@ -226,7 +220,6 @@ const ChatPage = () => {
       })
 
       const data = await response.json()
-      console.log("GOT DATA", data)
 
       const chatObj = {
         ...temp,
@@ -259,8 +252,6 @@ useEffect(() => {
   const fetchListingData = async (ids: string[]) => {
     const fetchedListings = await fetchListing({ ids });
 
-    console.log("fetched", fetchedListings);
-
     if (fetchedListings.status === 200) {
       setListings(fetchedListings.data || []);
     } else {
@@ -285,14 +276,17 @@ useEffect(() => {
     }
   }, [])
 
-  const setCurrentListing = (listing: ListingType | null) => {
+  const setCurrentListing = (listing: ListingType| 'loading' | null) => {
+    console.log("RUNNING")
+    if (listing && listing !== 'loading') { 
     sessionStorage.setItem('listing', listing?.id as string);
     sessionStorage.setItem('listingObj', JSON.stringify(listing));
-    if (listing) {
-        fetchChatHistory();
-    } else {
-      fetchChatHistory();
-    }
+  }
+
+  console.log(sessionStorage.getItem('listing'))
+
+    fetchChatHistory();
+
     setSelectedListing(listing);
   }
 

@@ -78,7 +78,6 @@ const Filter = ({userInfo, setUserInfo, setIds}:{userInfo: User | null, setUserI
                     });
                     
                     if (updateUser.status === 200) {
-                        console.log('User preferences updated successfully');
                         setUserInfo({...userInfo, ...userPreferences});
                         localStorage.setItem('userInfo', JSON.stringify({...userInfo, ...userPreferences}));
                         
@@ -95,11 +94,8 @@ const Filter = ({userInfo, setUserInfo, setIds}:{userInfo: User | null, setUserI
                         if (data.status !== 200) {
                             setIds([])
                         } else {
-                            console.log("DATA", data)
                             const responseData = await data.json()
-                            console.log("RES", responseData)
                             setIds(responseData.listings.map((listing: {listing_id: string, match_score: number}) => listing.listing_id))
-                            console.log("FETCHED LISTINGS")
                         }
                     } else {
                         console.error('Error updating user preferences');
@@ -107,9 +103,7 @@ const Filter = ({userInfo, setUserInfo, setIds}:{userInfo: User | null, setUserI
                 } catch (error) {
                     console.error('Error updating user preferences:', error);
                 }
-            } else {
-                console.log('No changes in user preferences');
-            }
+            } 
         }
     }
     

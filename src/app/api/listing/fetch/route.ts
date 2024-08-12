@@ -23,12 +23,12 @@ export const POST = withApiAuthRequired(async function handler(
     const body = await req.json();
     const { ids } = schema.parse(body);
 
-    let allListings: ListingType[] = [];
+    let allListings: Partial<ListingType>[] = [];
     for (let i = 0; i < ids.length; i += BATCH_SIZE) {
       const batchIds = ids.slice(i, i + BATCH_SIZE);
       const { data: listings, error: listingError } = await supabase
         .from('listings')
-        .select('*')
+        .select('latitude, longitude, id, primary_photo, full_street_line, beds, full_baths, half_baths, sqft, list_price')
         .in('id', batchIds);
 
       if (listingError) {
