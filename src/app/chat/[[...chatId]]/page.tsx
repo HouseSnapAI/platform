@@ -59,6 +59,7 @@ const ChatPage = () => {
   const [ids, setIds] = useState<string[]>([])
   const [hoveredListing, setHoveredListing] = useState<Partial<ListingType> | null>(null);
   const [selectedListing, setSelectedListing] = useState<ListingType | 'loading' | null>(null); // New state
+  const [callFunction, setCallFunction] = useState(false);
 
   const theme = useTheme();
 
@@ -241,9 +242,39 @@ const ChatPage = () => {
       setChatHistory(updatedChat) // Double check if chat isnt updated properly
       storedChatObj.chat = updatedChat;
 
+      setLoading(false);
+
+      if (currentListing == "HomePage") {
+        const userF = sessionStorage.getItem('userFilters');
+
+        let userFilters = null;
+        if(userF) { userFilters = JSON.parse(userF); }
+        console.log(userFilters);
+
+        // call filters API
+        // Call on updateFilters from listing page function
+        const updateFilters = await fetch(`/api/chat/filter`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+              prompt: inputValue, 
+              userFilters: userFilters,
+          })
+        })
+
+        sessionStorage.setItem('userFilters', JSON.stringify(await updateFilters.json()));
+        
+        //console.log(await updateFilters.json());
+        setCallFunction(!callFunction);
+      }
+
+
+
       sessionStorage.setItem(currentListing, JSON.stringify(storedChatObj));
     }
-    setLoading(false);
+    
 }
 // Fetch Listings
   
@@ -323,6 +354,7 @@ useEffect(() => {
             hoveredListing={hoveredListing}
             selectedListing={selectedListing} // Pass selectedListing
             setSelectedListing={setCurrentListing} // Pass setSelectedListing
+            callFunction={callFunction}
           />
         </Box>
 

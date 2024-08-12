@@ -20,7 +20,7 @@ import Typography from '@mui/material/Typography'
 // ** Custom Component Imports
 import FilterPopup from './FilterPopup'
 
-const Filter = ({userInfo, setUserInfo, setIds}:{userInfo: User | null, setUserInfo: (userInfo: User | null) => void, setIds: (ids: string[]) => void}) => {
+const Filter = ({userInfo, setUserInfo, setIds, callFunction}:{userInfo: User | null, setUserInfo: (userInfo: User | null) => void, setIds: (ids: string[]) => void, callFunction: boolean}) => {
     
     const theme = useTheme()
 
@@ -48,27 +48,22 @@ const Filter = ({userInfo, setUserInfo, setIds}:{userInfo: User | null, setUserI
     };
 
     
-    const updateFilters = async () => {
+    const updateFilters = async (userPreferences: Partial<User>) => {
         if (userInfo) {
-            const userPreferences: Partial<User> = {
-                min_budget: budget[0],
-                max_budget: budget[1],
-                location: locations,
-                house_description: houseDescription,
-                min_size_of_house: houseSize[0],
-                max_size_of_house: houseSize[1],
-                beds,
-                baths,
-                property_types: propertyType,
-            };
 
             // Check if any values have changed
             const hasChanges = Object.entries(userPreferences).some(([key, value]) => {
                 return JSON.stringify(userInfo[key as keyof User]) !== JSON.stringify(value);
             });
 
+            console.log(hasChanges)
+            console.log(userPreferences)
+
             if (hasChanges) {
                 try {
+
+                    sessionStorage.setItem('userFilters', JSON.stringify(userPreferences));
+
                     const updateUser = await fetch('/api/auth/user/update', {
                         method: 'PATCH',
                         headers: {
@@ -92,6 +87,7 @@ const Filter = ({userInfo, setUserInfo, setIds}:{userInfo: User | null, setUserI
 
                         
                         if (data.status !== 200) {
+                            console.log("WORKING")
                             setIds([])
                         } else {
                             const responseData = await data.json()
@@ -109,9 +105,38 @@ const Filter = ({userInfo, setUserInfo, setIds}:{userInfo: User | null, setUserI
     
     useEffect(() => {
         if (popupActive == 'none') {
-            updateFilters()
+            const userPreferences: Partial<User> = {
+                min_budget: budget[0],
+                max_budget: budget[1],
+                location: locations,
+                house_description: houseDescription,
+                min_size_of_house: houseSize[0],
+                max_size_of_house: houseSize[1],
+                beds,
+                baths,
+                property_types: propertyType,
+            };
+            updateFilters(userPreferences)
         }
     }, [popupActive])
+
+    useEffect(() => {
+        if (popupActive == 'none') {
+            const getUserFilters = sessionStorage.getItem('userFilters');
+            if (getUserFilters) {
+                const userPreferences: Partial<User> = JSON.parse(getUserFilters);
+                console.log(userPreferences)
+                setBeds(userPreferences.beds || 0)
+                setBaths(userPreferences.baths || 0)
+                setBudget([userPreferences.min_budget || 0, userPreferences.max_budget || 5000000])
+                setLocations(userPreferences.location || [])
+                setHouseDescription(userPreferences.house_description || '')
+                setHouseSize([userPreferences.min_size_of_house || 0, userPreferences.max_size_of_house || 5000])
+                setPropertyType(userPreferences.property_types || [])
+                updateFilters(userPreferences)
+            }
+        }
+    }, [callFunction])
 
     return (
         <Box className="h-[40px] w-full rounded-lg px-4 flex items-center justify-center gap-2 bg-black mb-2 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">

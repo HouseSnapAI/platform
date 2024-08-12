@@ -29,9 +29,10 @@ type ListingPageProps = {
     hoveredListing: Partial<ListingType> | null
     selectedListing: ListingType | 'loading' | null
     setSelectedListing: (listing: ListingType | 'loading' | null) => void
+    callFunction: boolean
 }
 
-const ListingPage = ({userInfo, setUserInfo, listings, setIds, onHover, hoveredListing, selectedListing, setSelectedListing}: ListingPageProps) => {
+const ListingPage = ({userInfo, setUserInfo, listings, setIds, onHover, hoveredListing, selectedListing, setSelectedListing, callFunction}: ListingPageProps) => {
 
     const theme = useTheme()
     const [lastHoveredListing, setLastHoveredListing] = useState<ListingType | null>(null)
@@ -67,7 +68,7 @@ const ListingPage = ({userInfo, setUserInfo, listings, setIds, onHover, hoveredL
                 </Button>
             </Box> 
          : 
-            <Filter userInfo={userInfo} setUserInfo={setUserInfo} setIds={setIds} />}
+            <Filter userInfo={userInfo} setUserInfo={setUserInfo} setIds={setIds} callFunction={callFunction} />}
         
         <Box className='flex flex-row flex-wrap gap-2 items-start justify-center w-full h-full overflow-y-auto'>
 
