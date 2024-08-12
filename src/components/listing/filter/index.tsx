@@ -20,7 +20,7 @@ import Typography from '@mui/material/Typography'
 // ** Custom Component Imports
 import FilterPopup from './FilterPopup'
 
-const Filter = ({userInfo, setUserInfo, setIds}:{userInfo: User | null, setUserInfo: (userInfo: User | null) => void, setIds: (ids: string[]) => void}) => {
+const Filter = ({userInfo, setUserInfo, setIds, setIsLoading}:{userInfo: User | null, setUserInfo: (userInfo: User | null) => void, setIds: (ids: string[]) => void, setIsLoading: (isLoading: boolean) => void}) => {
     
     const theme = useTheme()
 
@@ -50,6 +50,7 @@ const Filter = ({userInfo, setUserInfo, setIds}:{userInfo: User | null, setUserI
     
     const updateFilters = async () => {
         if (userInfo) {
+            setIsLoading(true)
             const userPreferences: Partial<User> = {
                 min_budget: budget[0],
                 max_budget: budget[1],
@@ -87,7 +88,7 @@ const Filter = ({userInfo, setUserInfo, setIds}:{userInfo: User | null, setUserI
                             headers: {
                                 'Content-Type': 'application/json',
                             },
-                            body: JSON.stringify({user: userInfo}),
+                            body: JSON.stringify({user: {...userInfo, ...userPreferences}}),
                         });
 
                         
@@ -102,8 +103,9 @@ const Filter = ({userInfo, setUserInfo, setIds}:{userInfo: User | null, setUserI
                     }
                 } catch (error) {
                     console.error('Error updating user preferences:', error);
-                }
-            } 
+                } 
+            }
+            setIsLoading(false)
         }
     }
     

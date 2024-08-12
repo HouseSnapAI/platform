@@ -2,9 +2,16 @@ import { withApiAuthRequired } from '@auth0/nextjs-auth0';
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/supabase/client';
 import { User } from '@/utils/types';
+import OpenAI from 'openai';
+import { zodResponseFormat } from 'openai/helpers/zod';
+import { z } from 'zod';
 
 //@ts-ignore
 import PipelineSingleton from './pipline.js';
+
+const ZipCodeResponse = z.object({
+    zip_codes: z.array(z.string()),
+});
 
 export const POST = withApiAuthRequired(async function handler(req: NextRequest) {
   if (req.method !== 'POST') {
@@ -27,23 +34,59 @@ export const POST = withApiAuthRequired(async function handler(req: NextRequest)
       location: user.location
     }));
 
-    // Ensure the embedding is the correct size
     const userEmbedding = Array.from(userEmbeddingObj.data).slice(0, 384);
     if (userEmbedding.length !== 384) {
       throw new Error('Invalid embedding size');
     }
 
-    const queryObj = {
+    const queryObj: any = {
       min_budget: user.min_budget,
       max_budget: user.max_budget,
       min_size_of_house: user.min_size_of_house,
       max_size_of_house: user.max_size_of_house,
-      property_types: user.property_types,
-      zip_codes: user.location,
       user_embedding: userEmbedding,
-      match_threshold: 0.8,
+      match_threshold: 0.5,
       match_number: 50
     };
+
+    if (user.property_types && user.property_types.length > 0) {
+      queryObj.property_types = user.property_types;
+    }
+
+    if (Array.isArray(user.location) && user.location.length > 0) {
+        const locationQuery = user.location.join(', '); 
+        console.log("Location Query:", locationQuery); 
+
+        const client = new OpenAI();
+
+        // Query OpenAI for relevant zip codes
+        const completion = await client.beta.chat.completions.parse({
+            model: 'gpt-4o-2024-08-06',
+            messages: [
+                {
+                    "role": "system",
+                    "content": "You are a helpful assistant. Provide relevant zip codes in a structured JSON format.",
+                },
+                { "role": "user", "content": `Provide relevant zip codes for the following locations: ${locationQuery}` },
+            ],
+            response_format: zodResponseFormat(ZipCodeResponse, 'zipCodeResponse'),
+        });
+
+        console.log("OpenAI Completion Response:", completion); 
+
+        const message = completion.choices[0]?.message;
+        if (message?.parsed) {
+            const zipCodes = message.parsed.zip_codes;
+            console.log("Retrieved Zip Codes:", zipCodes); 
+
+            // Add zip codes to queryObj
+            queryObj.zip_codes = zipCodes;
+        } else {
+            console.error("Error retrieving zip codes:", message.refusal); 
+        }
+    }
+
+    console.log("QUERY OBJ", queryObj)
 
     // Perform vector search in Supabase using the new function
     const { data: similarListings, error } = await supabase.rpc('filter_listings', queryObj);

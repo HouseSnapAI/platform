@@ -245,6 +245,8 @@ useEffect(() => {
 
   if (ids.length > 0) {
     fetchListingData(ids);
+  } else{
+    setListings([])
   }
 }, [ids])
 

@@ -5,6 +5,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
+import Skeleton from '@mui/material/Skeleton'
 
 // ** Theme Imports
 import { useTheme } from '@mui/material/styles'
@@ -35,6 +36,7 @@ const ListingPage = ({userInfo, setUserInfo, listings, setIds, onHover, hoveredL
 
     const theme = useTheme()
     const [lastHoveredListing, setLastHoveredListing] = useState<ListingType | null>(null)
+    const [isLoading, setIsLoading] = useState(false)
     const listingRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
 
     useEffect(() => {
@@ -67,7 +69,7 @@ const ListingPage = ({userInfo, setUserInfo, listings, setIds, onHover, hoveredL
                 </Button>
             </Box> 
          : 
-            <Filter userInfo={userInfo} setUserInfo={setUserInfo} setIds={setIds} />}
+            <Filter userInfo={userInfo} setUserInfo={setUserInfo} setIds={setIds} setIsLoading={setIsLoading} />}
         
         <Box className='flex flex-row flex-wrap gap-2 items-start justify-center w-full h-full overflow-y-auto'>
 
@@ -84,7 +86,15 @@ const ListingPage = ({userInfo, setUserInfo, listings, setIds, onHover, hoveredL
                     }}
                 />
             ) : (
-                (listings as ListingType[]).length > 0 ? (listings as ListingType[]).map((listing) => (
+                (listings as ListingType[]).length > 0 ? (isLoading ? (
+                    Array.from(new Array(12)).map((_, index) => (
+                        <Box key={index} sx={{ width: 180, margin: 1 }}>
+                            <Skeleton variant="rectangular" width={180} height={110} />
+                            <Skeleton width="60%" />
+                            <Skeleton width="80%" />
+                        </Box>
+                    ))
+                ) : (listings as ListingType[]).map((listing) => (
                     <div key={listing.id} ref={(el: HTMLDivElement | null) => { listingRefs.current[listing.id] = el }}>
                         <Listing
                             listing={listing}
@@ -97,7 +107,7 @@ const ListingPage = ({userInfo, setUserInfo, listings, setIds, onHover, hoveredL
                             setSelectedListing={setSelectedListing}
                         />
                     </div>
-                )) : (
+                ))) : (
                     <Typography>No listings available</Typography>
                 )
             )}
