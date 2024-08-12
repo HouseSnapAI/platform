@@ -337,7 +337,7 @@ useEffect(() => {
           <MapPage 
             listings={listings} 
             hoveredListing={hoveredListing} 
-            setSelectedListing={setSelectedListing} 
+            setSelectedListing={setCurrentListing} 
             selectedListing={selectedListing}
           />
           

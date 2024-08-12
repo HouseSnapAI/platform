@@ -60,7 +60,7 @@ const ChatInterface = ({ setInputValue, inputValue, chatHistory, handleClick, us
     }, [])
 
   return (
-    <Box onClick={() => {if(!open) setOpenFunction(true)}} className={!open ? 'transition-all duration-200 ease-in-out absolute bg-[#181818] bottom-4 right-4 rounded-xl flex items-center justify-center w-[70px] h-[70px] drop-shadow-lg hover:cursor-pointer hover:drop-shadow-xl' : (expanded ? ` absolute bg-[#141414] bottom-4 right-4 rounded-lg flex flex-col items-center text-center justify-between w-[450px] h-[580px] drop-shadow-lg` : ` absolute bg-[#141414] bottom-4 right-4 rounded-lg flex flex-col items-center text-center justify-between w-[380px] h-[440px] drop-shadow-lg`)} sx={{border: `1px solid #222`}}>
+    <Box onClick={() => {if(!open) setOpenFunction(true)}} className={!open ? 'absolute bg-[#181818] bottom-4 right-4 rounded-xl flex items-center justify-center w-[70px] h-[70px] drop-shadow-lg hover:cursor-pointer hover:drop-shadow-xl' : (expanded ? ` absolute bg-[#141414] bottom-4 right-4 rounded-lg flex flex-col items-center text-center justify-between w-[450px] h-[580px] drop-shadow-lg` : ` absolute bg-[#141414] bottom-4 right-4 rounded-lg flex flex-col items-center text-center justify-between w-[380px] h-[440px] drop-shadow-lg`)} sx={{border: `1px solid #222`}}>
         {
             !open ? <IconMessage size={40} className='text-[#989898] hover:cursor-pointer hover:text-[#c8c8c8] hover:shadow-xl transition-all ease-in-out duration-300'  />
             :

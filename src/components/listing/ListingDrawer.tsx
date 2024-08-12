@@ -113,12 +113,6 @@ const ListingDrawerContent = ({ listing, email, setUserInfo, userInfo, onClose }
 
   return (
     <Box className={`flex flex-col gap-2 p-2 relative`}>
-      <IconButton className='absolute top-2 right-2' onClick={onClose}>
-        <IconChevronLeft color='white' />
-      </IconButton>
-      <Typography variant="h6" color='white' style={{ whiteSpace: 'pre-wrap' }}>
-        {listing?.full_street_line} - {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(listing?.list_price))}
-      </Typography>
     <Box className={`flex flex-col gap-2 p-2`}>
       <Box className='flex justify-between items-center'>
         <Box className='bg-[#343434] rounded-lg w-[40px] pr-[2px] h-[35px] shadow-lg hover:shadow-xl hover:bg-[#303030] transition-all ease-in-out duration-300 hover:cursor-pointer flex justify-center items-center' onClick={onClose}>
@@ -127,6 +121,7 @@ const ListingDrawerContent = ({ listing, email, setUserInfo, userInfo, onClose }
         <Typography variant="h6" color='white' style={{ whiteSpace: 'pre-wrap' }}>
           {listing?.full_street_line} - {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(listing?.list_price))}
         </Typography>
+        <Box></Box>
         </Box>
       </Box>
       <Box className='flex justify-between'>
