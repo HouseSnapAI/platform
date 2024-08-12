@@ -55,10 +55,10 @@ const ChatPage = () => {
   const [loading, setLoading] = useState(false);
 
   // Listing States
-  const [listings, setListings] = useState<ListingType[]>([])
+  const [listings, setListings] = useState<Partial<ListingType>[]>([])
   const [ids, setIds] = useState<string[]>([])
-  const [hoveredListing, setHoveredListing] = useState<ListingType | null>(null);
-  const [selectedListing, setSelectedListing] = useState<ListingType | null>(null); // New state
+  const [hoveredListing, setHoveredListing] = useState<Partial<ListingType> | null>(null);
+  const [selectedListing, setSelectedListing] = useState<ListingType | 'loading' | null>(null); // New state
 
   const theme = useTheme();
 
@@ -265,10 +265,12 @@ useEffect(() => {
     }
   }, [])
 
-  const setCurrentListing = (listing: ListingType | null) => {
+  const setCurrentListing = (listing: ListingType| 'loading' | null) => {
+    if (listing && listing !== 'loading') { 
     sessionStorage.setItem('listing', listing?.id as string);
     sessionStorage.setItem('listingObj', JSON.stringify(listing));
-    if (listing) {
+  }
+    if (listing && listing !== 'loading') {
       if (Object.keys(sessionStorage).includes(listing.id)) {
         fetchChatHistory();
       } else {

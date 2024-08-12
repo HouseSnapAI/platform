@@ -23,12 +23,12 @@ import { IconSparkles, IconUser } from '@tabler/icons-react'
 type ListingPageProps = {
     userInfo: User | null
     setUserInfo: (userInfo: User | null) => void
-    listings: ListingType[]
+    listings: Partial<ListingType>[]
     setIds: (data: string[]) => void
     onHover: (listing: ListingType | null) => void
-    hoveredListing: ListingType | null
-    selectedListing: ListingType | null
-    setSelectedListing: (listing: ListingType | null) => void
+    hoveredListing: Partial<ListingType> | null
+    selectedListing: ListingType | 'loading' | null
+    setSelectedListing: (listing: ListingType | 'loading' | null) => void
 }
 
 const ListingPage = ({userInfo, setUserInfo, listings, setIds, onHover, hoveredListing, selectedListing, setSelectedListing}: ListingPageProps) => {
@@ -38,8 +38,8 @@ const ListingPage = ({userInfo, setUserInfo, listings, setIds, onHover, hoveredL
     const listingRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
 
     useEffect(() => {
-        if (hoveredListing && listingRefs.current[hoveredListing.id]) {
-            listingRefs.current[hoveredListing.id]?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        if (hoveredListing && listingRefs.current[hoveredListing.id as string]) {
+            listingRefs.current[hoveredListing.id as string]?.scrollIntoView({ behavior: 'smooth', block: 'center' })
         }
     }, [hoveredListing])
 
@@ -54,7 +54,7 @@ const ListingPage = ({userInfo, setUserInfo, listings, setIds, onHover, hoveredL
                     sx={{textTransform: 'none'}}
                     startIcon={<IconSparkles color='white' stroke={1.5} />}
                     >
-                    Get a Report
+                    Get a SnapShot
                 </Button>
                 <Button 
                     variant="contained" 

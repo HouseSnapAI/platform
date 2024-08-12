@@ -15,12 +15,13 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 // ** Types
 import { ListingType } from '@/utils/types'
 import { fetchListing } from '@/utils/db'
+import { Bounce, toast } from 'react-toastify'
 
 type MapPageProps = {
-  listings: ListingType[];
-  hoveredListing: ListingType | null;
-  setSelectedListing: (listing: ListingType | null) => void;
-  selectedListing: ListingType | null;
+  listings: Partial<ListingType>[];
+  hoveredListing: Partial<ListingType> | null;
+  setSelectedListing: (listing: ListingType | 'loading' | null) => void;
+  selectedListing: ListingType | 'loading' | null;
 }
 
 const MapPage = ({ listings, hoveredListing, setSelectedListing, selectedListing }: MapPageProps) => {
@@ -150,7 +151,7 @@ const MapPage = ({ listings, hoveredListing, setSelectedListing, selectedListing
 
   useEffect(() => {
     console.log('Selected listing changed:', selectedListing);
-    if (mapRef.current && selectedListing) {
+    if (mapRef.current && selectedListing && selectedListing !== 'loading') {
       mapRef.current.flyTo({
         center: [selectedListing.longitude || -77.0364, selectedListing.latitude || 38.8951],
         zoom: 14,
@@ -172,6 +173,42 @@ const MapPage = ({ listings, hoveredListing, setSelectedListing, selectedListing
     updateListingsWithinBounds(); // Fetch listings regardless of loading state
   }, [listings]);
 
+  const handleMarkerClick = async (listing: Partial<ListingType>) => {
+    setSelectedListing('loading');
+    try {
+      const response = await fetch('/api/listing/fetch/single', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: listing.id }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const fetchedListing = await response.json();
+      setSelectedListing(fetchedListing);
+    } catch (error) {
+      console.error('Failed to fetch listing:', error);
+      toast('Error fetching listing. Please try again.', {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Bounce,
+      });
+      setSelectedListing(null);
+    }  
+  
+  }
+
+
   return (
     <Box 
       className={`h-full w-full rounded-lg flex flex-col items-center text-center justify-between shadow-lg scale-100`} 
@@ -190,20 +227,20 @@ const MapPage = ({ listings, hoveredListing, setSelectedListing, selectedListing
         onMoveEnd={handleMapMoveEnd}
       >
         {(listings.length > 0 || mapFetchedListings.length > 0) && [...listings, ...mapFetchedListings].map((listing) => (
-          <Marker longitude={listing.longitude} latitude={listing.latitude}>
+          <Marker longitude={listing.longitude || 0} latitude={listing.latitude || 0}>
             <Tooltip
               title={listing.full_street_line}
             >
             <Box
               className="hover:bg-red-500"
+              onClick={() => handleMarkerClick(listing)} 
               sx={{
                 width: '25px',
                 height: '25px',
                 borderRadius: '50%',
-                backgroundColor: selectedListing && selectedListing.id === listing.id ? "blue" : hoveredListing && hoveredListing.id === listing.id ? "red" : "green",
+                backgroundColor: selectedListing && selectedListing !== 'loading' && selectedListing.id === listing.id ? "blue" : hoveredListing && hoveredListing.id === listing.id ? "red" : "green",
                 cursor: 'pointer',
               }}
-              onClick={() => setSelectedListing(listing)} // Set selected listing on click
             />
           </Tooltip>
         </Marker>
