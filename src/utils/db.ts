@@ -1,5 +1,4 @@
-import {Chat, ChatHistoryType, ListingType, User, UserType } from "./types";
-import { v4 as uuidv4 } from 'uuid';
+import {Chat, ListingType, User } from "./types";
 import { HumanMessage } from '@langchain/core/messages';
 
 export const fetchUserInfo = async (email: string) => {

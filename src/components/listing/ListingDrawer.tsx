@@ -47,21 +47,6 @@ const ListingDrawerContent = ({ listing, email, setUserInfo, userInfo, onClose }
   const theme = useTheme();
   const [saved, setSaved] = useState<boolean>(false);
 
-  const excludedFields: (keyof ListingType)[] = [
-    'full_baths',
-    'half_baths',
-    'sqft',
-    'list_price',
-    'id',
-    'embedding',
-    'created_at',
-    'updated_at',
-    'primary_photo',
-    'alt_photos',
-    'geom',
-    'property_url',
-  ];
-
   useEffect(() => {
     if (listing && listing !== 'loading' && email && userInfo?.id) {
       updateEngagements({ id: listing.id, listing: listing, viewed: true, clicked: true, user: userInfo })

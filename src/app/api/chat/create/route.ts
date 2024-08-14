@@ -33,7 +33,7 @@ export const POST = withApiAuthRequired(async function handler(req: NextRequest)
 
   const chatHistory: Message[] = [
     initChat,
-    { role: "user", content: initialMessage, listings: [] }
+    { role: "user", content: initialMessage }
   ];
 
   try {

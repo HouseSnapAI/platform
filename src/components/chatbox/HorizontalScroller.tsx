@@ -9,7 +9,6 @@ import Typography from '@mui/material/Typography'
 import Listing from '../listing/Listing'
 
 // ** Util Imports
-import { examplePromptsOne, examplePromptsTwo, exampleListings } from '@/utils/vars'
 import { User } from '@/utils/types';
 
 type HorizontalScrollerProps = {

@@ -1,7 +1,7 @@
 import { withApiAuthRequired } from '@auth0/nextjs-auth0';
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/supabase/client';
-import { Chat, ChatHistoryType } from '@/utils/types';
+import { Chat } from '@/utils/types';
 
 export const POST = withApiAuthRequired(async function handler(req: NextRequest) {
   if (req.method !== 'POST') {
