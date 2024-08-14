@@ -65,7 +65,7 @@ export const POST = withApiAuthRequired(async function handler(req: NextRequest)
             messages: [
                 {
                     "role": "system",
-                    "content": "You are a helpful assistant. Provide relevant zip codes in a structured JSON format.",
+                    "content": "You are a helpful assistant. Provide relevant zip codes in a structured JSON format, given all cities are from California USA.",
                 },
                 { "role": "user", "content": `Provide relevant zip codes for the following locations: ${locationQuery}` },
             ],
