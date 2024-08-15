@@ -79,7 +79,6 @@ const ChatPage = () => {
         },
         body: JSON.stringify({user: data}),
     });
-
     
     if (idData.status !== 200) {
         setIds([])
@@ -95,6 +94,12 @@ const ChatPage = () => {
 
 
   }, [user?.email])
+
+  useEffect(() => {
+    if (selectedListing && selectedListing !== 'loading') {
+      handleClick(true)
+    }
+  }, [selectedListing])
 
   const fetchChatHistory = () => {
       let currentListing = sessionStorage.getItem('listing');
@@ -168,7 +173,8 @@ const ChatPage = () => {
   };
 
   // If enter is clicked
-  const handleClick = async (newChat: boolean) => {
+  const handleClick = async (newChat: boolean, initVal: string = "Tell me more about this listing") => {
+    console.log("inside handle click")
     setLoading(true);
     let chatId: string | null = null;
     let currentListing = sessionStorage.getItem('listing');
@@ -181,7 +187,7 @@ const ChatPage = () => {
 
     // If New chat
     if (newChat && userInfo) {
-      chatId = await createNewChat({ user: userInfo, initialMessage: inputValue })
+      chatId = await createNewChat({ user: userInfo, initialMessage: inputValue ? inputValue : initVal })
       sessionStorage.setItem(currentListing, JSON.stringify({chatId: chatId!!, chat: ""}));
 
       // Normal handle click
@@ -201,31 +207,31 @@ const ChatPage = () => {
         updated_at: chatHistory.updated_at,
         user_id: chatHistory.user_id,
         chat_history: [...chatHistory.chat_history, 
-            { role: "user", content: inputValue, listings: []}
+            { role: "user", content:  inputValue ? inputValue : initVal, listings: []}
         ],
         id: chatId,
     }
       setChatHistory(temp);
 
       // get response
-      const response = await fetch(`/api/chat/response`, {
+      const response = await fetch(selectedListing && selectedListing !== 'loading' ? `/api/chat/response/listing` : `/api/chat/response`, {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-              prompt: inputValue, 
+              prompt: inputValue ? inputValue : initVal, 
               chat: chatHistory, 
-              user: userInfo
+              user: userInfo,
+              ...(selectedListing && selectedListing !== 'loading' && { listing: selectedListing })
           })
       })
-
       const data = await response.json()
 
       const chatObj = {
         ...temp,
         chat_history: [...chatHistory.chat_history,
-            { role: "user", content: inputValue, listings: []},
+            { role: "user", content:  inputValue ? inputValue : initVal, listings: []},
             data
         ],
         user_id: userInfo!!.id
@@ -379,6 +385,7 @@ useEffect(() => {
             userInfo={userInfo}
             loading={loading}
             resetChat={resetChat}
+            selectedListing={selectedListing}
             />
           
         </Box>
