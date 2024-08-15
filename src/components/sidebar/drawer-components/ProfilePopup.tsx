@@ -27,6 +27,7 @@ import { IconAnalyze, IconEdit, IconFile, IconLogout, IconSettings } from '@tabl
 import SettingsPopup from './profile-components/SettingsPopup';
 import SavedHousesPopup from './profile-components/SavedHousesPopup';
 import HousesHistoryPopup from './profile-components/HousesHistoryPopup';
+import React from 'react';
 
 const ProfilePopup = () => {
     const { user, isLoading } = useUser()
