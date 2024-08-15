@@ -20,6 +20,7 @@ import ListingDrawer from './ListingDrawer';
 
 // ** Icon Imports
 import { IconSparkles, IconUser } from '@tabler/icons-react'
+import ListingActionItems from './filter/ListingActionItems'
 
 type ListingPageProps = {
     userInfo: User | null
@@ -49,26 +50,7 @@ const ListingPage = ({userInfo, setUserInfo, listings, setIds, onHover, hoveredL
     return (
     <Box key={listings.length} className={`h-full w-full p-2 rounded-lg flex flex-col items-center text-center shadow-lg`} sx={{ backgroundColor: theme.palette.background.paper}}>
         {selectedListing ?
-            <Box className="h-[40px] w-full rounded-lg px-2 flex items-center justify-between gap-2 mb-2 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
-                <Button 
-                    variant="contained" 
-                    onClick={()=>null}
-                    className="bg-green-500 hover:bg-green-700 text-white text-transform-none"
-                    sx={{textTransform: 'none'}}
-                    startIcon={<IconSparkles color='white' stroke={1.5} />}
-                    >
-                    Get a SnapShot
-                </Button>
-                <Button 
-                    variant="contained" 
-                    onClick={()=>null}
-                    className="bg-blue-500 hover:bg-blue-700 text-white text-transform-none"
-                    sx={{textTransform: 'none'}}
-                    startIcon={<IconUser color='white' stroke={1.5} />}
-                    >
-                    Get Connected to a local Expert
-                </Button>
-            </Box> 
+            <ListingActionItems userInfo={userInfo} listing={selectedListing} />
          : 
             <Filter userInfo={userInfo} setUserInfo={setUserInfo} setIds={setIds} setIsLoading={setIsLoading} callFunction={callFunction} />}
         

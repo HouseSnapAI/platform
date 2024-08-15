@@ -92,7 +92,7 @@ export type User ={
   saved: ListingRecordType[],
   reports: string[],
   plan: string,
-  reports_available: number,
+  reports_remaining: number,
 }
 
 export type Message = {
