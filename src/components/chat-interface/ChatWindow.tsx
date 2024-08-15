@@ -6,15 +6,15 @@ import Box from '@mui/material/Box'
 import Message from './message/Message'
 
 // ** Type Imports
-import { Chat } from '@/utils/types'
+import { Chat, ListingType } from '@/utils/types'
 
 type ChatWindowProps = {
   chatHistory: Chat
   loading: boolean
+  selectedListing: ListingType | null | 'loading'
 }
 
-const ChatWindow = ({chatHistory, loading}: ChatWindowProps) => {
-
+const ChatWindow = ({chatHistory, loading, selectedListing  }: ChatWindowProps) => {
   return (
     <Box className='w-full h-full overflow-x-hidden overflow-y-auto hide-scrollbar flex items-center justify-center'>
       <Box className='w-[90%] h-full py-3 gap-[15px] flex flex-col'>

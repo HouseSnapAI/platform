@@ -24,7 +24,7 @@ const StripePricingTable = ({userId}: {userId: string}) => {
   return React.createElement("stripe-pricing-table", {
     "pricing-table-id": process.env.NEXT_PUBLIC_STRIPE_PRICING_TABLE_ID,
     "publishable-key": process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
-    "client-reference-id": userId,
+    "client-reference-id": userId, 
   });
 };
 

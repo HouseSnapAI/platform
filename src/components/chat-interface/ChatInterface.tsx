@@ -17,7 +17,7 @@ import { IconSend } from '@tabler/icons-react'
 import ChatWindow from './ChatWindow'
 
 // ** Types Imports
-import { Chat, User} from '@/utils/types'
+import { Chat, ListingType, User} from '@/utils/types'
 
 // ** Style Imports
 import { useTheme } from '@mui/material/styles'
@@ -31,10 +31,10 @@ type ChatInterfaceProps = {
     userInfo: User | null
     loading: boolean
     resetChat: () => void
+    selectedListing: ListingType | null | 'loading'
   }
-const ChatInterface = ({ setInputValue, inputValue, chatHistory, handleClick, userInfo, loading, resetChat}: ChatInterfaceProps) => {
+const ChatInterface = ({ setInputValue, inputValue, chatHistory, handleClick, userInfo, loading, resetChat, selectedListing}: ChatInterfaceProps) => {
 
-    const theme = useTheme();
     const [expanded, setExpanded] = useState(false);
     const [open, setOpen] = useState(true);
 
@@ -90,7 +90,7 @@ const ChatInterface = ({ setInputValue, inputValue, chatHistory, handleClick, us
             </Box>
         </Box>}
 
-        <ChatWindow chatHistory={chatHistory} loading={loading} />
+        <ChatWindow chatHistory={chatHistory} loading={loading} selectedListing={selectedListing} />
 
         <Box className='w-[95%] px-4 overflow-y-hidden'>
             <form
