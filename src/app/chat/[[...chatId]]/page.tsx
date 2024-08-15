@@ -336,7 +336,8 @@ useEffect(() => {
       <PersistentDrawer 
         open={drawerOpen} 
         handleDrawerClose={handleDrawerClose} 
-        content={drawerContent} 
+        content={drawerContent}
+        setSelectedListing={setCurrentListing}
       /> 
 
       <Box className="flex flex-col w-full h-[100vh] gap-2 flex-grow">
