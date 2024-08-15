@@ -8,8 +8,9 @@ import Box from '@mui/material/Box';
 
 // ** Style Imports
 import { useTheme } from '@mui/material/styles';
-import { ListingRecordType, User } from '@/utils/types';
-import { Skeleton } from '@mui/material';
+import { ListingRecordType, ListingType, User } from '@/utils/types';
+import { Fade, Skeleton } from '@mui/material';
+import HouseCard from './house-card/HouseCard';
 
 
 interface HousesHistoryPopupProps {
@@ -18,9 +19,11 @@ interface HousesHistoryPopupProps {
   onClose: () => void;
   userInfo: User | null;
   housesHistory: ListingRecordType[] | undefined;
+  setSelectedListing: (listing: ListingType | 'loading' | null) => void;
+  handleClose: () => void;
 }
 
-const HousesHistoryPopup = ({ anchorEl, open, onClose, userInfo, housesHistory }: HousesHistoryPopupProps) => {
+const HousesHistoryPopup = ({ anchorEl, open, onClose, userInfo, housesHistory, setSelectedListing, handleClose }: HousesHistoryPopupProps) => {
   const theme = useTheme();
 
   useEffect(() => {
@@ -54,39 +57,44 @@ const HousesHistoryPopup = ({ anchorEl, open, onClose, userInfo, housesHistory }
         vertical: 'top',
         horizontal: 'left',
       }}
+      TransitionComponent={Fade}
       sx={{
-        width: '500px',
-        height: '600px',
         marginTop: '-10px',
         marginLeft: '1px',
       }}
       
     >
       <Box sx={{
-          width: '400px',
-          height: '500px',
+          maxHeight: '500px',
+          minHeight: '300px',
+          width: `${housesHistory?.length == 1 ? '250px' : '480px'}`,
           border: `1px solid ${theme.palette.divider}`,
+          overflowY: 'auto',
+          display: 'flex',
+          justifyContent: 'center',
         }}>
-          <Box p={1} mt={1} className='flex flex-col gap-2 relative'>
+          <Box p={1} mt={1} className=''>
               {housesHistory && housesHistory.length === 0 ? 
                   <Box className=''>
                       <Typography color='text.primary' fontSize={14}>
-                          No Listings Visited...
+                          No Houses Saved...
                       </Typography>
                   </Box>
                   :
-                  housesHistory && housesHistory.map((housesHistory) => {
+                  <Box className='flex flex-col gap-2 relative justify-center items-center pb-[20px]'>
+                    <Box className={`flex justify-center items-center`}>
+                      <Typography className='w-[180px] h-[35px]  justify-center items-center flex rounded-md drop-shadow-lg' color='text.primary' fontSize={18}>Visited Listings</Typography>
+                    </Box>
+                    <Box className='flex gap-2 relative flex-wrap justify-center'>
+                      {
+                        housesHistory && housesHistory.map((houseHistory) => {
                           return (
-                              <Box key={housesHistory.id} className='flex flex-col gap-2'>
-                                  <Box>
-                                      <Typography color='text.primary' fontSize={14}>
-                                          {housesHistory.id}
-                                      </Typography>
-                                  </Box>
-                              </Box>
-
+                                <HouseCard onClose={onClose} handleClose={handleClose} setSelectedListing={setSelectedListing} listing={houseHistory} />
                           )
-                  })
+                        })
+                      }
+                    </Box>
+                  </Box>
               }
             
           </Box>

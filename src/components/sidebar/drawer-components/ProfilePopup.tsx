@@ -60,8 +60,26 @@ const ProfilePopup = ({ setSelectedListing, handleClose }: ProfilePopupProps) =>
             console.log(data);
             setSavedHouses(data);
         });
+    }
 
+    const setHistory = async (data: any) => {
+        if(data?.clicked == null || data?.clicked == undefined) {
+            return;
+        }
+        let ids: string[] = [];
+
+        data.clicked.forEach((element: { id: string; }) => {
+            if (!ids.includes(element.id)) {
+                ids.push((element.id));
+            }
+        })
         
+        console.log(ids)
+
+        await fetchListing({ ids }).then(({ data }) => {
+            console.log(data);
+            setHousesHistory(data);
+        });
     }
 
     useEffect(() => {
@@ -69,7 +87,7 @@ const ProfilePopup = ({ setSelectedListing, handleClose }: ProfilePopupProps) =>
             await fetchUserInfo(email).then(async (data) => {
                 console.log(data)
                 setUserInfo(data);
-                getHousesHistory(data)
+                await setHistory(data)
                 await setSaved(data)
             });
           };
@@ -293,7 +311,7 @@ const ProfilePopup = ({ setSelectedListing, handleClose }: ProfilePopupProps) =>
             </Box>
             <SettingsPopup anchorEl={anchorEl} open={settingsOpen} onClose={handleSettingsClose} userInfo={userInfo} setUserInfo={setUserInfo} />
             {savedHousesOpen && <SavedHousesPopup handleClose={handleClose} setSelectedListing={setSelectedListing} userInfo={userInfo} savedHouses={savedHouses} anchorEl={anchorEl} open={savedHousesOpen} onClose={handleSavedHousesClose} />}
-            {housesHistoryOpen && <HousesHistoryPopup housesHistory={housesHistory} userInfo={userInfo} anchorEl={anchorEl} open={housesHistoryOpen} onClose={handleHousesHistoryClose} />}
+            {housesHistoryOpen && <HousesHistoryPopup handleClose={handleClose} setSelectedListing={setSelectedListing} housesHistory={housesHistory} userInfo={userInfo} anchorEl={anchorEl} open={housesHistoryOpen} onClose={handleHousesHistoryClose} />}
         </>
           
       ) : (
