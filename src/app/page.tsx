@@ -32,6 +32,7 @@ import { useUser } from '@auth0/nextjs-auth0/client';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; 
 import { Bounce } from "react-toastify";
+import React from 'react';
 
 export default function Home() {
 

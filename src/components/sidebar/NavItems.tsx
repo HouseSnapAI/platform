@@ -1,5 +1,6 @@
 import { IconEdit, IconMessageCircle } from "@tabler/icons-react"
 import { DrawerContentType, SidebarType, User } from "@/utils/types"
+import React from "react";
 
 export const sidebar = (setDrawerContent: (content: DrawerContentType) => void, setDrawerOpen: (open: boolean) => void, userInfo:User | null ): SidebarType[] => [
     { 
