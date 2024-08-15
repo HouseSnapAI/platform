@@ -13,7 +13,7 @@ import SideBar from '@/components/sidebar/Sidebar';
 import PersistentDrawer from '@/components/sidebar/PersistentDrawer';
 
 // ** Type Imports
-import { DrawerContentType, User, Chat, ListingType } from '@/utils/types';
+import { DrawerContentType, User, Chat, ListingType, Message } from '@/utils/types';
 
 // ** Style Imports
 import { useTheme } from '@mui/material/styles';
@@ -28,6 +28,7 @@ import { createNewChat, fetchChat, fetchListing, fetchUserInfo, updateChat } fro
 import ListingPage from '@/components/listing/ListingPage';
 import MapPage from '@/components/map/MapPage';
 import { Typography } from '@mui/material';
+import React from 'react';
 
 const ChatPage = () => {
 
@@ -59,6 +60,7 @@ const ChatPage = () => {
   const [ids, setIds] = useState<string[]>([])
   const [hoveredListing, setHoveredListing] = useState<Partial<ListingType> | null>(null);
   const [selectedListing, setSelectedListing] = useState<ListingType | 'loading' | null>(null); // New state
+  const [callFunction, setCallFunction] = useState(false);
 
   const theme = useTheme();
 
@@ -103,7 +105,30 @@ const ChatPage = () => {
 
       let obj = JSON.parse(sessionStorage.getItem(currentListing)!!);
 
+      
+
       if(!obj) {
+        if(currentListing != "HomePage") {
+
+          let listObj = JSON.parse(sessionStorage.getItem('listingObj')!!);
+          console.log(listObj)
+          
+          const init: Message = {
+            role: listObj.full_street_line,
+            content: "You are an ai real estate agent who is helping users find the perfect home. You are also a helpful assistant that can help users with their questions. Answer professionally and in 1-2 sentences. Additionally use any and all of the data about the user provided to you to help make ur descision",
+          }
+  
+          setChatHistory({
+            id: "new chat",
+            user_id: userInfo?.id as string,
+            chat_history: [init],
+            title: "New Chat",
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          });
+          
+          return;
+        }
         setChatHistory({
           id: "new chat",
           user_id: userInfo?.id as string,
@@ -121,20 +146,13 @@ const ChatPage = () => {
   }
 
   const resetChat = () => {
-    setChatHistory({
-      id: "new chat",
-      user_id: userInfo?.id as string,
-      chat_history: [initChat],
-      title: "New Chat",
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    });
+    
     let currentListing = sessionStorage.getItem('listing');
     if(currentListing == null || currentListing == "undefined") {
       currentListing = "HomePage"
     }
     sessionStorage.removeItem(currentListing);
-    console.log(sessionStorage)
+    fetchChatHistory();
     setInputValue('');
     setLoading(false);
   }
@@ -224,9 +242,39 @@ const ChatPage = () => {
       setChatHistory(updatedChat) // Double check if chat isnt updated properly
       storedChatObj.chat = updatedChat;
 
+      setLoading(false);
+
+      if (currentListing == "HomePage") {
+        const userF = sessionStorage.getItem('userFilters');
+
+        let userFilters = null;
+        if(userF) { userFilters = JSON.parse(userF); }
+        console.log(userFilters);
+
+        // call filters API
+        // Call on updateFilters from listing page function
+        const updateFilters = await fetch(`/api/chat/filter`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+              prompt: inputValue, 
+              userFilters: userFilters,
+          })
+        })
+
+        sessionStorage.setItem('userFilters', JSON.stringify(await updateFilters.json()));
+        
+        //console.log(await updateFilters.json());
+        setCallFunction(!callFunction);
+      }
+
+
+
       sessionStorage.setItem(currentListing, JSON.stringify(storedChatObj));
     }
-    setLoading(false);
+    
 }
 // Fetch Listings
   
@@ -262,26 +310,16 @@ useEffect(() => {
   }, [])
 
   const setCurrentListing = (listing: ListingType| 'loading' | null) => {
+    console.log("RUNNING")
     if (listing && listing !== 'loading') { 
     sessionStorage.setItem('listing', listing?.id as string);
     sessionStorage.setItem('listingObj', JSON.stringify(listing));
   }
-    if (listing && listing !== 'loading') {
-      if (Object.keys(sessionStorage).includes(listing.id)) {
-        fetchChatHistory();
-      } else {
-        setChatHistory({
-          id: "new chat",
-          user_id: userInfo?.id as string,
-          chat_history: [initChat],
-          title: "New Chat",
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        });
-      }
-    } else {
-      fetchChatHistory();
-    }
+
+  console.log(sessionStorage.getItem('listing'))
+
+    fetchChatHistory();
+
     setSelectedListing(listing);
   }
 
@@ -318,6 +356,7 @@ useEffect(() => {
             hoveredListing={hoveredListing}
             selectedListing={selectedListing} // Pass selectedListing
             setSelectedListing={setCurrentListing} // Pass setSelectedListing
+            callFunction={callFunction}
           />
         </Box>
 
@@ -326,7 +365,7 @@ useEffect(() => {
           <MapPage 
             listings={listings} 
             hoveredListing={hoveredListing} 
-            setSelectedListing={setSelectedListing} 
+            setSelectedListing={setCurrentListing} 
             selectedListing={selectedListing}
           />
           
