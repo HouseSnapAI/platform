@@ -9,6 +9,7 @@ import type { Message } from '@/utils/types'
 
 // ** Style Imports
 import { useTheme } from '@mui/material/styles'
+import React from 'react'
 
 const Message = ({ message }: { message: Message }) => {
   const isAssistant = message.role === 'assistant';

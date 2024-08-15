@@ -19,8 +19,9 @@ import Typography from '@mui/material/Typography'
 
 // ** Custom Component Imports
 import FilterPopup from './FilterPopup'
+import React from 'react'
 
-const Filter = ({userInfo, setUserInfo, setIds, callFunction}:{userInfo: User | null, setUserInfo: (userInfo: User | null) => void, setIds: (ids: string[]) => void, callFunction: boolean}) => {
+const Filter = ({userInfo, setUserInfo, setIds, setIsLoading, callFunction}:{userInfo: User | null, setUserInfo: (userInfo: User | null) => void, setIds: (ids: string[]) => void, setIsLoading: (isLoading: boolean) => void, callFunction: boolean}) => {
     
     const theme = useTheme()
 
@@ -50,6 +51,18 @@ const Filter = ({userInfo, setUserInfo, setIds, callFunction}:{userInfo: User | 
     
     const updateFilters = async (userPreferences: Partial<User>) => {
         if (userInfo) {
+            setIsLoading(true)
+            const userPreferences: Partial<User> = {
+                min_budget: budget[0],
+                max_budget: budget[1],
+                location: locations,
+                house_description: houseDescription,
+                min_size_of_house: houseSize[0],
+                max_size_of_house: houseSize[1],
+                beds,
+                baths,
+                property_types: propertyType,
+            };
 
             // Check if any values have changed
             const hasChanges = Object.entries(userPreferences).some(([key, value]) => {
@@ -82,7 +95,7 @@ const Filter = ({userInfo, setUserInfo, setIds, callFunction}:{userInfo: User | 
                             headers: {
                                 'Content-Type': 'application/json',
                             },
-                            body: JSON.stringify({user: userInfo}),
+                            body: JSON.stringify({user: {...userInfo, ...userPreferences}}),
                         });
 
                         
@@ -98,8 +111,9 @@ const Filter = ({userInfo, setUserInfo, setIds, callFunction}:{userInfo: User | 
                     }
                 } catch (error) {
                     console.error('Error updating user preferences:', error);
-                }
-            } 
+                } 
+            }
+            setIsLoading(false)
         }
     }
     

@@ -21,6 +21,7 @@ import { Chat, User} from '@/utils/types'
 
 // ** Style Imports
 import { useTheme } from '@mui/material/styles'
+import React from 'react'
 
 type ChatInterfaceProps = {
     setInputValue: (value: string) => void

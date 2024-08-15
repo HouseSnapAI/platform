@@ -3,8 +3,6 @@ import { zodResponseFormat } from 'openai/helpers/zod';
 import { z } from 'zod';
 import { NextRequest, NextResponse } from 'next/server';
 import { withApiAuthRequired } from '@auth0/nextjs-auth0';
-import { Chat, User } from '@/utils/types';
-
 
 export const POST = (async (req: NextRequest) => {
     try {

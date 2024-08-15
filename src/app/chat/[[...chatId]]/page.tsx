@@ -28,6 +28,7 @@ import { createNewChat, fetchChat, fetchListing, fetchUserInfo, updateChat } fro
 import ListingPage from '@/components/listing/ListingPage';
 import MapPage from '@/components/map/MapPage';
 import { Typography } from '@mui/material';
+import React from 'react';
 
 const ChatPage = () => {
 
@@ -115,7 +116,6 @@ const ChatPage = () => {
           const init: Message = {
             role: listObj.full_street_line,
             content: "You are an ai real estate agent who is helping users find the perfect home. You are also a helpful assistant that can help users with their questions. Answer professionally and in 1-2 sentences. Additionally use any and all of the data about the user provided to you to help make ur descision",
-            listings: []
           }
   
           setChatHistory({
@@ -293,6 +293,8 @@ useEffect(() => {
 
   if (ids.length > 0) {
     fetchListingData(ids);
+  } else{
+    setListings([])
   }
 }, [ids])
 

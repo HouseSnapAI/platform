@@ -16,6 +16,7 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 import { ListingType } from '@/utils/types'
 import { fetchListing } from '@/utils/db'
 import { Bounce, toast } from 'react-toastify'
+import React from 'react'
 
 type MapPageProps = {
   listings: Partial<ListingType>[];

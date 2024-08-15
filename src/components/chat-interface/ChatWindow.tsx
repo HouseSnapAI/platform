@@ -1,15 +1,12 @@
 // ** Next Imports
-import React, { useEffect } from 'react'
+import React from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
 import Message from './message/Message'
 
 // ** Type Imports
-import { Chat, ChatHistoryType } from '@/utils/types'
-
-// ** Custom Components Imports
-import SpinnerComponent from '../common/CustomSpinner'
+import { Chat } from '@/utils/types'
 
 type ChatWindowProps = {
   chatHistory: Chat
