@@ -17,18 +17,20 @@ import Grow from '@mui/material/Grow';
 import { useTheme } from '@mui/material/styles';
 
 // ** Type Imports
-import { DrawerContentType } from '@/utils/types';
+import { DrawerContentType, ListingType } from '@/utils/types';
 
 // ** Util Imports
 import { drawerComponents } from './drawer-components/vars';
+import ProfilePopup from './drawer-components/ProfilePopup';
 
 interface PersistentDrawerProps {
   open: boolean;
   handleDrawerClose: () => void;
   content: DrawerContentType;
+  setSelectedListing: (listing: ListingType | 'loading' | null) => void;
 }
 
-export default function PersistentDrawer({ open, handleDrawerClose, content }: PersistentDrawerProps) {
+export default function PersistentDrawer({ open, handleDrawerClose, content, setSelectedListing }: PersistentDrawerProps) {
   const theme = useTheme();
   const [isVisible, setIsVisible] = useState(open);
 
@@ -70,7 +72,8 @@ export default function PersistentDrawer({ open, handleDrawerClose, content }: P
         }}
       >
         <Typography fontSize={16} paddingLeft={1} marginTop={1} paddingBottom={1} borderBottom={`1px solid ${theme.palette.divider}`}>{content.title}</Typography>
-          {drawerComponents[content.component]}
+          {/* {drawerComponents[content.component]} */}
+          <ProfilePopup handleClose={handleDrawerClose} setSelectedListing={setSelectedListing}/>
       </Dialog>
     </Box>
   );

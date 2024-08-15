@@ -10,13 +10,13 @@ import Skeleton from '@mui/material/Skeleton';
 import Button  from '@mui/material/Button';
 
 // ** Type Imports
-import { ListingRecordType, User } from '@/utils/types';
+import { ListingRecordType, ListingType, User } from '@/utils/types';
 
 // ** Style Imports
 import { useTheme } from '@mui/material/styles';
 
 // ** Utils Imports
-import { fetchUserInfo } from '@/utils/db';
+import { fetchListing, fetchUserInfo } from '@/utils/db';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { getInitials } from '@/utils/utils';
 
@@ -29,17 +29,67 @@ import SavedHousesPopup from './profile-components/SavedHousesPopup';
 import HousesHistoryPopup from './profile-components/HousesHistoryPopup';
 import React from 'react';
 
-const ProfilePopup = () => {
+interface ProfilePopupProps {
+    setSelectedListing: (listing: ListingType | 'loading' | null) => void;
+    handleClose: () => void;
+  }
+
+const ProfilePopup = ({ setSelectedListing, handleClose }: ProfilePopupProps) => {
     const { user, isLoading } = useUser()
     const [userInfo, setUserInfo] = useState<User | null>(null)
 
     const theme = useTheme()
 
+    const [savedHouses, setSavedHouses] = useState<Partial<ListingRecordType>[]>([]);
+    const [settingsOpen, setSettingsOpen] = useState(false);
+    const [savedHousesOpen, setSavedHousesOpen] = useState(false);
+    const [housesHistoryOpen, setHousesHistoryOpen] = useState(false);
+    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+    const [housesHistory, setHousesHistory] = useState<ListingRecordType[]>([]);
+
+    const setSaved = async (data: any) => {
+        const temp = data?.saved;
+        let ids: string[] = [];
+
+        temp.forEach((item: any) => {
+            ids.push(item.id)
+        })
+        console.log(ids)
+
+        await fetchListing({ ids }).then(({ data }) => {
+            console.log(data);
+            setSavedHouses(data);
+        });
+    }
+
+    const setHistory = async (data: any) => {
+        if(data?.clicked == null || data?.clicked == undefined) {
+            return;
+        }
+        let ids: string[] = [];
+
+        data.clicked.forEach((element: { id: string; }) => {
+            if (!ids.includes(element.id)) {
+                ids.push((element.id));
+            }
+        })
+        
+        console.log(ids)
+
+        await fetchListing({ ids }).then(({ data }) => {
+            console.log(data);
+            setHousesHistory(data);
+        });
+    }
+
     useEffect(() => {
         const fetchUserInfoData = async (email:string)=>{
-            const data = await fetchUserInfo(email);
-            setUserInfo(data);
-            getHousesHistory(data)
+            await fetchUserInfo(email).then(async (data) => {
+                console.log(data)
+                setUserInfo(data);
+                await setHistory(data)
+                await setSaved(data)
+            });
           };
           
           if (user?.email) {
@@ -57,12 +107,6 @@ const ProfilePopup = () => {
         !userInfo.baths ||
         !userInfo.property_types
       );
-
-    const [settingsOpen, setSettingsOpen] = useState(false);
-    const [savedHousesOpen, setSavedHousesOpen] = useState(false);
-    const [housesHistoryOpen, setHousesHistoryOpen] = useState(false);
-    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-    const [housesHistory, setHousesHistory] = useState<ListingRecordType[]>([]);
 
     const handleSettingsClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget.parentElement); 
@@ -266,8 +310,8 @@ const ProfilePopup = () => {
                 </Button>
             </Box>
             <SettingsPopup anchorEl={anchorEl} open={settingsOpen} onClose={handleSettingsClose} userInfo={userInfo} setUserInfo={setUserInfo} />
-            {savedHousesOpen && <SavedHousesPopup userInfo={userInfo} anchorEl={anchorEl} open={savedHousesOpen} onClose={handleSavedHousesClose} />}
-            {housesHistoryOpen && <HousesHistoryPopup housesHistory={housesHistory} userInfo={userInfo} anchorEl={anchorEl} open={housesHistoryOpen} onClose={handleHousesHistoryClose} />}
+            {savedHousesOpen && <SavedHousesPopup handleClose={handleClose} setSelectedListing={setSelectedListing} userInfo={userInfo} savedHouses={savedHouses} anchorEl={anchorEl} open={savedHousesOpen} onClose={handleSavedHousesClose} />}
+            {housesHistoryOpen && <HousesHistoryPopup handleClose={handleClose} setSelectedListing={setSelectedListing} housesHistory={housesHistory} userInfo={userInfo} anchorEl={anchorEl} open={housesHistoryOpen} onClose={handleHousesHistoryClose} />}
         </>
           
       ) : (
