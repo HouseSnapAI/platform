@@ -353,7 +353,7 @@ useEffect(() => {
         
         <Box className="flex w-full h-[calc(100vh-60px)] flex-grow">
         {/* Listings + Filter */}
-        <Box className="flex flex-grow w-1/2 pb-2 pl-2">
+        <Box className="flex flex-grow w-[52%] pb-2 pl-2">
           <ListingPage 
             userInfo={userInfo} 
             setUserInfo={setUserInfo} 
@@ -368,7 +368,7 @@ useEffect(() => {
         </Box>
 
         {/* MAP & CHAT BOX */} 
-        <Box className="flex flex-col gap-2 w-1/2 h-full pb-2 px-2">
+        <Box className="flex flex-col gap-2 w-[48%] h-full pb-2 px-2">
           <MapPage 
             listings={listings} 
             hoveredListing={hoveredListing} 
