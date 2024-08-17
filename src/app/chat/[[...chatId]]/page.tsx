@@ -27,8 +27,10 @@ import { chatStarter, initChat } from '@/utils/vars';
 import { createNewChat, fetchChat, fetchListing, fetchUserInfo, updateChat } from '@/utils/db';
 import ListingPage from '@/components/listing/ListingPage';
 import MapPage from '@/components/map/MapPage';
-import { Typography } from '@mui/material';
+import { Modal, Typography } from '@mui/material';
 import React from 'react';
+import { IconPaywall } from '@tabler/icons-react';
+import PricingPaymentComponent from '@/components/reports/pricing/PricingPageComponent';
 
 const ChatPage = () => {
 
@@ -329,6 +331,19 @@ useEffect(() => {
     setSelectedListing(listing);
   }
 
+  const [open, setOpen] = useState<boolean>(false)
+
+    const handleReportClick = () => {
+        if(userInfo && userInfo?.reports_remaining > 0){
+            console.log('report clicked')
+        } else {
+            console.log('no reports remaining')
+            setOpen(true)
+        }
+            
+
+    }
+
 
   return (
     userInfo ? 
@@ -347,8 +362,22 @@ useEffect(() => {
       /> 
 
       <Box className="flex flex-col w-full h-[100vh] gap-2 flex-grow">
-        <Box className="flex w-full h-[45px] items-center justify-center" sx={{backgroundColor: theme.palette.background.paper}}>
+      <Modal
+            open={open}
+            onClose={() => setOpen(false)}
+            aria-labelledby="modal-title"
+            aria-describedby="modal-description"
+            sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+        >
+            <PricingPaymentComponent userId={userInfo?.id as string} />
+        </Modal>
+        <Box className="flex w-full h-[45px] items-center justify-between" sx={{backgroundColor: theme.palette.background.paper}}>
+          <Box className="w-[105px]"></Box>
           <Typography fontSize={16} className='text-[#c1c1c1]' >HouseSnap<span className="bg-gradient-to-r from-purple-400 via-pink-500 fade-in-on-scroll to-red-500 text-transparent bg-clip-text">AI</span></Typography>
+          <Box onClick={handleReportClick} className="mt-[3px] flex justify-center items-center gap-[5px] bg-[#383838] mr-[30px] py-[4px] w-[105px] rounded-sm shadow-lg cursor-pointer hover:bg-[#262626] transition-all ease-in-out duration-200">
+            <Typography fontSize={14} className='text-[#c1c1c1]' >Our Plans</Typography>
+            <IconPaywall className='text-[#c1c1c1] w-[19px]' />
+          </Box>
         </Box>
         
         <Box className="flex w-full h-[calc(100vh-60px)] flex-grow">
@@ -391,6 +420,7 @@ useEffect(() => {
         </Box>
         </Box>
       </Box>
+      
 
       
     </Box> : 

@@ -28,18 +28,10 @@ const StripePricingTable = ({userId}: {userId: string}) => {
   });
 };
 
-const PricingPaymentComponent = ({ open, setOpen, userId }: { open: boolean; setOpen: (open: boolean) => void; userId: string }) => {
-  const handleClose = () => setOpen(false)
-
+const PricingPaymentComponent = ({ userId }: { userId: string }) => {
 
   return (
-    <Modal
-      open={open}
-      onClose={handleClose}
-      aria-labelledby="modal-title"
-      aria-describedby="modal-description"
-      sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-    >
+    
       <Box
         sx={{
           position: 'absolute',
@@ -185,7 +177,6 @@ const PricingPaymentComponent = ({ open, setOpen, userId }: { open: boolean; set
           </Typography>
         </Box>
       </Box>
-    </Modal>
   )
 }
 

@@ -16,6 +16,7 @@ import Button from '@mui/material/Button';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
+import { IconLock } from '@tabler/icons-react';
 
 // ** Icon Imports
 import { IconChevronLeft, IconBookmark, IconBookmarkFilled, IconTools, IconBuildingCommunity, IconSchool, IconCar, IconCalendar, IconMoneybag, IconRuler, IconMapPin, IconHome } from '@tabler/icons-react';
@@ -39,6 +40,7 @@ import MortgageMonthlyCalc from './MortgageMonthlyCalc';
 import Skeleton from '@mui/material/Skeleton';
 import React from 'react';
 import { Tab } from '@mui/material';
+import ListingActionItems from './filter/ListingActionItems';
 
 type ListingDrawerContentProps = {
   listing: ListingType | 'loading';
@@ -171,15 +173,18 @@ const ListingDrawerContent = ({ listing, email, setUserInfo, userInfo, onClose }
         <TabContext value={tab}>
           <Box sx={{ marginLeft: "0px", marginTop: "5px" }}>
             <Box className='flex items-center justify-between'>
-              <TabList TabIndicatorProps={{
-                  sx: {
-                    bgcolor: "#c243d8",
-                  }
-                }} 
-                onChange={(synth, newTab) => setTab(newTab)} aria-label="lab API tabs example">
-                <Tab sx={{textTransform: 'none'}} label="Summary" value="summary" />
-                <Tab sx={{textTransform: 'none'}} label="Report" value="report" />
-              </TabList>
+              <Box className='flex items-center gap-[10px]'>
+                <TabList TabIndicatorProps={{
+                    sx: {
+                      bgcolor: "#c243d8",
+                    }
+                  }} 
+                  onChange={(synth, newTab) => setTab(newTab)} aria-label="lab API tabs example">
+                  <Tab sx={{textTransform: 'none'}} label="Summary" value="summary" />
+                  <Tab sx={{textTransform: 'none'}} label="Tools" value="tools" />
+                </TabList>
+                <ListingActionItems listing={listing} userInfo={userInfo || null} />
+              </Box>
               <Box>
                 <Chip label={listing.property_type.split('_').map(word => word.charAt(0).toUpperCase() + word.toLowerCase().slice(1)).join(' ')} sx={{ marginRight: 1, backgroundColor: '#444', color: 'white' }} />
                 <Chip label={listing.status.split('_').map(word => word.charAt(0).toUpperCase() + word.toLowerCase().slice(1)).join(' ')} sx={{ marginRight: 1, backgroundColor: '#444', color: 'white' }} />
@@ -331,10 +336,12 @@ const ListingDrawerContent = ({ listing, email, setUserInfo, userInfo, onClose }
               </Box>
             </Box>
           </Box>
-          <Box className='mt-[30px]'></Box>
-          <MortgageMonthlyCalc listing={listing} />
+          
           </TabPanel>
-          <TabPanel value="report">Item Two</TabPanel>
+          <TabPanel sx={{ padding: 0 }} value="tools">
+            <Box className='mt-[10px]'></Box>
+            <MortgageMonthlyCalc listing={listing} />
+          </TabPanel>
         </TabContext>
         
       </Box>
