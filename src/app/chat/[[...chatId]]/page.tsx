@@ -336,6 +336,8 @@ useEffect(() => {
     userInfo ? 
     <Box className="flex w-[100vw] h-[100vh] overflow-hidden flex-row bg-black relative">
       <SideBar 
+        setDrawerContent={setDrawerContent}
+        setDrawerOpen={setDrawerOpen}
         userInfo={userInfo}
       />
 

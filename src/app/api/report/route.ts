@@ -89,7 +89,7 @@ async function sendMessageToSQS(payload: object) {
   }
 }
 
-export const POST = async function handler(req: NextRequest) {
+export const POST = withApiAuthRequired(async function handler(req: NextRequest) {
   if (req.method !== 'POST') {
     return NextResponse.json({ message: 'Method not allowed' }, { status: 405 });
   }
@@ -120,5 +120,4 @@ export const POST = async function handler(req: NextRequest) {
   } catch (err) {
     return NextResponse.json({ error: "Failed to send message to SQS" }, { status: 500 });
   }
-}
-// withApiAuthRequired();
+});

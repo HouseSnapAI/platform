@@ -16,14 +16,17 @@ import { DrawerContentType, User } from '@/utils/types';
 import { getInitials } from '@/utils/utils';
 
 type SideBarProps = {
+    setDrawerContent: (content: DrawerContentType) => void;
+    setDrawerOpen: (open: boolean) => void;
     userInfo: User | null;
 }
 
-const SideBar = ({  userInfo }: SideBarProps) => {
+const SideBar = ({ setDrawerContent, setDrawerOpen, userInfo }: SideBarProps) => {
   const items = sidebar();
 
   const handleProfileClick = () => {
-    console.log("CLICKED IG")
+    setDrawerContent({ title: 'Profile', component: 'ProfilePopup', props: userInfo });
+    setDrawerOpen(true);
   };
 
   const hasIncompletePreferences = userInfo && (

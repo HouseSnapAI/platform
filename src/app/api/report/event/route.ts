@@ -42,7 +42,7 @@ export const GET = async function handler(req: NextRequest) {
   return new Response(readable, { headers });
 };
 
-export function notifyClient(clientId: string, message: any) {
+function notifyClient(clientId: string, message: any) {
   const encoder = new TextEncoder();
   clients
     .filter(client => client.clientId === clientId)

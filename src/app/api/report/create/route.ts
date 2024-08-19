@@ -8,7 +8,7 @@ const recordCreateSchema = z.object({
   listing_id: z.string(),
 });
 
-export const POST = async function handler(req: NextRequest) {
+export const POST = withApiAuthRequired(async function handler(req: NextRequest) {
   if (req.method !== 'POST') {
     return NextResponse.json({ message: 'Method not allowed' }, { status: 405 });
   }
@@ -76,6 +76,4 @@ export const POST = async function handler(req: NextRequest) {
     console.error('Error interacting with Supabase:', error);
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
   }
-}
-
-// withApiAuthRequired();
+}); // Added semicolon here
