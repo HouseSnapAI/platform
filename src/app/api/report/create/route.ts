@@ -71,7 +71,7 @@ export const POST = async function handler(req: NextRequest) {
 
       await supabase.from('User').update({reports_remaining: reports_remaining.reports_remaining - 1}).eq('id', user_id);
 
-    return NextResponse.json({ message: 'Record created successfully', record: newRecord }, { status: 200 });
+    return NextResponse.json({ message: 'Record created successfully', report: newRecord }, { status: 200 });
   } catch (error) {
     console.error('Error interacting with Supabase:', error);
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });

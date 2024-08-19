@@ -36,9 +36,22 @@ const ReportPage = ({ listing, open, setOpen, userInfo }: ReportPageProps) => {
       body: JSON.stringify({ listing_id: listing.id, user_id: userInfo.id }),
     });
     if (response.status === 200) {
-        window.location.href = `/report/${listing.id}`;
-    } else{
-        toast.error('Failed to create report. Please try again.');
+      const data = await response.json();
+      const reportId = data.report.id;
+
+      const { id, status, property_type, full_street_line, street, city, state, unit, zip_code, list_price, beds, full_baths, sqft, latitude, longitude } = listing;
+
+      const queueResponse = await fetch(`/api/report/`, {
+        method: 'POST',
+        body: JSON.stringify({ report_id: reportId, listing: { id, status, property_type, full_street_line, street, city, state, unit, zip_code, list_price, beds, full_baths, sqft, latitude, longitude } }),
+      });
+      if (queueResponse.status === 200) {
+        window.location.href = `/report/${reportId}`;
+      } else {
+        toast.error('Failed to queue report. Please try again.');
+      }
+    } else {
+      toast.error('Failed to create report. Please try again.');
     }
   };
 

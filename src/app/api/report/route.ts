@@ -76,18 +76,24 @@ async function sendMessageToSQS(payload: object) {
   try {
     const data = await sqsClient.send(new SendMessageCommand(params));
     console.log("Success, message sent. Response:", data);
-    return data;
+    
+    // Check the status of the response
+    if (data.$metadata.httpStatusCode === 200) {
+      return { success: true, data };
+    } else {
+      return { success: false, error: "Failed to send message to SQS" };
+    }
   } catch (err) {
     console.error("Error", err);
-    throw new Error("Failed to send message to SQS");
+    return { success: false, error: "Failed to send message to SQS" };
   }
 }
 
 export const POST = async function handler(req: NextRequest) {
-    if (req.method !== 'POST') {
-        return NextResponse.json({ message: 'Method not allowed' }, { status: 405 });
-    }
-  
+  if (req.method !== 'POST') {
+    return NextResponse.json({ message: 'Method not allowed' }, { status: 405 });
+  }
+
   const body = await req.json();
 
   // Validate the request body
@@ -104,8 +110,13 @@ export const POST = async function handler(req: NextRequest) {
 
   try {
     const payload = { report_id, listing };
-    const data = await sendMessageToSQS(payload);
-    return NextResponse.json({ message: "Message sent to SQS successfully", data }, { status: 200 });
+    const response = await sendMessageToSQS(payload);
+    
+    if (response.success) {
+      return NextResponse.json({ message: "Message sent to SQS successfully", data: response.data }, { status: 200 });
+    } else {
+      return NextResponse.json({ error: response.error }, { status: 500 });
+    }
   } catch (err) {
     return NextResponse.json({ error: "Failed to send message to SQS" }, { status: 500 });
   }
