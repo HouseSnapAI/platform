@@ -11,6 +11,7 @@ import { IconSparkles, IconUser } from '@tabler/icons-react'
 // ** Types
 import { ListingType, User } from '@/utils/types'
 import PricingPaymentComponent from '@/components/reports/pricing/PricingPageComponent'
+import ReportPage from '@/components/reports/ReportPage'
 
 type ListingActionItemProps = {
     userInfo: User | null
@@ -19,13 +20,17 @@ type ListingActionItemProps = {
 
 const ListingActionItems = ({userInfo, listing}: ListingActionItemProps) => {
     const [open, setOpen] = useState<boolean>(false)
+    const [reportOpen, setReportOpen] = useState<boolean>(false)
 
     const handleReportClick = () => {
         if(userInfo && userInfo?.reports_remaining > 0){
             console.log('report clicked')
+            setOpen(true)
+            // setReportOpen(true)
         } else {
             console.log('no reports remaining')
-            setOpen(true)
+            setReportOpen(true)
+            // setOpen(true)
         }
             
 
@@ -51,6 +56,7 @@ const ListingActionItems = ({userInfo, listing}: ListingActionItemProps) => {
             >
             Get Connected to a local Expert
         </Button>
+        {listing != 'loading' && listing != null ? <ReportPage listing={listing} open={reportOpen} setOpen={setReportOpen} user={userInfo as User} /> : null}
         <PricingPaymentComponent open={open} setOpen={setOpen} userId={userInfo?.id as string} />
     </Box> 
 
