@@ -55,7 +55,6 @@ export const POST = withApiAuthRequired(async function handler(req: NextRequest)
 
     if (Array.isArray(user.location) && user.location.length > 0) {
         const locationQuery = user.location.join(', '); 
-        console.log("Location Query:", locationQuery); 
 
         const client = new OpenAI();
 
@@ -72,8 +71,6 @@ export const POST = withApiAuthRequired(async function handler(req: NextRequest)
             response_format: zodResponseFormat(ZipCodeResponse, 'zipCodeResponse'),
         });
 
-        console.log("OpenAI Completion Response:", completion); 
-
         const message = completion.choices[0]?.message;
         if (message?.parsed) {
             const zipCodes = message.parsed.zip_codes;
@@ -85,8 +82,6 @@ export const POST = withApiAuthRequired(async function handler(req: NextRequest)
             console.error("Error retrieving zip codes:", message.refusal); 
         }
     }
-
-    console.log("QUERY OBJ", queryObj)
 
     // Perform vector search in Supabase using the new function
     const { data: similarListings, error } = await supabase.rpc('filter_listings', queryObj);

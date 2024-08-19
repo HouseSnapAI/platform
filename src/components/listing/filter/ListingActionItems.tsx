@@ -26,12 +26,12 @@ const ListingActionItems = ({userInfo, listing}: ListingActionItemProps) => {
     const handleReportClick = () => {
         if(userInfo && userInfo?.reports_remaining > 0){
             console.log('report clicked')
-            setOpen(true)
-            // setReportOpen(true)
+            // setOpen(true)
+            setReportOpen(true)
         } else {
             console.log('no reports remaining')
-            setReportOpen(true)
-            // setOpen(true)
+            // setReportOpen(true)
+            setOpen(true)
         }
     }
 

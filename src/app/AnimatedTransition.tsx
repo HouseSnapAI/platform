@@ -1,5 +1,6 @@
 'use client'
 
+import { fetchUserInfo } from '@/utils/db';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { AnimatePresence, motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
@@ -14,18 +15,21 @@ const AnimatedTransition = ({ children }: { children: React.ReactNode }) => {
     }, [pathname]);
 
     useEffect(() => {
-        if (window){
-            const handleBeforeUnload = () => {
+        if (window) {
+            const handleBeforeUnload = async () => {
                 localStorage.clear();
+                if (user?.email) {
+                    await fetchUserInfo(user.email);
+                }
             };
-    
+
             window.addEventListener('beforeunload', handleBeforeUnload);
-    
+
             return () => {
                 window.removeEventListener('beforeunload', handleBeforeUnload);
             };
         }
-    }, []);
+    }, [user?.email]);
 
     return (
         <AnimatePresence mode="wait">
