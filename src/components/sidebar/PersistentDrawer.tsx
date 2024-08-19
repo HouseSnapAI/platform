@@ -5,13 +5,9 @@ import { useState } from 'react';
 // ** MUI Imports
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import CardContent from '@mui/material/CardContent';
 import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import Grow from '@mui/material/Grow';
+
 
 // ** Style Imports
 import { useTheme } from '@mui/material/styles';
@@ -20,7 +16,6 @@ import { useTheme } from '@mui/material/styles';
 import { DrawerContentType, ListingType } from '@/utils/types';
 
 // ** Util Imports
-import { drawerComponents } from './drawer-components/vars';
 import ProfilePopup from './drawer-components/ProfilePopup';
 
 interface PersistentDrawerProps {

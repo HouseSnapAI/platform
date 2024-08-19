@@ -1,7 +1,7 @@
 "use client"
 
 // ** Next Imports
-import {useState, useEffect, SetStateAction} from 'react'
+import {useState, useEffect} from 'react'
 import { useParams, useSearchParams } from 'next/navigation';
 
 // ** MUI Imports
@@ -21,24 +21,23 @@ import { useTheme } from '@mui/material/styles';
 // ** Auth Imports
 import { useUser } from '@auth0/nextjs-auth0/client';
 import ChatInterface from '@/components/chat-interface/ChatInterface';
-import { chatStarter, initChat } from '@/utils/vars';
+import { initChat } from '@/utils/vars';
 
 // ** UUID Imports
-import { createNewChat, fetchChat, fetchListing, fetchUserInfo, updateChat } from '@/utils/db';
+import { createNewChat, fetchListing, fetchUserInfo, updateChat } from '@/utils/db';
 import ListingPage from '@/components/listing/ListingPage';
 import MapPage from '@/components/map/MapPage';
 import { Modal, Typography } from '@mui/material';
 import React from 'react';
-import { IconPaywall } from '@tabler/icons-react';
+import { IconGraph, IconPaywall } from '@tabler/icons-react';
 import PricingPaymentComponent from '@/components/reports/pricing/PricingPageComponent';
 
 const ChatPage = () => {
 
   // ** User States
-  const {user, isLoading} = useUser();
+  const {user} = useUser();
   const [userInfo, setUserInfo] = useState<User | null>(null)
 
-  const params = useParams();
   const query = useSearchParams();
   
   // ** Drawer States
@@ -333,24 +332,10 @@ useEffect(() => {
 
   const [open, setOpen] = useState<boolean>(false)
 
-    const handleReportClick = () => {
-        if(userInfo && userInfo?.reports_remaining > 0){
-            console.log('report clicked')
-        } else {
-            console.log('no reports remaining')
-            setOpen(true)
-        }
-            
-
-    }
-
-
   return (
     userInfo ? 
     <Box className="flex w-[100vw] h-[100vh] overflow-hidden flex-row bg-black relative">
       <SideBar 
-        setDrawerContent={setDrawerContent} 
-        setDrawerOpen={setDrawerOpen} 
         userInfo={userInfo}
       />
 
@@ -374,9 +359,16 @@ useEffect(() => {
         <Box className="flex w-full h-[45px] items-center justify-between" sx={{backgroundColor: theme.palette.background.paper}}>
           <Box className="w-[105px]"></Box>
           <Typography fontSize={16} className='text-[#c1c1c1]' >HouseSnap<span className="bg-gradient-to-r from-purple-400 via-pink-500 fade-in-on-scroll to-red-500 text-transparent bg-clip-text">AI</span></Typography>
-          <Box onClick={handleReportClick} className="mt-[3px] flex justify-center items-center gap-[5px] bg-[#383838] mr-[30px] py-[4px] w-[105px] rounded-sm shadow-lg cursor-pointer hover:bg-[#262626] transition-all ease-in-out duration-200">
-            <Typography fontSize={14} className='text-[#c1c1c1]' >Our Plans</Typography>
-            <IconPaywall className='text-[#c1c1c1] w-[19px]' />
+          <Box className="flex gap-2">
+            <Box className="mt-[3px] flex justify-center items-center gap-[5px] bg-[#383838] py-[4px] px-3 rounded-sm shadow-lg">
+              <Typography fontSize={14} className='text-[#c1c1c1]' >Reports Remaining:</Typography>
+              <Typography fontSize={14} className='text-[#c1c1c1]' >{userInfo?.reports_remaining}</Typography>
+              <IconGraph className='text-[#c1c1c1] w-[19px]' />
+            </Box>        
+            <Box onClick={() => setOpen(true)} className="mt-[3px] flex justify-center items-center gap-[5px] mr-[30px] py-[4px] px-3 rounded-sm shadow-lg cursor-pointer bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 hover:scale-[1.05] hover:shadow-xl transition-all ease-in-out duration-500">
+              <Typography fontSize={14} className='text-[#c1c1c1]' >Buy More</Typography>
+              <IconPaywall className='text-[#c1c1c1] w-[19px]' />
+            </Box>
           </Box>
         </Box>
         

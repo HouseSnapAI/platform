@@ -1,39 +1,46 @@
+// ** Next Imports
 import { useEffect, useState } from 'react';
-import { Modal, Box, Typography } from '@mui/material';
+
+// ** MUI Imports
+import Modal from '@mui/material/Modal';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+
+// ** Type Imports
 import { ListingType, User } from '@/utils/types';
 
-const ReportPage = ({ listing, open, setOpen, user }: { listing: ListingType, open: boolean, setOpen: (open: boolean) => void, user: User }) => {
-  const [data, setData] = useState(null);
-  const [lambdaFinished, setLambdaFinished] = useState(false);
+// ** Style Imports
+import { useTheme } from '@mui/material/styles';
 
-  useEffect(() => {
-    console.log('Setting up EventSource');
-    const clientId = user.id;
-    const eventSource = new EventSource(`/api/report/event?clientId=${clientId}`);
+// ** Custom Imports
+import { toast } from 'react-toastify';
 
-    eventSource.onmessage = async (event) => {
-      console.log('Received event:', event);
-      const message = JSON.parse(event.data);
-      console.log('Parsed message:', message);
-      if (message === 'Database updated') {
-        console.log('Database updated message received');
-        const response = await fetch(`/api/report/${listing.id}`);
-        const updatedData = await response.json();
-        console.log('Fetched updated data:', updatedData);
-        setData(updatedData);
-      } else if (message === 'Lambda finished') {
-        console.log('Lambda finished message received');
-        setLambdaFinished(true);
-      }
-    };
+type ReportPageProps = {
+    listing: ListingType;
+    open: boolean;
+    setOpen: (open: boolean) => void;
+    userInfo: User;
+}
 
-    return () => {
-      console.log('Closing EventSource');
-      eventSource.close();
-    };
-  }, [user]);
+const ReportPage = ({ listing, open, setOpen, userInfo }: ReportPageProps) => {
+
+  const theme = useTheme();
 
   const handleClose = () => setOpen(false);
+  const handleConfirm = async () => {
+    setOpen(false);
+    const response = await fetch(`/api/report/create`, {
+      method: 'POST',
+      body: JSON.stringify({ listing_id: listing.id, user_id: userInfo.id }),
+    });
+    if (response.status === 200) {
+        window.location.href = `/report/${listing.id}`;
+    } else{
+        toast.error('Failed to create report. Please try again.');
+    }
+  };
 
   return (
     <Modal
@@ -49,28 +56,50 @@ const ReportPage = ({ listing, open, setOpen, user }: { listing: ListingType, op
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          width: '80vw',
+          width: '20vw',
           maxHeight: '90vh',
           bgcolor: 'background.paper',
-          border: '2px solid #000',
+          border: `2px solid ${theme.palette.divider}`,
           boxShadow: 24,
           p: 4,
           overflowY: 'auto',
+          borderRadius: '10px',
         }}
       >
-        <Typography variant="h4" gutterBottom>
-          Report Data
-        </Typography>
-        {data ? (
-          <pre>{JSON.stringify(data, null, 2)}</pre>
-        ) : (
-          <Typography variant="body1">Loading...</Typography>
-        )}
-        {lambdaFinished && (
-          <Typography variant="body1" color="success">
-            Lambda has finished running.
-          </Typography>
-        )}
+        <Typography fontSize={20} color={theme.palette.text.secondary} sx={{ mb: 2 }}>Report Confirmation</Typography>
+        <Box sx={{ mt: 4 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+            <Typography variant="body1" color={theme.palette.text.secondary}>Reports Available</Typography>
+            <Typography variant="body1" color={theme.palette.text.secondary}>{userInfo.reports_remaining}</Typography>
+          </Box>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+            <Typography variant="body1" color={theme.palette.text.secondary}>Change in Reports</Typography>
+            <Typography variant="body1" color={theme.palette.success.main}>+1</Typography>
+          </Box>
+          <Divider sx={{ mb: 2 }} />
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+            <Typography variant="body1" color={theme.palette.text.secondary}>Reports Left After</Typography>
+            <Typography variant="body1" color={theme.palette.text.secondary}>{userInfo.reports_remaining - 1}</Typography>
+          </Box>
+        </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2, gap: 2 }}>
+          <Button 
+            variant="contained" 
+            onClick={handleClose} 
+            className="bg-[#383838] hover:bg-[#383838]/80 text-white"
+            sx={{ textTransform: 'none' }}
+          >
+            Cancel
+          </Button>
+          <Button 
+            variant="contained" 
+            onClick={handleConfirm} 
+            className="bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 text-white"
+            sx={{ textTransform: 'none' }}
+          >
+            Confirm
+          </Button>
+        </Box>
       </Box>
     </Modal>
   );

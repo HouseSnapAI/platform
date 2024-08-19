@@ -22,6 +22,24 @@ export const POST = async function handler(req: NextRequest) {
 
   const { user_id, listing_id } = result.data;
 
+  const {data: reports_remaining, error: reports_remaining_error} = await supabase
+       .from('User')
+       .select('reports_remaining')
+       .eq('id', user_id)
+       .single();
+
+  if (reports_remaining_error ) {
+    console.error('Error creating record:', reports_remaining_error);
+    return NextResponse.json({ message: 'Error creating record' }, { status: 500 });  
+  }
+
+  if (reports_remaining.reports_remaining <= 0) {
+    return NextResponse.json({ message: 'No reports remaining' }, { status: 400 });
+  }
+
+
+  
+
   try {
     const { data: newRecord, error } = await supabase
       .from('reports')
@@ -48,17 +66,6 @@ export const POST = async function handler(req: NextRequest) {
 
       if (ascError) {
         console.error('Error creating record:', ascError);
-        return NextResponse.json({ message: 'Error creating record' }, { status: 500 });
-      }
-
-      const {data: reports_remaining, error: reports_remaining_error} = await supabase
-       .from('User')
-       .select('reports_remaining')
-       .eq('id', user_id)
-       .single();
-
-       if (reports_remaining_error) {
-        console.error('Error creating record:', reports_remaining_error);
         return NextResponse.json({ message: 'Error creating record' }, { status: 500 });
       }
 

@@ -48,7 +48,7 @@ const ProfilePopup = ({ setSelectedListing, handleClose }: ProfilePopupProps) =>
     const [housesHistory, setHousesHistory] = useState<ListingRecordType[]>([]);
 
     const setSaved = async (data: any) => {
-        const temp = data?.saved;
+        const temp = data?.saved || [];
         let ids: string[] = [];
 
         temp.forEach((item: any) => {
@@ -57,7 +57,7 @@ const ProfilePopup = ({ setSelectedListing, handleClose }: ProfilePopupProps) =>
         console.log(ids)
 
         await fetchListing({ ids }).then(({ data }) => {
-            console.log(data);
+            console.log("SAVED DATA",data);
             setSavedHouses(data);
         });
     }
@@ -183,7 +183,7 @@ const ProfilePopup = ({ setSelectedListing, handleClose }: ProfilePopupProps) =>
                     <Typography fontSize={10} noWrap className='text-[#6f6f6f]'>Saved Houses</Typography>
                 </Button>
                 <Button onClick={handleHousesHistoryClick} sx={{textTransform: 'none', borderColor: theme.palette.divider }} className='flex flex-col' variant='outlined'>
-                    <Typography fontSize={14} noWrap textAlign={'left'}>{housesHistory.length||0}</Typography>
+                    <Typography fontSize={14} noWrap textAlign={'left'}>{userInfo?.clicked?.length||0}</Typography>
                     <Typography fontSize={10} noWrap className='text-[#6f6f6f]'>Houses History</Typography>
                 </Button>
             </Box>

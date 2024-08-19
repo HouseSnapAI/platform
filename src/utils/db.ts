@@ -55,11 +55,6 @@ export const createNewChat = async ({ user, initialMessage }: createNewChatType)
 
 }
 
-type DeleteUserChatType ={
-  id: string,
-  user: User
-}
-
 export const updateChat = async (chat: Chat) => {
 
   console.log(chat)
@@ -173,6 +168,8 @@ export const saveHouse = async ({id, user, listing}: {id:string, user: User, lis
         console.error('Error updating listing');
       }
 
+      localStorage.setItem('userInfo', JSON.stringify(updatedUser));
+
       return updatedUser;
     } else {
       const data = await response.json();
@@ -208,6 +205,8 @@ export const deleteSavedHouse = async ({id, user, listing}: {id:string, user: Us
       if (listingResponse.status !== 200) {
         console.error('Error updating listing');
       }
+
+      localStorage.setItem('userInfo', JSON.stringify(updatedUser));
 
       return updatedUser;
     } else {

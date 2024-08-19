@@ -1,5 +1,6 @@
 'use client'
 
+import { useUser } from '@auth0/nextjs-auth0/client';
 import { AnimatePresence, motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -7,7 +8,7 @@ import { useEffect, useState } from 'react';
 const AnimatedTransition = ({ children }: { children: React.ReactNode }) => {
     const pathname = usePathname();
     const [page, setPage] = useState(pathname);
-
+    const { user } = useUser();
     useEffect(() => {
         setPage(pathname);
     }, [pathname]);

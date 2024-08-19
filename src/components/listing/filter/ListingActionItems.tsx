@@ -37,7 +37,7 @@ const ListingActionItems = ({userInfo, listing}: ListingActionItemProps) => {
 
   return (
 <>
-        <Box className='bg-gradient-to-r from-purple-400 via-pink-500 fade-in-on-scroll to-red-500 px-[10px] py-[5px] shadow-md rounded-sm cursor-pointer hover:scale-[1.05] hover:shadow-xl transition-all ease-in-out duration-200 flex items-center justify-center gap-[3px]' onClick={handleReportClick}>
+        <Box className='bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 px-[10px] py-[5px] shadow-md rounded-sm cursor-pointer hover:scale-[1.05] hover:shadow-xl transition-all ease-in-out duration-500 flex items-center justify-center gap-[3px]' onClick={handleReportClick}>
         <Typography fontSize={14} className='text-[#ffffff]' >SnapShot</Typography>
         <IconLock className='w-[18px]' />
         
@@ -49,11 +49,10 @@ const ListingActionItems = ({userInfo, listing}: ListingActionItemProps) => {
             aria-describedby="modal-description"
             sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
             >
-            <>
                 <PricingPaymentComponent userId={userInfo?.id as string} />
-                {listing != 'loading' && listing != null && userInfo != null ? <ReportPage listing={listing} open={reportOpen} setOpen={setReportOpen} user={userInfo as User} /> : null}
-            </>
         </Modal>
+        {listing != 'loading' && listing != null && userInfo != null ? <ReportPage listing={listing} open={reportOpen} setOpen={setReportOpen} userInfo={userInfo as User} /> : null}
+
     </>
 
   )
