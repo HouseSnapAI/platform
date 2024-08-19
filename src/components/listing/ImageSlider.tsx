@@ -64,7 +64,7 @@ const ImageSlider = ({ listing }: { listing: ListingType }) => {
   }, [currentIndex]);
 
   return (
-    <Box sx={{ position: 'relative', height: 400, width: '100%', overflow: 'hidden' }}>
+    <Box className='rounded-md drop-shadow-lg' sx={{ position: 'relative', height: 400, width: '100%', overflow: 'hidden' }}>
       {images.length > 0 && (
         <ImageContainer style={{ transform: `translateX(-${currentIndex * 100}%)` }}>
           {images.map((src, index) => (

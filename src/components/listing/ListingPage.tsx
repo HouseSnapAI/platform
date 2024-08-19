@@ -48,15 +48,14 @@ const ListingPage = ({userInfo, setUserInfo, listings, setIds, onHover, hoveredL
     }, [hoveredListing])
 
     return (
-    <Box key={listings.length} className={`h-full w-full p-2 rounded-lg flex flex-col items-center text-center shadow-lg`} sx={{ backgroundColor: theme.palette.background.paper}}>
-        {selectedListing ?
-            <ListingActionItems userInfo={userInfo} listing={selectedListing} />
-         : 
+    <Box key={listings.length} className={`h-full w-full py-2 px-1 rounded-lg flex flex-col items-center text-center shadow-lg`} sx={{ backgroundColor: theme.palette.background.paper}}>
+        {!selectedListing &&
             <Filter userInfo={userInfo} setUserInfo={setUserInfo} setIds={setIds} setIsLoading={setIsLoading} callFunction={callFunction} />}
         
         <Box className='flex flex-row flex-wrap gap-2 items-start justify-center w-full h-full overflow-y-auto'>
 
             {selectedListing ? (
+                <>
                 <ListingDrawer
                     listing={selectedListing}
                     email={userInfo?.email}
@@ -69,6 +68,8 @@ const ListingPage = ({userInfo, setUserInfo, listings, setIds, onHover, hoveredL
                       console.log("SETTING LISTING TO NULL")
                     }}
                 />
+                {/* <ListingActionItems userInfo={userInfo} listing={selectedListing} /> */}
+                </>
             ) : (
                 (listings as ListingType[]).length > 0 ? (isLoading ? (
                     Array.from(new Array(12)).map((_, index) => (

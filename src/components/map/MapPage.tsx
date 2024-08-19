@@ -225,7 +225,7 @@ const MapPage = ({ listings, hoveredListing, setSelectedListing, selectedListing
               title={listing.full_street_line}
             >
             <Box
-              className="hover:bg-red-500"
+              className="hover:bg-red-500 shadow-md hover:shadow-lg"
               onClick={() => handleMarkerClick(listing)} 
               sx={{
                 width: '25px',
