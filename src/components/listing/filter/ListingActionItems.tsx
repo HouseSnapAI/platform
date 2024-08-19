@@ -6,11 +6,12 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 
 // ** Icon Imports
-import { IconSparkles, IconUser } from '@tabler/icons-react'
+import { IconLock, IconSparkles, IconUser } from '@tabler/icons-react'
 
 // ** Types
 import { ListingType, User } from '@/utils/types'
 import PricingPaymentComponent from '@/components/reports/pricing/PricingPageComponent'
+import { Modal, Typography } from '@mui/material'
 
 type ListingActionItemProps = {
     userInfo: User | null
@@ -32,27 +33,22 @@ const ListingActionItems = ({userInfo, listing}: ListingActionItemProps) => {
     }
 
   return (
-    <Box className="h-[40px] w-full rounded-lg px-2 flex items-center justify-between gap-2 mb-2 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
-        <Button 
-            variant="contained" 
-            onClick={handleReportClick}
-            className="bg-green-500 hover:bg-green-700 text-white text-transform-none"
-            sx={{textTransform: 'none'}}
-            startIcon={<IconSparkles color='white' stroke={1.5} />}
-            >
-            Get a SnapShot
-        </Button>
-        <Button 
-            variant="contained" 
-            onClick={()=>null}
-            className="bg-blue-500 hover:bg-blue-700 text-white text-transform-none"
-            sx={{textTransform: 'none'}}
-            startIcon={<IconUser color='white' stroke={1.5} />}
-            >
-            Get Connected to a local Expert
-        </Button>
-        <PricingPaymentComponent open={open} setOpen={setOpen} userId={userInfo?.id as string} />
-    </Box> 
+    <>
+        <Box className='bg-gradient-to-r from-purple-400 via-pink-500 fade-in-on-scroll to-red-500 px-[10px] py-[5px] shadow-md rounded-sm cursor-pointer hover:scale-[1.05] hover:shadow-xl transition-all ease-in-out duration-200 flex items-center justify-center gap-[3px]' onClick={handleReportClick}>
+        <Typography fontSize={14} className='text-[#ffffff]' >SnapShot</Typography>
+        <IconLock className='w-[18px]' />
+        
+        </Box>
+        <Modal
+            open={open}
+            onClose={() => setOpen(false)}
+            aria-labelledby="modal-title"
+            aria-describedby="modal-description"
+            sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+        >
+            <PricingPaymentComponent userId={userInfo?.id as string} />
+        </Modal>
+    </>
 
   )
 }
