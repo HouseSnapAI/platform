@@ -99,6 +99,7 @@ const ChatPage = () => {
                   setData({status: 'empty'});
                 }
                 eventSource.close();
+                window.location.reload()
             }
           };
 
@@ -114,6 +115,7 @@ const ChatPage = () => {
           return () => {
             console.log('Closing EventSource');
             eventSource.close();
+            window.location.reload()
           };
       }
     };

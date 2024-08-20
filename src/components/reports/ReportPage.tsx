@@ -36,6 +36,8 @@ const ReportPage = ({ listing, open, setOpen, userInfo }: ReportPageProps) => {
       const data = await response.json();
       const reportId = data.report.id;
 
+      localStorage.setItem('userInfo', JSON.stringify({...userInfo, reports_remaining: userInfo.reports_remaining - 1}));
+
       const { id, status, property_type, full_street_line, street, city, county, state, unit, zip_code, list_price, beds, full_baths, sqft, latitude, longitude, lot_sqft } = listing;
 
       const queueResponse = await fetch(`/api/report`, {
