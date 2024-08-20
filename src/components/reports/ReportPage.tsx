@@ -1,6 +1,3 @@
-// ** Next Imports
-import { useEffect, useState } from 'react';
-
 // ** MUI Imports
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
@@ -39,11 +36,11 @@ const ReportPage = ({ listing, open, setOpen, userInfo }: ReportPageProps) => {
       const data = await response.json();
       const reportId = data.report.id;
 
-      const { id, status, property_type, full_street_line, street, city, state, unit, zip_code, list_price, beds, full_baths, sqft, latitude, longitude } = listing;
+      const { id, status, property_type, full_street_line, street, city, county, state, unit, zip_code, list_price, beds, full_baths, sqft, latitude, longitude, lot_sqft } = listing;
 
       const queueResponse = await fetch(`/api/report`, {
         method: 'POST',
-        body: JSON.stringify({ report_id: reportId, client_id: userInfo.id, listing: { id, status, property_type, full_street_line, street, city, state, unit, zip_code, list_price, beds, full_baths, sqft, latitude, longitude } }),
+        body: JSON.stringify({ report_id: reportId, client_id: userInfo.id, listing: { id, status, property_type, county, lot_sqft, full_street_line, street, city, state, unit, zip_code, list_price, beds, full_baths, sqft, latitude, longitude } }),
       });
       if (queueResponse.status === 200) {
         window.location.href = `/report/${reportId}`;
