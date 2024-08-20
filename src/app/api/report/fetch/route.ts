@@ -31,11 +31,7 @@ export const POST = withApiAuthRequired(async function handler(req: NextRequest)
       return NextResponse.json({ message: 'Error fetching report' }, { status: 500 });
     }
 
-    if (data.status === 'complete') {
       return NextResponse.json(data, { status: 200 });
-    } else {
-      return NextResponse.json({status: 'incomplete'}, { status: 200 });
-    }
   } catch (error) {
     console.error('Error processing request:', error);
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });

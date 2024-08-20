@@ -273,12 +273,8 @@ export const fetchReport = async(report_id:string) =>{
 
   if (response.status === 200) {
     const data = await response.json()
-    if (data.status === 'incomplete'){
-      return null
-    } else {
       return data
-    }
   } else {
-    return null
+    return {status: 'empty'}
   }
 }

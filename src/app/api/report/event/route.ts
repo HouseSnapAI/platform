@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 
 let clients: { id: number; clientId: string; writer: WritableStreamDefaultWriter }[] = [];
 
+export const maxDuration = 60;
+
 export const GET = async function handler(req: NextRequest) {
   const headers = {
     'Content-Type': 'text/event-stream',

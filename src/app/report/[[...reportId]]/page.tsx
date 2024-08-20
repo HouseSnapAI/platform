@@ -48,7 +48,7 @@ const ChatPage = () => {
  
 
   useEffect(() => {
-    const createEventSource = async () => {
+    const updateReport = async () => {
       console.log('Checking report validity for reportId:', reportId[0], 'and userId:', userInfo?.id);
       const valid = await checkReport(reportId[0] as string, userInfo?.id as string);
       console.log('Report validity:', valid);
@@ -58,7 +58,7 @@ const ChatPage = () => {
         const report = await fetchReport(reportId[0] as string);
         if (report){
           console.log('Report fetched successfully:', report);
-          setData({...report, status: 'populated'});
+          setData({...report });
         } else {
           console.log('No report found, setting status to empty');
           setData({status: 'empty'});
@@ -66,41 +66,54 @@ const ChatPage = () => {
       }
     }
     if(userInfo?.id){
-      createEventSource();
+      updateReport();
     }
   }, [reportId[0], userInfo?.id]);
 
   useEffect(() => {
     
-    if(userInfo?.id && authReport && data?.status == 'empty'){
-        console.log('Setting up EventSource');
-        const clientId = userInfo?.id;
-        const eventSource = new EventSource(`/api/report/event?clientId=${clientId}`);
+    const setupEventSource = () => {
+      if(userInfo?.id && authReport && data?.status == 'empty'){
+          console.log('Setting up EventSource');
+          const clientId = userInfo?.id;
+          const eventSource = new EventSource(`/api/report/event?clientId=${clientId}`);
 
-        eventSource.onmessage = async (event) => {
-        console.log('Received event:', event);
-        const message = JSON.parse(event.data);
-        console.log('Parsed message:', message);
-        setStatus(message.message);
-        if (message.message === 'complete') {
-            console.log('Lambda finished message received');
-            const report = await fetchReport(reportId[0] as string);
-            if (report){
-              console.log('Report fetched successfully:', report);
-              setData({...report, status: 'populated'});
-            } else {
-              console.log('No report found, setting status to empty');
-              setData({status: 'empty'});
+          eventSource.onmessage = async (event) => {
+            console.log('Received event:', event);
+            const message = JSON.parse(event.data);
+            console.log('Parsed message:', message);
+            setStatus(message.message);
+            if (message.message === 'complete') {
+                console.log('Lambda finished message received');
+                const report = await fetchReport(reportId[0] as string);
+                if (report){
+                  console.log('Report fetched successfully:', report);
+                  setData({...report, status: 'populated'});
+                } else {
+                  console.log('No report found, setting status to empty');
+                  setData({status: 'empty'});
+                }
+                eventSource.close();
             }
-            eventSource.close();
-        }
-        };
+          };
 
-        return () => {
-        console.log('Closing EventSource');
-        eventSource.close();
-        };
-    }
+          eventSource.onerror = () => {
+            console.log('EventSource error, closing connection');
+            eventSource.close();
+            if (status !== 'complete') {
+              console.log('Reopening EventSource as status is not complete');
+              setupEventSource();
+            }
+          };
+
+          return () => {
+            console.log('Closing EventSource');
+            eventSource.close();
+          };
+      }
+    };
+
+    setupEventSource();
 
   }, [userInfo, authReport, data]);
 
