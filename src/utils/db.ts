@@ -265,7 +265,7 @@ export const checkReport = async (reportId: string, userId: string) => {
   }
 }
 
-export const fetchReport = async(report_id:string) =>{
+export const fetchReport = async(report_id:string) => {
   const response = await fetch(`/api/report/fetch`, {
     method: 'POST',
     body: JSON.stringify({ report_id: report_id }),
@@ -277,6 +277,25 @@ export const fetchReport = async(report_id:string) =>{
       return null
     } else {
       return data
+    }
+  } else {
+    return null
+  }
+}
+
+export const fetchReportsByUser = async(user_id: string) => {
+  const response = await fetch(`/api/report/fetch/by-user`, {
+    method: 'POST',
+    body: JSON.stringify({ user_id: user_id }),
+  });
+
+  if (response.status === 200) {
+    const data = await response.json()
+    if (data) {
+      console.log(data)
+      return data;
+    } else {
+      return null;
     }
   } else {
     return null
