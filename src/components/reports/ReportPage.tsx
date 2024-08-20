@@ -41,9 +41,9 @@ const ReportPage = ({ listing, open, setOpen, userInfo }: ReportPageProps) => {
 
       const { id, status, property_type, full_street_line, street, city, state, unit, zip_code, list_price, beds, full_baths, sqft, latitude, longitude } = listing;
 
-      const queueResponse = await fetch(`/api/report/`, {
+      const queueResponse = await fetch(`/api/report`, {
         method: 'POST',
-        body: JSON.stringify({ report_id: reportId, listing: { id, status, property_type, full_street_line, street, city, state, unit, zip_code, list_price, beds, full_baths, sqft, latitude, longitude } }),
+        body: JSON.stringify({ report_id: reportId, client_id: userInfo.id, listing: { id, status, property_type, full_street_line, street, city, state, unit, zip_code, list_price, beds, full_baths, sqft, latitude, longitude } }),
       });
       if (queueResponse.status === 200) {
         window.location.href = `/report/${reportId}`;
