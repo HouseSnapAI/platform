@@ -22,7 +22,7 @@ import { useTheme } from '@mui/material/styles';
 import { useUser } from '@auth0/nextjs-auth0/client';
 
 // ** Util Imports
-import { fetchUserInfo } from '@/utils/db';
+import { checkReport, fetchReport, fetchUserInfo } from '@/utils/db';
 
 // ** Icon Imports
 import { IconGraph, IconMap, IconPaywall } from '@tabler/icons-react';
@@ -35,18 +35,44 @@ const ChatPage = () => {
   // ** User States
   const {user} = useUser();
   const [userInfo, setUserInfo] = useState<User | null>(null)
+ 
+  // ** Report States
+  const [data, setData] = useState({status: 'empty'});
+  const [status, setStatus] = useState('empty');
+  const [authReport, setAuthReport] = useState(false);
 
   const { reportId } = useParams();
-  
-  // ** Drawer States
 
   const theme = useTheme();
 
-  const [data, setData] = useState(null);
-  const [lambdaFinished, setLambdaFinished] = useState(false);
+ 
 
   useEffect(() => {
+    const createEventSource = async () => {
+      console.log('Checking report validity for reportId:', reportId[0], 'and userId:', userInfo?.id);
+      const valid = await checkReport(reportId[0] as string, userInfo?.id as string);
+      console.log('Report validity:', valid);
+      setAuthReport(valid);
+      if(valid){
+        console.log('Fetching report for reportId:', reportId[0]);
+        const report = await fetchReport(reportId[0] as string);
+        if (report){
+          console.log('Report fetched successfully:', report);
+          setData({...report, status: 'populated'});
+        } else {
+          console.log('No report found, setting status to empty');
+          setData({status: 'empty'});
+        }
+      }
+    }
     if(userInfo?.id){
+      createEventSource();
+    }
+  }, [reportId[0], userInfo?.id]);
+
+  useEffect(() => {
+    
+    if(userInfo?.id && authReport && data?.status == 'empty'){
         console.log('Setting up EventSource');
         const clientId = userInfo?.id;
         const eventSource = new EventSource(`/api/report/event?clientId=${clientId}`);
@@ -55,15 +81,18 @@ const ChatPage = () => {
         console.log('Received event:', event);
         const message = JSON.parse(event.data);
         console.log('Parsed message:', message);
-        if (message === 'Database updated') {
-            console.log('Database updated message received');
-            const response = await fetch(`/api/report/${reportId}`);
-            const updatedData = await response.json();
-            console.log('Fetched updated data:', updatedData);
-            setData(updatedData);
-        } else if (message === 'Lambda finished') {
+        setStatus(message.message);
+        if (message.message === 'complete') {
             console.log('Lambda finished message received');
-            setLambdaFinished(true);
+            const report = await fetchReport(reportId[0] as string);
+            if (report){
+              console.log('Report fetched successfully:', report);
+              setData({...report, status: 'populated'});
+            } else {
+              console.log('No report found, setting status to empty');
+              setData({status: 'empty'});
+            }
+            eventSource.close();
         }
         };
 
@@ -73,7 +102,7 @@ const ChatPage = () => {
         };
     }
 
-  }, [userInfo]);
+  }, [userInfo, authReport, data]);
 
   // Fetch user information from DB
   useEffect(() => {
@@ -127,7 +156,7 @@ const ChatPage = () => {
         </Box>
         
         <Box className="flex w-full h-[calc(100vh-60px)] flex-grow">
-            <Typography color="text.secondary">Report Goes Here {reportId} Data: {JSON.stringify(data)} Lambda Finished: {lambdaFinished.toString()} </Typography>
+            <Typography color="text.secondary">Report Goes Here {reportId} Data: {JSON.stringify(data)} Lambda Finished: {status} </Typography>
         </Box>
       </Box>
       

@@ -1,3 +1,4 @@
+import { report } from "process";
 import {Chat, ListingType, User } from "./types";
 import { HumanMessage } from '@langchain/core/messages';
 
@@ -249,3 +250,35 @@ export const fetchListing = async ({ ids }: FetchListingType) => {
     return { status: 500, message: 'Internal server error' };
   }
 };
+
+// REPORT FUNCTIONS
+export const checkReport = async (reportId: string, userId: string) => {
+  const response = await fetch(`/api/report/check`, {
+    method: 'POST',
+    body: JSON.stringify({ report_id: reportId, user_id: userId }),
+  });
+
+  if (response.status === 200) {
+    return true
+  } else {
+    return false
+  }
+}
+
+export const fetchReport = async(report_id:string) =>{
+  const response = await fetch(`/api/report/fetch`, {
+    method: 'POST',
+    body: JSON.stringify({ report_id: report_id }),
+  });
+
+  if (response.status === 200) {
+    const data = await response.json()
+    if (data.status === 'incomplete'){
+      return null
+    } else {
+      return data
+    }
+  } else {
+    return null
+  }
+}

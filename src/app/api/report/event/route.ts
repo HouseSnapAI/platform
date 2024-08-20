@@ -56,8 +56,8 @@ export const POST = async function handler(req: NextRequest) {
   const { message, clientId } = body;
   console.log('Message:', message);
   console.log('Client ID In POST:', clientId);
-  if (message === 'Lambda finished' && clientId) {
-    notifyClient(clientId, { message: 'Lambda finished' });
+  if (clientId) {
+    notifyClient(clientId, { message });
     return NextResponse.json({ message: 'Client notified' }, { status: 200 });
   }
   return NextResponse.json({ message: 'Invalid message or clientId' }, { status: 400 });
