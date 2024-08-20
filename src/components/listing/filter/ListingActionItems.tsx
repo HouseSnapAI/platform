@@ -1,5 +1,5 @@
 // ** Next Imports
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -7,12 +7,17 @@ import Modal from '@mui/material/Modal'
 import Typography from '@mui/material/Typography'
 
 // ** Icon Imports
-import { IconLock, IconSparkles, IconUser } from '@tabler/icons-react'
+import { IconLock, } from '@tabler/icons-react'
 
 // ** Types
 import { ListingType, User } from '@/utils/types'
+
+// ** Custom Components
 import PricingPaymentComponent from '@/components/reports/pricing/PricingPageComponent'
 import ReportPage from '@/components/reports/ReportPage'
+import { checkReportByListing } from '@/utils/db'
+
+// ** Util Imports
 
 type ListingActionItemProps = {
     userInfo: User | null
@@ -22,18 +27,33 @@ type ListingActionItemProps = {
 const ListingActionItems = ({userInfo, listing}: ListingActionItemProps) => {
     const [open, setOpen] = useState<boolean>(false)
     const [reportOpen, setReportOpen] = useState<boolean>(false)
+    const [reportExists, setReportExists] = useState<{valid: boolean, data: any}>({valid: false, data: null})
 
     const handleReportClick = () => {
-        if(userInfo && userInfo?.reports_remaining > 0){
+        if(reportExists.valid){
+            window.open(`/report/${reportExists.data.report_id}`, '_blank')
+            setOpen(false)
+            setReportOpen(false)
+        } else if(userInfo && userInfo?.reports_remaining > 0){
             console.log('report clicked')
-            // setOpen(true)
             setReportOpen(true)
         } else {
             console.log('no reports remaining')
-            // setReportOpen(true)
             setOpen(true)
         }
     }
+
+    useEffect(() => {
+        const checkReportExists = async () => {
+            if(listing != 'loading' && listing != null && userInfo != null){
+                const res = await checkReportByListing(listing?.id as string, userInfo?.id as string)
+                setReportExists(res)
+                console.log("RES",res)
+            }
+        }
+
+        checkReportExists()
+    }, [listing])
 
   return (
 <>

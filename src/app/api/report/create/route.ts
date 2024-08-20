@@ -60,6 +60,7 @@ export const POST = withApiAuthRequired(async function handler(req: NextRequest)
       .insert({
         user_id: user_id,
         report_id: newRecord.id,
+        listing_id: listing_id
       })
       .select()
       .single();

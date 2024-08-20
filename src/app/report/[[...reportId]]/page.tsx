@@ -56,13 +56,18 @@ const ChatPage = () => {
       if(valid){
         console.log('Fetching report for reportId:', reportId[0]);
         const report = await fetchReport(reportId[0] as string);
-        if (report){
+        if (report && report.status == 'complete'){
           console.log('Report fetched successfully:', report);
           setData({...report });
         } else {
           console.log('No report found, setting status to empty');
           setData({status: 'empty'});
         }
+        if(report.status){
+          setStatus(report.status);
+        }
+      } else{
+        setData({status: 'unauthorized'});
       }
     }
     if(userInfo?.id){

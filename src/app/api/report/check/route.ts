@@ -5,7 +5,8 @@ import { z } from 'zod';
 
 const schema = z.object({
   user_id: z.string(),
-  report_id: z.string(),
+  report_id: z.string().optional(),
+  listing_id: z.string().optional(),
 });
 
 export const POST = withApiAuthRequired(async function handler(req: NextRequest) {
@@ -20,22 +21,32 @@ export const POST = withApiAuthRequired(async function handler(req: NextRequest)
     return NextResponse.json({ message: 'Invalid request body', errors: result.error.errors }, { status: 400 });
   }
 
-  const { user_id, report_id } = result.data;
+  const { user_id, report_id, listing_id } = result.data;
+
+  if (!report_id && !listing_id) {
+    return NextResponse.json({ message: 'Either report_id or listing_id must be provided' }, { status: 400 });
+  }
 
   try {
-    const { data, error } = await supabase
+    const query = supabase
       .from('user_reports')
       .select('*')
-      .eq('user_id', user_id)
-      .eq('report_id', report_id)
-      .single();
+      .eq('user_id', user_id);
 
-    if (error) {
-      console.error('Error fetching report:', error);
-      return NextResponse.json({ message: 'Report not found' }, { status: 404 });
+    if (report_id) {
+      query.eq('report_id', report_id);
+    } else if (listing_id) {
+      query.eq('listing_id', listing_id);
     }
 
-    return NextResponse.json({ message: 'Report found', data }, { status: 200 });
+    const { data, error } = await query.single();
+
+    if (error) {
+      console.error('Error fetching record:', error);
+      return NextResponse.json({ message: 'Record not found' }, { status: 404 });
+    }
+
+    return NextResponse.json(data, { status: 200 });
   } catch (error) {
     console.error('Error querying Supabase:', error);
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
