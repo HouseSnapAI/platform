@@ -179,7 +179,7 @@ const ListingDrawerContent = ({ listing, email, setUserInfo, userInfo, onClose }
                       bgcolor: "#c243d8",
                     }
                   }} 
-                  onChange={(synth, newTab) => setTab(newTab)} aria-label="lab API tabs example">
+                  onChange={(synth, newTab) => setTab(newTab)}>
                   <Tab sx={{textTransform: 'none'}} label="Summary" value="summary" />
                   <Tab sx={{textTransform: 'none'}} label="Tools" value="tools" />
                 </TabList>
@@ -199,7 +199,7 @@ const ListingDrawerContent = ({ listing, email, setUserInfo, userInfo, onClose }
                   <Typography variant="h6" sx={{ color: 'white' }}>
                     ${listing.list_price.toLocaleString()}
                   </Typography>
-                  <Typography variant="subtitle1" color="textSecondary">Asking Price</Typography>
+                  <Typography variant="subtitle1" color="textSecondary">Listing Price</Typography>
                 </Box>
                 <Box className='flex items-start gap-8'>
                   <Box className='flex flex-col items-start'>
