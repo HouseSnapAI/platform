@@ -242,15 +242,7 @@ const ChatPage = () => {
       
     </Box> : 
     <Box className="flex w-[100vw] h-[100vh] overflow-hidden flex-row bg-black relative">
-      <Box className="w-[67px] h-[100vh] bg-[#111111] border-[#3a3939]"></Box>
-      <Box className="flex-1 items-center justify-center p-4 w-[64%]">
-        <Skeleton variant="rectangular" height={60} />
-        <Skeleton variant="text" />
-        <Skeleton variant="text" />
-        <Skeleton variant="rectangular" height={400} />
-        <Skeleton variant="text" />
-        <Skeleton variant="text" />
-      </Box>
+      Data: {JSON.stringify(data)} status: {status} authReport: {authReport}
     </Box>
   )
 }
