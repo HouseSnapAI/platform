@@ -242,7 +242,7 @@ const ChatPage = () => {
       
     </Box> : 
     <Box className="flex w-[100vw] h-[100vh] overflow-hidden flex-row bg-black relative">
-      Data: {JSON.stringify(data)} status: {status} authReport: {authReport}
+      <Typography color="white">Data: {JSON.stringify(data)} status: {status} authReport: {authReport.toString()}</Typography>
     </Box>
   )
 }
