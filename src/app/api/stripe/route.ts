@@ -66,7 +66,6 @@ export async function POST(req: NextRequest) {
         .update({ 
           plan: 'paid',
           reports_remaining: newReportsRemaining,
-          customer_details: session.customer_details
         })
         .eq('id', userId);
 
@@ -83,7 +82,8 @@ export async function POST(req: NextRequest) {
         currency: session.currency,
         status: session.status,
         products: lineItems.data[0].description,
-        discount_code: discountCode
+        discount_code: discountCode,
+        customer_details: session.customer_details
       })
       console.log('Supabase update successful:', dataPayments);
     
