@@ -1,7 +1,7 @@
 import { loansAdjustment } from './vars';
 import { supabase } from '@/supabase/client';
 
-export async function mortgageCalc(listPrice: number, hoaFees: number, creditScore: number, downpayment: number) {
+export async function mortgageCalc(listPrice: number, creditScore: number, downpayment: number) {
     const loanAmount = listPrice - downpayment;
     const ltv = (loanAmount / listPrice) * 100;
 
@@ -67,12 +67,9 @@ export async function mortgageCalc(listPrice: number, hoaFees: number, creditSco
     const lowerEndTax = (0.01 * listPrice) / 12;
     const upperEndTax = (0.02 * listPrice) / 12;
 
-    const estimatedMonthlyPaymentLower = monthlyMortgagePayment + hoaFees + lowerEndTax;
-    const estimatedMonthlyPaymentUpper = monthlyMortgagePayment + hoaFees + upperEndTax;
-
     return {
         monthlyMortgagePayment,
-        estimatedMonthlyPaymentLower,
-        estimatedMonthlyPaymentUpper
+        lowerEndTax,
+        upperEndTax
     };
 }

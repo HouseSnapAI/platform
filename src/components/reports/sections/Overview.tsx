@@ -27,6 +27,7 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearSca
 // ** Types
 import { ListingType, MarketTrends, Report } from '@/utils/types';
 import ImageSlider from '@/components/listing/ImageSlider';
+import Chip from '@mui/material/Chip';
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 
@@ -40,6 +41,15 @@ const ListingDetails = ({ listing }: { listing: ListingType }) => {
 
   return (
     <Box className='bg-[#1e1e1e] w-[100%] px-5 py-4 rounded-md mt-[10px]'>
+        <Box className='flex items-center mb-2 justify-between gap-[10px]'>
+            <Box className='flex items-end gap-[10px]'>
+                <Typography className='' fontSize={18} color="white">{listing.full_street_line}, {listing.city}, {listing.state} {listing.zip_code}</Typography>
+            </Box>
+            <Box>
+                <Chip label={listing.property_type.split('_').map(word => word.charAt(0).toUpperCase() + word.toLowerCase().slice(1)).join(' ')} sx={{ marginRight: 1, backgroundColor: '#444', color: 'white' }} />
+                <Chip label={listing.status.split('_').map(word => word.charAt(0).toUpperCase() + word.toLowerCase().slice(1)).join(' ')} sx={{ marginRight: 1, backgroundColor: '#444', color: 'white' }} />
+            </Box>
+        </Box>
       <ImageSlider listing={listing} />
       <Box sx={{ textAlign: 'center', marginBottom: 2, marginTop: 2 }}>
         <Box className='flex justify-between items-start flex-wrap gap-2'>
