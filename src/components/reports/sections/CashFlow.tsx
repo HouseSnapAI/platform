@@ -13,7 +13,7 @@ import Slider from '@mui/material/Slider';
 import Tooltip from '@mui/material/Tooltip';
 
 // ** Types Imports
-import { ListingType, Report, RentCashFlow } from '@/utils/types';
+import { ListingType, Report } from '@/utils/types';
 
 // ** Style Imports
 import { useTheme } from '@mui/material/styles';
@@ -23,6 +23,11 @@ import { mortgageCalc } from './utils/helper';
 import InputAdornment from '@mui/material/InputAdornment';
 import Divider from '@mui/material/Divider';
 import { IconBrandPushbullet, IconChevronDown, IconChevronRight, IconChevronUp, IconInfoCircle, IconLine, IconLineDashed } from '@tabler/icons-react';
+
+import { Pie } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, Tooltip as ChartTooltip } from 'chart.js';
+
+ChartJS.register(ArcElement, ChartTooltip);
 
 type CashFlowProps = {
   data: Report;
@@ -37,7 +42,7 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
   const [creditScore, setCreditScore] = useState<number>(760);
   const [downpayment, setDownpayment] = useState<number>(20);
   const [listingPrice, setListingPrice] = useState<number>(listing.list_price);
-  const [propertyManagerCost, setPropertyManagerCost] = useState<number>(1.2);
+  const [propertyManagerCost, setPropertyManagerCost] = useState<number>(8.5);
   const [isPercentage, setIsPercentage] = useState<boolean>(false);
   const [isPMPercentage, setPMIsPercentage] = useState<boolean>(false);
   const [cashFlow, setCashFlow] = useState<any>({...JSON.parse(data.rent_cash_flow), estimatedCashFlow: 0});
@@ -78,9 +83,9 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
   const handleInputChange = (setter: React.Dispatch<React.SetStateAction<number>>, isCurrency: boolean) => (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     const regex = isCurrency ? /^\d*\.?\d{0,2}$/ : /^\d*\.?\d{0,2}$/; // Allow up to two decimal places
-    if (regex.test(value)) {
-      const numericValue = Number(value);
-      setter(numericValue); // No need to use parseFloat or toFixed here
+    if (regex.test(value) || value === '' || value === '.') {
+      //@ts-ignore
+      setter(value); // Set the value directly to allow intermediate states like '8.'
     }
   };
 
@@ -89,11 +94,67 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
     setter(value as number);
   };
 
+  const chartData = {
+    labels: [
+      'Estimated Maintenance',
+      'Property Management Cost',
+      'HOA Fee',
+      'Estimated Property Tax',
+      'Mortgage Fee',
+      'Estimated Cash Flow'
+    ],
+    datasets: [
+      {
+        data: [
+          listing.list_price * 0.01 / 12,
+          !isPMPercentage ? propertyManagerCost : propertyManagerCost * cashFlow.estimated_rent / 100,
+          (listing.hoa_fee && listing.hoa_fee > 0) ? listing.hoa_fee : 0,
+          (taxRange[0] + taxRange[1]) / 2,
+          monthlyPayment || 0,
+          cashFlow.estimatedCashFlow
+        ],
+        hoverBackgroundColor: [
+          'rgba(153, 51, 51, 0.4)', // Dark Red
+          'rgba(38, 70, 83, 0.4)', // Dark Blue
+          'rgba(204, 153, 0, 0.4)', // Dark Yellow
+          'rgba(0, 102, 102, 0.4)', // Dark Teal
+          'rgba(102, 51, 153, 0.4)', // Dark Purple
+          'rgba(153, 76, 0, 0.4)'  // Dark Orange
+        ],
+        backgroundColor: [
+          'rgba(153, 51, 51, .2)', // Dark Red
+          'rgba(38, 70, 83, .2)', // Dark Blue
+          'rgba(204, 153, 0, .2)', // Dark Yellow
+          'rgba(0, 102, 102, .2)', // Dark Teal
+          'rgba(102, 51, 153, .2)', // Dark Purple
+          'rgba(153, 76, 0, .2)'  // Dark Orange
+        ],
+        borderColor: [
+          'rgba(153, 51, 51, 1)', // Dark Red
+          'rgba(38, 70, 83, 1)', // Dark Blue
+          'rgba(204, 153, 0, 1)', // Dark Yellow
+          'rgba(0, 102, 102, 1)', // Dark Teal
+          'rgba(102, 51, 153, 1)', // Dark Purple
+          'rgba(153, 76, 0, 1)'  // Dark Orange
+        ],
+        borderWidth: 1
+      }
+    ]
+  };
+
+  const chartOptions = {
+    plugins: {
+      legend: {
+        display: false
+      }
+    }
+  };
+
   return (
     <Grid container spacing={2} p={2} className="transition-all ease-in-out duration-500" sx={{ '& .MuiInputBase-input': { paddingRight: "4px", paddingLeft: "4px", paddingTop: "2px", paddingBottom: "2px" } }}>
       {/* Cash Flow Input Section */}
-      <Grid item xs={4}>
-        <Card>
+      <Grid item xs={4} sx={{ height: '450px' }}> {/* Adjust the height as needed */}
+        <Card sx={{ height: '100%' }}>
           <CardContent className="transition-all ease-in-out duration-300 relative">
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Typography fontSize={14} fontWeight={600} sx={{ margin: 0 }}>
@@ -201,8 +262,8 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
         </Card>
       </Grid>
       {/* Cash Flow Output Section */}
-      <Grid item xs={4}>
-        <Card>
+      <Grid item xs={4} sx={{ height: '450px' }}> {/* Adjust the height as needed */}
+        <Card sx={{ height: '100%' }}>
           <CardContent className="relative">
             <Tooltip title={`Data collected by analyzing ${cashFlow.basis_number} similar properties in the area.`}>
               <IconInfoCircle color="#6f6f6f" className="absolute top-5 right-4" size={14} style={{ cursor: 'pointer' }} />
@@ -305,12 +366,17 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
           </CardContent>
         </Card>
       </Grid>
-      {/* Additional Info Section */}
-      <Grid item xs={4}>
-        <Card>
+      {/* Chart Section */}
+      <Grid item xs={4} sx={{ height: '450px' }}> {/* Adjust the height as needed */}
+        <Card sx={{ height: '100%' }}>
           <CardContent>
-            <Typography variant="h6">Additional Info</Typography>
-            {/* Add any additional content here */}
+            <Box className="flex flex-col gap-2 p-4 h-[300px]">
+              <Typography fontSize={14} fontWeight={600} sx={{ margin: 0 }}>Estimated Rent Split</Typography>
+              <Typography fontSize={14} color="text.secondary" sx={{ marginBottom: 2 }}>
+              Estimated Rent Split by Property Type
+              </Typography>
+              <Pie data={chartData} options={chartOptions} className="self-center" />
+            </Box>
           </CardContent>
         </Card>
       </Grid>
