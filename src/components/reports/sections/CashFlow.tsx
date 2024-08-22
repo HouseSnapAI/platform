@@ -22,7 +22,7 @@ import { useTheme } from '@mui/material/styles';
 import { mortgageCalc } from './utils/helper';
 import InputAdornment from '@mui/material/InputAdornment';
 import Divider from '@mui/material/Divider';
-import { IconChevronDown, IconChevronRight, IconChevronUp, IconInfoCircle } from '@tabler/icons-react';
+import { IconBrandPushbullet, IconChevronDown, IconChevronRight, IconChevronUp, IconInfoCircle, IconLine, IconLineDashed } from '@tabler/icons-react';
 
 type CashFlowProps = {
   data: Report;
@@ -52,41 +52,35 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
     setTaxRange([lowerEndTax, upperEndTax]);
 
     const hoaFee = (listing.hoa_fee && listing.hoa_fee > 0) ? listing.hoa_fee : 0;
-    const estimatedCashFlow = cashFlow.estimated_rent * 0.5 - monthlyMortgagePayment - (taxRange[0]+taxRange[1])/2 - hoaFee;
+    const propertyManagerCostValue = isPMPercentage ? (propertyManagerCost / 100) * cashFlow.estimated_rent : propertyManagerCost;
+    const estimatedCashFlow = cashFlow.estimated_rent - monthlyMortgagePayment - (taxRange[0]+taxRange[1])/2 - hoaFee - propertyManagerCostValue - (0.01 * listing.list_price/12);
     setCashFlow({ ...cashFlow, estimatedCashFlow });
   };
 
   // Effect to calculate values on component mount
   useEffect(() => {
     handleCalculate();
-  }, []);
+  }, [downpayment, propertyManagerCost, listingPrice, creditScore]);
 
   // Effect to update downpayment based on percentage toggle
   useEffect(() => {
     const downpaymentValue = !isPercentage ? (downpayment / 100) * listing.list_price : downpayment/listing.list_price * 100;
-    setDownpayment(downpaymentValue);
+    setDownpayment(parseFloat(downpaymentValue.toFixed(2))); // Ensure two decimal places
   }, [isPercentage]);
 
   // Effect to update property manager cost based on percentage toggle
   useEffect(() => {
-    const downpaymentValue = !isPMPercentage ? (propertyManagerCost / 100) * cashFlow.estimated_rent : propertyManagerCost/cashFlow.estimated_rent * 100;
-    setPropertyManagerCost(downpaymentValue);
+    const propertyManagerCostValue = !isPMPercentage ? (propertyManagerCost / 100) * cashFlow.estimated_rent : propertyManagerCost/cashFlow.estimated_rent * 100;
+    setPropertyManagerCost(parseFloat(propertyManagerCostValue.toFixed(2))); // Ensure two decimal places
   }, [isPMPercentage]);
 
   // Function to handle input changes
   const handleInputChange = (setter: React.Dispatch<React.SetStateAction<number>>, isCurrency: boolean) => (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    const regex = isCurrency ? /^\d*\.?\d{0,2}$/ : null
-    if(regex) {
-        if (regex.test(value)) {
-            const numericValue = Number(value);
-            if (isCurrency) {
-                setter(numericValue);
-            }
-        }
-    } else{
-        const numericValue = Math.min(Math.max(Number(value), 0), 100);
-        setter(numericValue);
+    const regex = isCurrency ? /^\d*\.?\d{0,2}$/ : /^\d*\.?\d{0,2}$/; // Allow up to two decimal places
+    if (regex.test(value)) {
+      const numericValue = Number(value);
+      setter(numericValue); // No need to use parseFloat or toFixed here
     }
   };
 
@@ -96,7 +90,7 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
   };
 
   return (
-    <Grid container spacing={2} p={2} className="transition-all ease-in-out duration-500" sx={{ '& .MuiInputBase-input': { padding: 0 } }}>
+    <Grid container spacing={2} p={2} className="transition-all ease-in-out duration-500" sx={{ '& .MuiInputBase-input': { paddingRight: "4px", paddingLeft: "4px", paddingTop: "2px", paddingBottom: "2px" } }}>
       {/* Cash Flow Input Section */}
       <Grid item xs={4}>
         <Card>
@@ -138,6 +132,7 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
                   <TextField
                     InputProps={{
                       startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                      style:{fontSize: 14}
                     }}
                     size="small"
                     fullWidth
@@ -148,7 +143,7 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
                 </Box>  
               </Box>
               {/* Property Manager Cost Input */}
-              <Box>
+              <Box className="flex flex-col">
                 <Box className="flex gap-2 items-center justify-between">
                   <Typography fontSize={14} color="text.secondary" className="flex items-center gap-2" sx={{ marginBottom: 1 }}>
                     Property Manager Cost 
@@ -156,7 +151,7 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
                       <IconInfoCircle color="#6f6f6f" className="" size={14} style={{ cursor: 'pointer' }} />
                     </Tooltip>
                   </Typography>
-                  <Box className="flex rounded-md w-min mb-2" sx={{ backgroundColor: 'black'}}>
+                  <Box className="flex rounded-md w-min mb-2 mt-2" sx={{ backgroundColor: 'black'}}>
                     <Box fontSize={12} fontWeight={600} sx={{ margin: 0 }} className={`${isPMPercentage ? 'bg-[#6f6f6f] text-white' : 'bg-transparent text-[#6f6f6f]'} px-2 py-1 rounded-md cursor-pointer transition-all ease-in-out duration-200`} onClick={() => setPMIsPercentage(true)}>  Percentage</Box>
                     <Box fontSize={12} fontWeight={600} sx={{ margin: 0 }} className={`${isPMPercentage ? 'bg-transparent text-[#6f6f6f]' : 'bg-[#6f6f6f] text-white'} px-2 py-1 rounded-md cursor-pointer transition-all ease-in-out duration-200`} onClick={() => setPMIsPercentage(false)}> Amount</Box>
                   </Box>
@@ -165,6 +160,7 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
                   fullWidth
                   InputProps={{
                     startAdornment: <InputAdornment position="start">{isPMPercentage ? '%' : '$'}</InputAdornment>,
+                    style:{fontSize: 14}
                   }}
                   value={propertyManagerCost}
                   onChange={handleInputChange(setPropertyManagerCost, !isPMPercentage)}
@@ -173,7 +169,7 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
               </Box>
               {/* Down Payment Cost Input */}
               <Box>
-                <Box className="flex gap-2 items-center justify-between">
+                <Box className="flex gap-2 items-center justify-between mt-2">
                   <Typography fontSize={14} color="text.secondary" className="flex items-center gap-2" sx={{ marginBottom: 1 }}>
                     Down Payment Cost
                     <Tooltip title={`Percentage/Amount of Listing Price`}>
@@ -189,6 +185,7 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
                   fullWidth
                   InputProps={{
                     startAdornment: <InputAdornment position="start">{isPercentage ? '%' : '$'}</InputAdornment>,
+                    style:{fontSize: 14}
                   }}
                   value={downpayment}
                   onChange={handleInputChange(setDownpayment, !isPercentage)}
@@ -196,7 +193,7 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
                 />
               </Box>
               {/* Calculate Button */}
-              <Button variant="contained" color="primary" size="small" fullWidth onClick={handleCalculate} sx={{ textTransform: 'none' }}>
+              <Button variant="contained" color="primary" size="small" className="mt-4" fullWidth onClick={handleCalculate} sx={{ textTransform: 'none' }}>
                 Calculate
               </Button>
             </Box>
@@ -220,7 +217,7 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
             {cashFlow && (
               <Box mt={2}>
                 {/* Estimated Rent */}
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                   <Typography fontSize={14} >Estimated Rent</Typography>
                   <Typography fontSize={14} className="flex items-center gap-2">
                     <IconChevronUp size={12} color="green" />
@@ -228,18 +225,18 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
                   </Typography>
                 </Box>
                 {/* Rent per Sqft */}
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                  <Typography fontSize={14} color="text.secondary" className="flex items-center" > 
-                    <IconChevronRight size={14} color="#6f6f6f" /> Rent per Sqft
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb:1}}>
+                  <Typography fontSize={14} color="text.secondary" className="flex items-center mr-2" > 
+                    <IconLineDashed size={10} color="#6f6f6f" /> Rent per Sqft
                   </Typography>
                   <Typography fontSize={14} color="text.secondary">
                     {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(cashFlow.rent_per_sqft)}
                   </Typography>
                 </Box>
                 {/* Rent per Lot Sqft */}
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb:1 }}>
                   <Typography fontSize={14} color="text.secondary" className="flex items-center" > 
-                    <IconChevronRight size={14} color="#6f6f6f" /> Rent per Lot Sqft
+                    <IconLineDashed size={10} color="#6f6f6f" /> Rent per Lot Sqft
                   </Typography>
                   <Typography fontSize={14} color="text.secondary">
                     {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(cashFlow.rent_per_lot_sqft)}
@@ -251,6 +248,13 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
                   <Typography fontSize={14} className="flex items-center gap-2">
                     <IconChevronDown size={12} color="red" />
                     {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(listing.list_price * 0.01/12)}
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                  <Typography fontSize={14} >Estimated Property Manager Cost </Typography>
+                  <Typography fontSize={14} className="flex items-center gap-2">
+                    <IconChevronDown size={12} color="red" />
+                    {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(!isPMPercentage ? propertyManagerCost : propertyManagerCost * cashFlow.estimated_rent/100)}
                   </Typography>
                 </Box>
                 {/* Monthly HOA Fee */}
