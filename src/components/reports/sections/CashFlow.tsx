@@ -42,12 +42,25 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
   const [creditScore, setCreditScore] = useState<number>(760);
   const [downpayment, setDownpayment] = useState<number>(20);
   const [listingPrice, setListingPrice] = useState<number>(listing.list_price);
+  const [insurancePrice, setInsurancePrice] = useState<number>(listing.list_price * 0.00040333333);
   const [propertyManagerCost, setPropertyManagerCost] = useState<number>(8.5);
   const [isPercentage, setIsPercentage] = useState<boolean>(false);
   const [isPMPercentage, setPMIsPercentage] = useState<boolean>(false);
   const [cashFlow, setCashFlow] = useState<any>({...JSON.parse(data.rent_cash_flow), estimatedCashFlow: 0});
   const [monthlyPayment, setMonthlyPayment] = useState<number|null>(null);
   const [taxRange, setTaxRange] = useState<number[]>([listing.list_price * 0.01 / 12, listing.list_price * 0.02 / 12]);
+
+// State for Cash Reserves
+  const [loanAmount, setLoanAmount] = useState<number>(listing.list_price * 0.01);
+  const [appraisalFee, setAppraisalFee] = useState<number>(600); // Default to mid-range
+  const [taxAppraisalFee, setTaxAppraisalFee] = useState<number>(150); // Default to mid-range
+  const [ownersTitleInsurance, setOwnersTitleInsurance] = useState<number>(listing.list_price * 0.0075);
+  const [titleSearchFee, setTitleSearchFee] = useState<number>(0); // Placeholder, update as needed
+  const [lendersTitleInsurance, setLendersTitleInsurance] = useState<number>(listing.list_price * 0.0001);
+  const [governmentRecordingFee, setGovernmentRecordingFee] = useState<number>(125);
+  const [propertyTax, setPropertyTax] = useState<number>(0); // Placeholder, update with smart_asset % by county
+  const [prepaidInterestRate, setPrepaidInterestRate] = useState<number>(0); // Placeholder, update as needed
+  const [homeownersInsurance, setHomeownersInsurance] = useState<number>(listing.list_price * 0.004376 / 6);
 
   // Function to handle the calculation of mortgage and cash flow
   const handleCalculate = async () => {
@@ -58,14 +71,14 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
 
     const hoaFee = (listing.hoa_fee && listing.hoa_fee > 0) ? listing.hoa_fee : 0;
     const propertyManagerCostValue = isPMPercentage ? (propertyManagerCost / 100) * cashFlow.estimated_rent : propertyManagerCost;
-    const estimatedCashFlow = cashFlow.estimated_rent - monthlyMortgagePayment - (taxRange[0]+taxRange[1])/2 - hoaFee - propertyManagerCostValue - (0.01 * listing.list_price/12);
+    const estimatedCashFlow = cashFlow.estimated_rent - monthlyMortgagePayment - (taxRange[0]+taxRange[1])/2 - hoaFee - propertyManagerCostValue - (0.01 * listing.list_price/12) - insurancePrice;
     setCashFlow({ ...cashFlow, estimatedCashFlow });
   };
 
   // Effect to calculate values on component mount
   useEffect(() => {
     handleCalculate();
-  }, [downpayment, propertyManagerCost, listingPrice, creditScore]);
+  }, [downpayment, propertyManagerCost, listingPrice, creditScore, insurancePrice]);
 
   // Effect to update downpayment based on percentage toggle
   useEffect(() => {
@@ -78,6 +91,10 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
     const propertyManagerCostValue = !isPMPercentage ? (propertyManagerCost / 100) * cashFlow.estimated_rent : propertyManagerCost/cashFlow.estimated_rent * 100;
     setPropertyManagerCost(parseFloat(propertyManagerCostValue.toFixed(2))); // Ensure two decimal places
   }, [isPMPercentage]);
+
+  useEffect(() => {
+    setInsurancePrice(listingPrice * 0.00040333333);
+  }, [listingPrice]);
 
   // Function to handle input changes
   const handleInputChange = (setter: React.Dispatch<React.SetStateAction<number>>, isCurrency: boolean) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -101,7 +118,8 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
       'HOA Fee',
       'Estimated Property Tax',
       'Mortgage Fee',
-      'Estimated Cash Flow'
+      'Estimated Cash Flow',
+      'Monthly Insurance'
     ],
     datasets: [
       {
@@ -111,7 +129,8 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
           (listing.hoa_fee && listing.hoa_fee > 0) ? listing.hoa_fee : 0,
           (taxRange[0] + taxRange[1]) / 2,
           monthlyPayment || 0,
-          cashFlow.estimatedCashFlow
+          cashFlow.estimatedCashFlow,
+          insurancePrice
         ],
         hoverBackgroundColor: [
           'rgba(153, 51, 51, 0.4)', // Dark Red
@@ -151,21 +170,23 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
   };
 
   return (
-    <Grid container spacing={2} p={2} className="transition-all ease-in-out duration-500" sx={{ '& .MuiInputBase-input': { paddingRight: "4px", paddingLeft: "4px", paddingTop: "2px", paddingBottom: "2px" } }}>
+    <Box className="flex pb-10 overflow-auto">
+
+    <Grid container spacing={2} p={2} mb={10} className="transition-all ease-in-out duration-500" sx={{ '& .MuiInputBase-input': { paddingRight: "4px", paddingLeft: "4px", paddingTop: "2px", paddingBottom: "2px" } }}>
       {/* Cash Flow Input Section */}
-      <Grid item xs={4} sx={{ height: '450px' }}> {/* Adjust the height as needed */}
+      <Grid item xs={4} sx={{ height: '500px' }}> {/* Adjust the height as needed */}
         <Card sx={{ height: '100%' }}>
           <CardContent className="transition-all ease-in-out duration-300 relative">
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Typography fontSize={14} fontWeight={600} sx={{ margin: 0 }}>
-                Cash Flow
+                Calculate
               </Typography>
               <Tooltip title={`Calculated using up to date Mortgage Prime Rates.`}>
                 <IconInfoCircle color="#6f6f6f" className="absolute top-5 right-4" size={14} style={{ cursor: 'pointer' }} />
               </Tooltip>
             </Box>
             <Typography fontSize={14} color="text.secondary" sx={{ marginBottom: 2 }}>
-              Calculated from inputted property details.
+              Cash Flow by filling out the fields below.
             </Typography>
 
             <Box component="form" noValidate autoComplete="off">
@@ -183,7 +204,7 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
                     step={1}
                     valueLabelDisplay="off"
                     sx={{ marginBottom: 2 }}
-                  />
+                    />
                 </Box>  
                 {/* Listing Price Input */}
                 <Box flex={1}>
@@ -200,7 +221,7 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
                     value={listingPrice}
                     onChange={handleInputChange(setListingPrice, true)}
                     sx={{ marginBottom: 2 }}
-                  />
+                    />
                 </Box>  
               </Box>
               {/* Property Manager Cost Input */}
@@ -253,6 +274,25 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
                   sx={{ marginBottom: 2 }}
                 />
               </Box>
+
+              <Box flex={1}>
+                  <Typography fontSize={14} color="text.secondary" sx={{ marginBottom: 1 }}>
+                    Estimated Monthly Insurance
+                  </Typography>
+                  <TextField
+                    InputProps={{
+                      startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                      style:{fontSize: 14}
+                    }}
+                    size="small"
+                    fullWidth
+                    value={insurancePrice}
+                    //@ts-ignore
+                    onChange={(e)=>setInsurancePrice(e.target.value)}
+                    sx={{ marginBottom: 2 }}
+                  />
+                </Box> 
+
               {/* Calculate Button */}
               <Button variant="contained" color="primary" size="small" className="mt-4" fullWidth onClick={handleCalculate} sx={{ textTransform: 'none' }}>
                 Calculate
@@ -262,7 +302,7 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
         </Card>
       </Grid>
       {/* Cash Flow Output Section */}
-      <Grid item xs={4} sx={{ height: '450px' }}> {/* Adjust the height as needed */}
+      <Grid item xs={4} sx={{ height: '500px' }}> {/* Adjust the height as needed */}
         <Card sx={{ height: '100%' }}>
           <CardContent className="relative">
             <Tooltip title={`Data collected by analyzing ${cashFlow.basis_number} similar properties in the area.`}>
@@ -272,7 +312,7 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
               Cash Flow
             </Typography>
             <Typography fontSize={14} color="text.secondary" sx={{ marginBottom: 2 }}>
-              Calculated from inputted property details.
+              Calculated from property details.
             </Typography>
 
             {cashFlow && (
@@ -334,6 +374,13 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
                     {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format((taxRange[0]+taxRange[1])/2)}
                   </Typography>
                 </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                    <Typography fontSize={14} >Monthly Insurance</Typography>
+                    <Typography fontSize={14} className="flex items-center gap-2">
+                      <IconChevronDown size={12} color="red" />
+                      {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(insurancePrice)}
+                    </Typography>
+                  </Box>
                 {/* Monthly Mortgage Payment */}
                 {monthlyPayment && (
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
@@ -367,14 +414,14 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
         </Card>
       </Grid>
       {/* Chart Section */}
-      <Grid item xs={4} sx={{ height: '450px' }}> {/* Adjust the height as needed */}
+      <Grid item xs={4} sx={{ height: '500px' }}> {/* Adjust the height as needed */}
         <Card sx={{ height: '100%' }}>
           <CardContent>
-            <Box className="flex flex-col gap-2 p-4 h-[300px]">
-              <Typography fontSize={14} fontWeight={600} sx={{ margin: 0 }}>Estimated Rent Split</Typography>
-              <Typography fontSize={14} color="text.secondary" sx={{ marginBottom: 2 }}>
-              Estimated Rent Split by Property Type
-              </Typography>
+            <Typography fontSize={14} fontWeight={600} sx={{ margin: 0 }}>Estimated Rent Split</Typography>
+            <Typography fontSize={14} color="text.secondary" sx={{ marginBottom: 2 }}>
+            Estimated Rent Split by Property Type
+            </Typography>
+            <Box className="flex flex-col gap-2 p-4 h-[350px]">
               <Pie data={chartData} options={chartOptions} className="self-center" />
             </Box>
           </CardContent>
@@ -384,8 +431,174 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
       <Grid item xs={8}>
         <Card>
           <CardContent>
-            <Typography variant="h6">More Details</Typography>
-            {/* Add any additional content here */}
+          <Typography fontSize={14} fontWeight={600} sx={{ margin: 0 }}>Cash Reserve Calculator</Typography>
+            <Typography fontSize={14} color="text.secondary" sx={{ marginBottom: 2 }}>
+            Cash Reserve by Property Type
+            </Typography>
+            <Box component="form" noValidate autoComplete="off">
+              <Box display="flex" flexDirection="column" gap={2}>
+                <Box display="flex" gap={2}>
+                  <Box flex={1}>
+                    <Typography fontSize={14} color="text.secondary" sx={{ marginBottom: 1 }}>
+                      Loan Amount (1% of loan)
+                    </Typography>
+                    <TextField
+                      fullWidth
+                      value={loanAmount}
+                      onChange={handleInputChange(setLoanAmount, true)}
+                      InputProps={{
+                        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                        style: { fontSize: 14 }
+                      }}
+                      sx={{ marginBottom: 2 }}
+                    />
+                  </Box>
+                  <Box flex={1}>
+                    <Typography fontSize={14} color="text.secondary" sx={{ marginBottom: 1 }}>
+                      Appraisal Fee
+                    </Typography>
+                    <TextField
+                      fullWidth
+                      value={appraisalFee}
+                      onChange={handleInputChange(setAppraisalFee, true)}
+                      InputProps={{
+                        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                        style: { fontSize: 14 }
+                      }}
+                      sx={{ marginBottom: 2 }}
+                    />
+                  </Box>
+                </Box>
+                <Box display="flex" gap={2}>
+                  <Box flex={1}>
+                    <Typography fontSize={14} color="text.secondary" sx={{ marginBottom: 1 }}>
+                      Tax Appraisal Fee
+                    </Typography>
+                    <TextField
+                      fullWidth
+                      value={taxAppraisalFee}
+                      onChange={handleInputChange(setTaxAppraisalFee, true)}
+                      InputProps={{
+                        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                        style: { fontSize: 14 }
+                      }}
+                      sx={{ marginBottom: 2 }}
+                    />
+                  </Box>
+                  <Box flex={1}>
+                    <Typography fontSize={14} color="text.secondary" sx={{ marginBottom: 1 }}>
+                      Owner's Title Insurance
+                    </Typography>
+                    <TextField
+                      fullWidth
+                      value={ownersTitleInsurance}
+                      onChange={handleInputChange(setOwnersTitleInsurance, true)}
+                      InputProps={{
+                        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                        style: { fontSize: 14 }
+                      }}
+                      sx={{ marginBottom: 2 }}
+                    />
+                  </Box>
+                </Box>
+                <Box display="flex" gap={2}>
+                  <Box flex={1}>
+                    <Typography fontSize={14} color="text.secondary" sx={{ marginBottom: 1 }}>
+                      Title Search Fee
+                    </Typography>
+                    <TextField
+                      fullWidth
+                      value={titleSearchFee}
+                      onChange={handleInputChange(setTitleSearchFee, true)}
+                      InputProps={{
+                        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                        style: { fontSize: 14 }
+                      }}
+                      sx={{ marginBottom: 2 }}
+                    />
+                  </Box>
+                  <Box flex={1}>
+                    <Typography fontSize={14} color="text.secondary" sx={{ marginBottom: 1 }}>
+                      Lender's Title Insurance
+                    </Typography>
+                    <TextField
+                      fullWidth
+                      value={lendersTitleInsurance}
+                      onChange={handleInputChange(setLendersTitleInsurance, true)}
+                      InputProps={{
+                        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                        style: { fontSize: 14 }
+                      }}
+                      sx={{ marginBottom: 2 }}
+                    />
+                  </Box>
+                </Box>
+                <Box display="flex" gap={2}>
+                  <Box flex={1}>
+                    <Typography fontSize={14} color="text.secondary" sx={{ marginBottom: 1 }}>
+                      Government Recording Fee
+                    </Typography>
+                    <TextField
+                      fullWidth
+                      value={governmentRecordingFee}
+                      onChange={handleInputChange(setGovernmentRecordingFee, true)}
+                      InputProps={{
+                        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                        style: { fontSize: 14 }
+                      }}
+                      sx={{ marginBottom: 2 }}
+                    />
+                  </Box>
+                  <Box flex={1}>
+                    <Typography fontSize={14} color="text.secondary" sx={{ marginBottom: 1 }}>
+                      6 Months Property Tax
+                    </Typography>
+                    <TextField
+                      fullWidth
+                      value={propertyTax}
+                      onChange={handleInputChange(setPropertyTax, true)}
+                      InputProps={{
+                        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                        style: { fontSize: 14 }
+                      }}
+                      sx={{ marginBottom: 2 }}
+                    />
+                  </Box>
+                </Box>
+                <Box display="flex" gap={2}>
+                  <Box flex={1}>
+                    <Typography fontSize={14} color="text.secondary" sx={{ marginBottom: 1 }}>
+                      Prepaid Interest Rate
+                    </Typography>
+                    <TextField
+                      fullWidth
+                      value={prepaidInterestRate}
+                      onChange={handleInputChange(setPrepaidInterestRate, true)}
+                      InputProps={{
+                        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                        style: { fontSize: 14 }
+                      }}
+                      sx={{ marginBottom: 2 }}
+                    />
+                  </Box>
+                  <Box flex={1}>
+                    <Typography fontSize={14} color="text.secondary" sx={{ marginBottom: 1 }}>
+                      2 Months Homeowners Insurance
+                    </Typography>
+                    <TextField
+                      fullWidth
+                      value={homeownersInsurance}
+                      onChange={handleInputChange(setHomeownersInsurance, true)}
+                      InputProps={{
+                        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                        style: { fontSize: 14 }
+                      }}
+                      sx={{ marginBottom: 2 }}
+                    />
+                  </Box>
+                </Box>
+              </Box>
+            </Box>
           </CardContent>
         </Card>
       </Grid>
@@ -399,6 +612,8 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
         </Card>
       </Grid>
     </Grid>
+    <Box className="h-[100px]"></Box>
+    </Box>
   );
 };
 
