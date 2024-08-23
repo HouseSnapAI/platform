@@ -22,7 +22,7 @@ import { useTheme } from '@mui/material/styles';
 import { mortgageCalc } from './utils/helper';
 import InputAdornment from '@mui/material/InputAdornment';
 import Divider from '@mui/material/Divider';
-import { IconBrandPushbullet, IconChevronDown, IconChevronRight, IconChevronUp, IconInfoCircle, IconLine, IconLineDashed } from '@tabler/icons-react';
+import { IconChevronDown, IconChevronUp, IconInfoCircle, IconLineDashed } from '@tabler/icons-react';
 
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip as ChartTooltip } from 'chart.js';
@@ -35,9 +35,6 @@ type CashFlowProps = {
 };
 
 const CashFlow = ({ data, listing }: CashFlowProps) => {
-  // Initialize theme
-  const theme = useTheme();
-
   // State variables for various inputs and calculations
   const [creditScore, setCreditScore] = useState<number>(760);
   const [downpayment, setDownpayment] = useState<number>(20);
@@ -51,13 +48,13 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
   const [taxRange, setTaxRange] = useState<number[]>([listing.list_price * 0.01 / 12, listing.list_price * 0.02 / 12]);
 
 // State for Cash Reserves
-  const [loanAmount, setLoanAmount] = useState<string>((listing.list_price - ((20 / 100) * listing.list_price) ) * 0.01 + '');
-  const [appraisalFee, setAppraisalFee] = useState<string>('600'); 
-  const [taxAppraisalFee, setTaxAppraisalFee] = useState<string>('150'); 
-  const [ownersTitleInsurance, setOwnersTitleInsurance] = useState<string>((listing.list_price * 0.0075).toFixed(2));
-  const [titleSearchFee, setTitleSearchFee] = useState<string>('250'); 
+  const [loanAmount, setLoanAmount] = useState<string>((listing.list_price - ((20 / 100) * listing.list_price) ) * 0.01 + ''); //gbu
+  const [appraisalFee, setAppraisalFee] = useState<string>('600');  //gbu
+  const [taxAppraisalFee, setTaxAppraisalFee] = useState<string>('150');  //gbu
+  const [ownersTitleInsurance, setOwnersTitleInsurance] = useState<string>((listing.list_price * 0.0075).toFixed(2)); //gbu
+  const [titleSearchFee, setTitleSearchFee] = useState<string>('250'); //gbu
   const [lendersTitleInsurance, setLendersTitleInsurance] = useState<string>((listing.list_price * 0.0001).toFixed(2));
-  const [governmentRecordingFee, setGovernmentRecordingFee] = useState<string>('125');
+  const [governmentRecordingFee, setGovernmentRecordingFee] = useState<string>('125'); //gbu
   const [propertyTax, setPropertyTax] = useState<string>(((listing.list_price * 0.01 / 12 + listing.list_price * 0.02 / 12)/2*6).toFixed(2)); // PULL FROM HOMES.COM, THEN SMARTSHEET TABLE, THEN 0.015
   const [prepaidInterestRate, setPrepaidInterestRate] = useState<string>('0'); 
   const [homeownersInsurance, setHomeownersInsurance] = useState<string>((listing.list_price * 0.004376 / 6).toFixed(2));
@@ -113,10 +110,6 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
       setter(value); // Set the value directly to allow intermediate states like '8.'
     }
   };
-
-  const onlyNumber = (value: string) => {
-    return value.replace(/[^0-9.]/g, ''); // Remove any character that is not a digit or a dot
-  }
 
   // Function to handle slider changes
   const handleSliderChange = (setter: React.Dispatch<React.SetStateAction<number>>) => (e: Event, value: number | number[]) => {
@@ -267,9 +260,9 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
   };
 
   return (
-    <Box className="flex pb-10 overflow-auto w-full h-full">
+    <Box className="flex flex-col pb-10 overflow-auto w-full h-full">
 
-    <Grid container spacing={2} p={2} mb={10} className="transition-all ease-in-out duration-500" sx={{ '& .MuiInputBase-input': { paddingRight: "4px", paddingLeft: "4px", paddingTop: "2px", paddingBottom: "2px" } }}>
+    <Grid container spacing={2} p={2} className="transition-all ease-in-out duration-500" sx={{ '& .MuiInputBase-input': { paddingRight: "4px", paddingLeft: "4px", paddingTop: "2px", paddingBottom: "2px" } }}>
       {/* Cash Flow Input Section */}
       <Grid item xs={4} sx={{ height: '500px' }}> {/* Adjust the height as needed */}
         <Card sx={{ height: '100%' }}>
@@ -512,7 +505,10 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
       </Grid>
       {/* Chart Section */}
       <Grid item xs={4} sx={{ height: '500px' }}> {/* Adjust the height as needed */}
-        <Card sx={{ height: '100%' }}>
+        <Card className="relative" sx={{ height: '100%' }}>
+          <Tooltip title={`Data collected by analyzing ${cashFlow.basis_number} similar properties in the area.`}>
+            <IconInfoCircle color="#6f6f6f" className="absolute top-5 right-4" size={14} style={{ cursor: 'pointer' }} />
+          </Tooltip>
           <CardContent>
             <Typography fontSize={14} fontWeight={600} sx={{ margin: 0 }}>Estimated Rent Split</Typography>
             <Typography fontSize={14} color="text.secondary">
@@ -528,8 +524,11 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
         </Card>
       </Grid>
       {/* Cash Reserve Section */}
-      <Grid item xs={4} sx={{ height: '600px' }}>
-        <Card sx={{ height: '500px' }}>
+      <Grid item xs={4} sx={{ height: '500px' }}>
+        <Card className="relative" sx={{ height: '500px' }}>
+          <Tooltip title={`Data Calculated through public and private HouseSnap data and propreitary Machine Learning models.`}>
+            <IconInfoCircle color="#6f6f6f" className="absolute top-5 right-4" size={14} style={{ cursor: 'pointer' }} />
+          </Tooltip>
           <CardContent>
           <Typography fontSize={14} fontWeight={600} sx={{ margin: 0 }}>Cash Reserve Calculator</Typography>
             <Typography fontSize={14} color="text.secondary" sx={{ marginBottom: 2 }}>
@@ -707,7 +706,10 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
       </Grid>
       {/* Pie Chart Section */}
       <Grid item xs={4} sx={{ height: '500px' }}> {/* Adjust the height as needed */}
-        <Card sx={{ height: '500px' }}>
+        <Card className="relative" sx={{ height: '500px' }}>
+          <Tooltip title={`Data Calculated through public and private HouseSnap data and propreitary Machine Learning models.`}>
+            <IconInfoCircle color="#6f6f6f" className="absolute top-5 right-4" size={14} style={{ cursor: 'pointer' }} />
+          </Tooltip>
           <CardContent>
             <Typography fontSize={14} fontWeight={600} sx={{ margin: 0 }}>Estimated Cash Reserve Split</Typography>
             <Typography fontSize={14} color="text.secondary">
@@ -724,7 +726,10 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
       </Grid>
       {/* Cash Reserve Output Section */}
       <Grid item xs={4} sx={{ height: '500px' }}>
-        <Card sx={{ height: '500px' }}>
+        <Card className="relative" sx={{ height: '500px' }}>
+          <Tooltip title={`Data Calculated through public and private HouseSnap data and propreitary Machine Learning models.`}>
+            <IconInfoCircle color="#6f6f6f" className="absolute top-5 right-4" size={14} style={{ cursor: 'pointer' }} />
+          </Tooltip>
           <CardContent>
             <Typography fontSize={14} fontWeight={600} sx={{ margin: 0 }}>HouseSnap Recommended Cash Reserve</Typography>
             <Typography fontSize={14} color="text.secondary" sx={{ marginBottom: 2 }}>
@@ -815,8 +820,12 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
           </CardContent>
         </Card>
       </Grid>
+      <Box className='flex justify-center items-center mt-6 w-full'>
+        <Typography fontSize={10} color="textSecondary" className='text-center' >
+          The financial estimates are based on public and HouseSnap private data trained on proprietary machine learning models. Actual costs may vary. This tool is intended to assist in evaluating potential costs when buying the house. HouseSnap does not guarantee the accuracy of these estimates.
+        </Typography>
+      </Box>
     </Grid>
-    <Box className="h-[100px]"></Box>
     </Box>
   );
 };
