@@ -128,7 +128,7 @@ export type Report = {
   status: string,
 }
 
-type School = {
+export type School = {
   KG?: string,
   Zip: string,
   City: string,
@@ -145,6 +145,34 @@ type School = {
   Address: string,
   Distance: string,
   District: string,
+  Enrollment: number;
+  "Student/\nTeacher Ratio": number,
+  Hispanic: string,
+  "3rd\nGrade"?: string,
+  "4th\nGrade"?: string,
+  "5th\nGrade"?: string,
+  "6th\nGrade"?: string,
+  "7th\nGrade"?: string,
+  "8th\nGrade"?: string,
+  "11th\nGrade"?: string,
+  "End\nof\nCourse"?: string,
+  "Is Magnet"?: string,
+  "Is Charter"?: string,
+  "Is Title I"?: string,
+  "Is Virtual"?: string,
+  "American\nIndian"?: string,
+  "Pacific\nIslander"?: string,
+  "Two or\nMore Races"?: string,
+  "Full-time Teachers"?: string,
+  "Statewide Rank (2022)"?: string,
+  "Statewide Rank (2023)"?: string,
+  "State Percentile (2022)"?: string,
+  "State Percentile (2023)"?: string,
+  "SchoolDigger Rating (2023)"?: string,
+  "Average Standard Score (2022)"?: string,
+  "Average Standard Score (2023)"?: string,
+  "Rank Change from Previous Year"?: string,
+  "Free/Discounted\nLunch Recipients"?: string
 }
 
 export type MarketTrends = {

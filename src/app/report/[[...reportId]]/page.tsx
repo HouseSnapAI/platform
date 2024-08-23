@@ -33,6 +33,7 @@ import { IconGraph, IconMap, IconPaywall } from '@tabler/icons-react';
 import PricingPaymentComponent from '@/components/reports/pricing/PricingPageComponent';
 import CashFlow from '@/components/reports/sections/CashFlow';
 import Overview from '@/components/reports/sections/Overview';
+import DevelopmentalPage from '@/components/reports/sections/DevelopmentalPage';
 
 
 const ChatPage = () => {
@@ -64,6 +65,8 @@ const ChatPage = () => {
       case 0:
         return <Overview data={data as Report} listing={listing as ListingType} />;
       case 1:
+        return <DevelopmentalPage data={data as Report} listing={listing as ListingType} />;
+      case 2:
         return <CashFlow data={data as Report} listing={listing as ListingType} />;
       default:
         return <Overview data={data as Report} listing={listing as ListingType} />;
@@ -226,6 +229,7 @@ const ChatPage = () => {
                     }
                   }}  value={selectedTab} color="secondary" onChange={handleTabChange} sx={{ backgroundColor: theme.palette.background.paper, textTransform: 'none'  }}>
           <Tab label="Overview" color='secondary' sx={{ textTransform: 'none' }} />
+          <Tab label="Developmental" sx={{ textTransform: 'none' }} />
           <Tab label="Cash Flow" sx={{ textTransform: 'none' }} />
         </Tabs>
 
