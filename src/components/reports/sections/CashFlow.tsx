@@ -46,27 +46,30 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
   const [propertyManagerCost, setPropertyManagerCost] = useState<number>(8.5);
   const [isPercentage, setIsPercentage] = useState<boolean>(false);
   const [isPMPercentage, setPMIsPercentage] = useState<boolean>(false);
-  const [cashFlow, setCashFlow] = useState<any>({...JSON.parse(data.rent_cash_flow), estimatedCashFlow: 0});
+  const [cashFlow, setCashFlow] = useState<any>({...JSON.parse(data.rent_cash_flow), estimatedCashFlow: 0, estimatedCashReserve: 0});
   const [monthlyPayment, setMonthlyPayment] = useState<number|null>(null);
   const [taxRange, setTaxRange] = useState<number[]>([listing.list_price * 0.01 / 12, listing.list_price * 0.02 / 12]);
 
 // State for Cash Reserves
-  const [loanAmount, setLoanAmount] = useState<number>(listing.list_price * 0.01);
-  const [appraisalFee, setAppraisalFee] = useState<number>(600); // Default to mid-range
-  const [taxAppraisalFee, setTaxAppraisalFee] = useState<number>(150); // Default to mid-range
-  const [ownersTitleInsurance, setOwnersTitleInsurance] = useState<number>(listing.list_price * 0.0075);
-  const [titleSearchFee, setTitleSearchFee] = useState<number>(0); // Placeholder, update as needed
-  const [lendersTitleInsurance, setLendersTitleInsurance] = useState<number>(listing.list_price * 0.0001);
-  const [governmentRecordingFee, setGovernmentRecordingFee] = useState<number>(125);
-  const [propertyTax, setPropertyTax] = useState<number>(0); // Placeholder, update with smart_asset % by county
-  const [prepaidInterestRate, setPrepaidInterestRate] = useState<number>(0); // Placeholder, update as needed
-  const [homeownersInsurance, setHomeownersInsurance] = useState<number>(listing.list_price * 0.004376 / 6);
+  const [loanAmount, setLoanAmount] = useState<string>((listing.list_price - ((20 / 100) * listing.list_price) ) * 0.01 + '');
+  const [appraisalFee, setAppraisalFee] = useState<string>('600'); 
+  const [taxAppraisalFee, setTaxAppraisalFee] = useState<string>('150'); 
+  const [ownersTitleInsurance, setOwnersTitleInsurance] = useState<string>((listing.list_price * 0.0075).toFixed(2));
+  const [titleSearchFee, setTitleSearchFee] = useState<string>('250'); 
+  const [lendersTitleInsurance, setLendersTitleInsurance] = useState<string>((listing.list_price * 0.0001).toFixed(2));
+  const [governmentRecordingFee, setGovernmentRecordingFee] = useState<string>('125');
+  const [propertyTax, setPropertyTax] = useState<string>(((listing.list_price * 0.01 / 12 + listing.list_price * 0.02 / 12)/2*6).toFixed(2)); // PULL FROM HOMES.COM, THEN SMARTSHEET TABLE, THEN 0.015
+  const [prepaidInterestRate, setPrepaidInterestRate] = useState<string>('0'); 
+  const [homeownersInsurance, setHomeownersInsurance] = useState<string>((listing.list_price * 0.004376 / 6).toFixed(2));
 
   // Function to handle the calculation of mortgage and cash flow
   const handleCalculate = async () => {
     const downpaymentValue = isPercentage ? (downpayment / 100) * listing.list_price : downpayment;
-    const { monthlyMortgagePayment, lowerEndTax, upperEndTax } = await mortgageCalc(listing.list_price, creditScore, downpaymentValue);
+    const { monthlyMortgagePayment, lowerEndTax, upperEndTax, adjustedAnnualRate } = await mortgageCalc(listing.list_price, creditScore, downpaymentValue);
     setMonthlyPayment(monthlyMortgagePayment);
+    const prepaidInterestRateValue = adjustedAnnualRate/365 * (listing.list_price - downpaymentValue);
+    console.log("prepaidInterestRateValue",Number(prepaidInterestRateValue.toFixed(2)));
+    setPrepaidInterestRate(prepaidInterestRateValue.toFixed(2));
     setTaxRange([lowerEndTax, upperEndTax]);
 
     const hoaFee = (listing.hoa_fee && listing.hoa_fee > 0) ? listing.hoa_fee : 0;
@@ -74,6 +77,11 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
     const estimatedCashFlow = cashFlow.estimated_rent - monthlyMortgagePayment - (taxRange[0]+taxRange[1])/2 - hoaFee - propertyManagerCostValue - (0.01 * listing.list_price/12) - insurancePrice;
     setCashFlow({ ...cashFlow, estimatedCashFlow });
   };
+
+  useEffect(() => {
+    const estimatedCashReserve = Number(loanAmount) + Number(appraisalFee) + Number(taxAppraisalFee) + Number(ownersTitleInsurance) + Number(titleSearchFee) + Number(lendersTitleInsurance) + Number(governmentRecordingFee) + Number(propertyTax) + Number(prepaidInterestRate) + Number(homeownersInsurance);
+    setCashFlow({ ...cashFlow, estimatedCashReserve });
+  }, [loanAmount, appraisalFee, taxAppraisalFee, ownersTitleInsurance, titleSearchFee, lendersTitleInsurance, governmentRecordingFee, propertyTax, prepaidInterestRate, homeownersInsurance]);
 
   // Effect to calculate values on component mount
   useEffect(() => {
@@ -106,9 +114,22 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
     }
   };
 
+  const onlyNumber = (value: string) => {
+    return value.replace(/[^0-9.]/g, ''); // Remove any character that is not a digit or a dot
+  }
+
   // Function to handle slider changes
   const handleSliderChange = (setter: React.Dispatch<React.SetStateAction<number>>) => (e: Event, value: number | number[]) => {
     setter(value as number);
+  };
+
+  // Function to handle input changes for loan amount
+  const handleAmountChanged = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, setter: React.Dispatch<React.SetStateAction<string>>) => {
+    const value = e.target.value;
+    const regex = /^\d*\.?\d{0,2}$/; // Allow up to two decimal places
+    if (regex.test(value) || value === '' || value === '.') {
+      setter(value); // Set the value directly to allow intermediate states like '8.'
+    }
   };
 
   const chartData = {
@@ -169,8 +190,84 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
     }
   };
 
+  const cashReserveChartData = {
+    labels: [
+      'Loan Amount',
+      'Appraisal Fee',
+      'Tax Appraisal Fee',
+      'Owner\'s Title Insurance',
+      'Title Search Fee',
+      'Lender\'s Title Insurance',
+      'Government Recording Fee',
+      '6 Months Property Tax',
+      'Prepaid Interest Rate',
+      'Homeowners Insurance'
+    ],
+    datasets: [
+      {
+        data: [
+          loanAmount,
+          appraisalFee,
+          taxAppraisalFee,
+          ownersTitleInsurance,
+          titleSearchFee,
+          lendersTitleInsurance,
+          governmentRecordingFee,
+          propertyTax,
+          prepaidInterestRate,
+          homeownersInsurance
+        ],
+        hoverBackgroundColor: [
+          'rgba(153, 51, 51, 0.4)', // Dark Red
+          'rgba(38, 70, 83, 0.4)', // Dark Blue
+          'rgba(204, 153, 0, 0.4)', // Dark Yellow
+          'rgba(0, 102, 102, 0.4)', // Dark Teal
+          'rgba(102, 51, 153, 0.4)', // Dark Purple
+          'rgba(153, 76, 0, 0.4)', // Dark Orange
+          'rgba(153, 51, 51, 0.4)', // Dark Red
+          'rgba(38, 70, 83, 0.4)', // Dark Blue
+          'rgba(204, 153, 0, 0.4)', // Dark Yellow
+          'rgba(0, 102, 102, 0.4)'  // Dark Teal
+        ],
+        backgroundColor: [
+          'rgba(153, 51, 51, .2)', // Dark Red
+          'rgba(38, 70, 83, .2)', // Dark Blue
+          'rgba(204, 153, 0, .2)', // Dark Yellow
+          'rgba(0, 102, 102, .2)', // Dark Teal
+          'rgba(102, 51, 153, .2)', // Dark Purple
+          'rgba(153, 76, 0, .2)', // Dark Orange
+          'rgba(153, 51, 51, .2)', // Dark Red
+          'rgba(38, 70, 83, .2)', // Dark Blue
+          'rgba(204, 153, 0, .2)', // Dark Yellow
+          'rgba(0, 102, 102, .2)'  // Dark Teal
+        ],
+        borderColor: [
+          'rgba(153, 51, 51, 1)', // Dark Red
+          'rgba(38, 70, 83, 1)', // Dark Blue
+          'rgba(204, 153, 0, 1)', // Dark Yellow
+          'rgba(0, 102, 102, 1)', // Dark Teal
+          'rgba(102, 51, 153, 1)', // Dark Purple
+          'rgba(153, 76, 0, 1)', // Dark Orange
+          'rgba(153, 51, 51, 1)', // Dark Red
+          'rgba(38, 70, 83, 1)', // Dark Blue
+          'rgba(204, 153, 0, 1)', // Dark Yellow
+          'rgba(0, 102, 102, 1)'  // Dark Teal
+        ],
+        borderWidth: 1
+      }
+    ]
+  };
+
+  const cashReserveChartOptions = {
+    plugins: {
+      legend: {
+        display: false
+      }
+    }
+  };
+
   return (
-    <Box className="flex pb-10 overflow-auto">
+    <Box className="flex pb-10 overflow-auto w-full h-full">
 
     <Grid container spacing={2} p={2} mb={10} className="transition-all ease-in-out duration-500" sx={{ '& .MuiInputBase-input': { paddingRight: "4px", paddingLeft: "4px", paddingTop: "2px", paddingBottom: "2px" } }}>
       {/* Cash Flow Input Section */}
@@ -418,8 +515,11 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
         <Card sx={{ height: '100%' }}>
           <CardContent>
             <Typography fontSize={14} fontWeight={600} sx={{ margin: 0 }}>Estimated Rent Split</Typography>
+            <Typography fontSize={14} color="text.secondary">
+            Estimated Rent Split by Charge Type
+            </Typography>
             <Typography fontSize={14} color="text.secondary" sx={{ marginBottom: 2 }}>
-            Estimated Rent Split by Property Type
+            Total Estimated Rent: <span className="text-white">{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(cashFlow.estimatedCashFlow)}</span>
             </Typography>
             <Box className="flex flex-col gap-2 p-4 h-[350px]">
               <Pie data={chartData} options={chartOptions} className="self-center" />
@@ -427,16 +527,16 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
           </CardContent>
         </Card>
       </Grid>
-      {/* More Details Section */}
-      <Grid item xs={8}>
-        <Card>
+      {/* Cash Reserve Section */}
+      <Grid item xs={4} sx={{ height: '600px' }}>
+        <Card sx={{ height: '500px' }}>
           <CardContent>
           <Typography fontSize={14} fontWeight={600} sx={{ margin: 0 }}>Cash Reserve Calculator</Typography>
             <Typography fontSize={14} color="text.secondary" sx={{ marginBottom: 2 }}>
-            Cash Reserve by Property Type
+            Cash Reserve by Charge Type
             </Typography>
             <Box component="form" noValidate autoComplete="off">
-              <Box display="flex" flexDirection="column" gap={2}>
+              <Box display="flex" flexDirection="column" >
                 <Box display="flex" gap={2}>
                   <Box flex={1}>
                     <Typography fontSize={14} color="text.secondary" sx={{ marginBottom: 1 }}>
@@ -445,7 +545,7 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
                     <TextField
                       fullWidth
                       value={loanAmount}
-                      onChange={handleInputChange(setLoanAmount, true)}
+                      onChange={(e) => handleAmountChanged(e, setLoanAmount)}
                       InputProps={{
                         startAdornment: <InputAdornment position="start">$</InputAdornment>,
                         style: { fontSize: 14 }
@@ -460,7 +560,7 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
                     <TextField
                       fullWidth
                       value={appraisalFee}
-                      onChange={handleInputChange(setAppraisalFee, true)}
+                      onChange={(e) => handleAmountChanged(e, setAppraisalFee)}
                       InputProps={{
                         startAdornment: <InputAdornment position="start">$</InputAdornment>,
                         style: { fontSize: 14 }
@@ -477,7 +577,7 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
                     <TextField
                       fullWidth
                       value={taxAppraisalFee}
-                      onChange={handleInputChange(setTaxAppraisalFee, true)}
+                      onChange={(e) => handleAmountChanged(e, setTaxAppraisalFee)}
                       InputProps={{
                         startAdornment: <InputAdornment position="start">$</InputAdornment>,
                         style: { fontSize: 14 }
@@ -492,7 +592,7 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
                     <TextField
                       fullWidth
                       value={ownersTitleInsurance}
-                      onChange={handleInputChange(setOwnersTitleInsurance, true)}
+                      onChange={(e) => handleAmountChanged(e, setOwnersTitleInsurance)}
                       InputProps={{
                         startAdornment: <InputAdornment position="start">$</InputAdornment>,
                         style: { fontSize: 14 }
@@ -509,7 +609,7 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
                     <TextField
                       fullWidth
                       value={titleSearchFee}
-                      onChange={handleInputChange(setTitleSearchFee, true)}
+                      onChange={(e) => handleAmountChanged(e, setTitleSearchFee)}
                       InputProps={{
                         startAdornment: <InputAdornment position="start">$</InputAdornment>,
                         style: { fontSize: 14 }
@@ -524,7 +624,7 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
                     <TextField
                       fullWidth
                       value={lendersTitleInsurance}
-                      onChange={handleInputChange(setLendersTitleInsurance, true)}
+                      onChange={(e) => handleAmountChanged(e, setLendersTitleInsurance)}
                       InputProps={{
                         startAdornment: <InputAdornment position="start">$</InputAdornment>,
                         style: { fontSize: 14 }
@@ -541,7 +641,7 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
                     <TextField
                       fullWidth
                       value={governmentRecordingFee}
-                      onChange={handleInputChange(setGovernmentRecordingFee, true)}
+                      onChange={(e) => handleAmountChanged(e, setGovernmentRecordingFee)}
                       InputProps={{
                         startAdornment: <InputAdornment position="start">$</InputAdornment>,
                         style: { fontSize: 14 }
@@ -556,7 +656,7 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
                     <TextField
                       fullWidth
                       value={propertyTax}
-                      onChange={handleInputChange(setPropertyTax, true)}
+                      onChange={(e) => handleAmountChanged(e, setPropertyTax)}
                       InputProps={{
                         startAdornment: <InputAdornment position="start">$</InputAdornment>,
                         style: { fontSize: 14 }
@@ -573,7 +673,7 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
                     <TextField
                       fullWidth
                       value={prepaidInterestRate}
-                      onChange={handleInputChange(setPrepaidInterestRate, true)}
+                      onChange={(e) => handleAmountChanged(e, setPrepaidInterestRate)}
                       InputProps={{
                         startAdornment: <InputAdornment position="start">$</InputAdornment>,
                         style: { fontSize: 14 }
@@ -583,12 +683,12 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
                   </Box>
                   <Box flex={1}>
                     <Typography fontSize={14} color="text.secondary" sx={{ marginBottom: 1 }}>
-                      2 Months Homeowners Insurance
+                        Homeowners Insurance
                     </Typography>
                     <TextField
                       fullWidth
                       value={homeownersInsurance}
-                      onChange={handleInputChange(setHomeownersInsurance, true)}
+                      onChange={(e) => handleAmountChanged(e, setHomeownersInsurance)}
                       InputProps={{
                         startAdornment: <InputAdornment position="start">$</InputAdornment>,
                         style: { fontSize: 14 }
@@ -597,17 +697,121 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
                     />
                   </Box>
                 </Box>
+                <Button variant="contained" color="primary" size="small" className="mt-4" fullWidth onClick={handleCalculate} sx={{ textTransform: 'none' }}>
+                  Calculate
+                </Button>
               </Box>
             </Box>
           </CardContent>
         </Card>
       </Grid>
-      {/* Summary Section */}
-      <Grid item xs={4}>
-        <Card>
+      {/* Pie Chart Section */}
+      <Grid item xs={4} sx={{ height: '500px' }}> {/* Adjust the height as needed */}
+        <Card sx={{ height: '500px' }}>
           <CardContent>
-            <Typography variant="h6">Summary</Typography>
-            {/* Add any additional content here */}
+            <Typography fontSize={14} fontWeight={600} sx={{ margin: 0 }}>Estimated Cash Reserve Split</Typography>
+            <Typography fontSize={14} color="text.secondary">
+            Estimated Cash Reserve Split by Charge Type
+            </Typography>
+            <Typography fontSize={14} color="text.secondary" sx={{ marginBottom: 1 }}>
+            Total Estimated Cash Reserve: <span className="text-white">{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(cashFlow.estimatedCashReserve)}</span>
+            </Typography>
+            <Box className="flex flex-col gap-2 p-4 h-[350px]">
+              <Pie data={cashReserveChartData} options={cashReserveChartOptions} className="self-center" />
+            </Box>
+          </CardContent>
+        </Card>
+      </Grid>
+      {/* Cash Reserve Output Section */}
+      <Grid item xs={4} sx={{ height: '500px' }}>
+        <Card sx={{ height: '500px' }}>
+          <CardContent>
+            <Typography fontSize={14} fontWeight={600} sx={{ margin: 0 }}>HouseSnap Recommended Cash Reserve</Typography>
+            <Typography fontSize={14} color="text.secondary" sx={{ marginBottom: 2 }}>
+            HouseSnap Recommended Cash Reserve by Charge Type
+            </Typography>
+            <Box mt={2} className="flex flex-col gap-2">
+              {/* Loan Amount */}
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Typography fontSize={14}>Loan Amount</Typography>
+                <Typography fontSize={14}>
+                  {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(loanAmount))}
+                </Typography>
+              </Box>
+              {/* Appraisal Fee */}
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Typography fontSize={14}>Appraisal Fee</Typography>
+                <Typography fontSize={14}>
+                  {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(appraisalFee))}
+                </Typography>
+              </Box>
+              {/* Tax Appraisal Fee */}
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Typography fontSize={14}>Tax Appraisal Fee</Typography>
+                <Typography fontSize={14}>
+                  {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(taxAppraisalFee))}
+                </Typography>
+              </Box>
+              {/* Owner's Title Insurance */}
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Typography fontSize={14}>Owner's Title Insurance</Typography>
+                <Typography fontSize={14}>
+                  {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(ownersTitleInsurance))}
+                </Typography>
+              </Box>
+              {/* Title Search Fee */}
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Typography fontSize={14}>Title Search Fee</Typography>
+                <Typography fontSize={14}>
+                  {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(titleSearchFee))}
+                </Typography>
+              </Box>
+              {/* Lender's Title Insurance */}
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Typography fontSize={14}>Lender's Title Insurance</Typography>
+                <Typography fontSize={14}>
+                  {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(lendersTitleInsurance))}
+                </Typography>
+              </Box>
+              {/* Government Recording Fee */}
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Typography fontSize={14}>Government Recording Fee</Typography>
+                <Typography fontSize={14}>
+                  {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(governmentRecordingFee))}
+                </Typography>
+              </Box>
+              {/* 6 Months Property Tax */}
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Typography fontSize={14}>6 Months Property Tax</Typography>
+                <Typography fontSize={14}>
+                    {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(propertyTax))}
+                </Typography>
+              </Box>
+              {/* Prepaid Interest Rate */}
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Typography fontSize={14}>Prepaid Interest Rate</Typography>
+                <Typography fontSize={14}>
+                  {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(prepaidInterestRate))}
+                </Typography>
+              </Box>
+              {/*Homeowners Insurance */}
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Typography fontSize={14}>Homeowners Insurance</Typography>
+                <Typography fontSize={14}>
+                  {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(homeownersInsurance))}
+                </Typography>
+              </Box>
+              <Divider className="mb-2" />
+              {/* Total Cash Reserve */}
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                <Typography fontSize={14} fontWeight={600}>Total Cash Reserve</Typography>
+                <Typography fontSize={14} fontWeight={600}>
+                  {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(
+                    cashFlow.estimatedCashReserve
+                  )}
+                </Typography>
+              </Box>
+            </Box>
           </CardContent>
         </Card>
       </Grid>

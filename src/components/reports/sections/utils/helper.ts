@@ -69,6 +69,7 @@ export async function mortgageCalc(listPrice: number, creditScore: number, downp
 
     return {
         monthlyMortgagePayment,
+        adjustedAnnualRate,
         lowerEndTax,
         upperEndTax
     };
