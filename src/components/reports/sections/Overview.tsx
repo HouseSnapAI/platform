@@ -1,5 +1,5 @@
 // ** Next Imports
-import React, { useState } from 'react';
+import React from 'react';
 
 // ** MUI Imports
 import Box from '@mui/material/Box';
@@ -13,23 +13,25 @@ import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Link from '@mui/material/Link';
+import Tooltip from '@mui/material/Tooltip';
 
 // ** Tabler Icons
-import { IconTools, IconBuildingCommunity, IconSchool, IconCar, IconCalendar, IconMoneybag, IconRuler, IconMapPin, IconHome } from '@tabler/icons-react';
+import { IconTools, IconBuildingCommunity, IconSchool, IconCar, IconCalendar, IconMoneybag, IconRuler, IconMapPin, IconHome, IconInfoCircle } from '@tabler/icons-react';
 
 // ** Style Imports
 import { useTheme } from '@mui/material/styles';
 
 // ** ChartJS Imports
-import { Bar, Pie } from 'react-chartjs-2';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement } from 'chart.js';
+import { Chart as ChartJS, ArcElement, Tooltip as ChartTooltip, Legend, CategoryScale, LinearScale, BarElement } from 'chart.js';
 
 // ** Types
-import { ListingType, MarketTrends, Report } from '@/utils/types';
+import { ListingType, Report } from '@/utils/types';
 import ImageSlider from '@/components/listing/ImageSlider';
 import Chip from '@mui/material/Chip';
+import Map, { NavigationControl, Marker, Popup } from 'react-map-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
 
-ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
+ChartJS.register(ArcElement, ChartTooltip, Legend, CategoryScale, LinearScale, BarElement);
 
 type OverviewProps = {
   data: Report;
@@ -40,7 +42,7 @@ const ListingDetails = ({ listing }: { listing: ListingType }) => {
   const theme = useTheme();
 
   return (
-    <Box className='bg-[#1e1e1e] w-[100%] px-5 py-4 rounded-md mt-[10px]'>
+    <Box className='bg-[#1e1e1e] w-[100%] px-5 py-4 rounded-md'>
         <Box className='flex items-center mb-2 justify-between gap-[10px]'>
             <Box className='flex items-end gap-[10px]'>
                 <Typography className='' fontSize={18} color="white">{listing.full_street_line}, {listing.city}, {listing.state} {listing.zip_code}</Typography>
@@ -81,7 +83,7 @@ const ListingDetails = ({ listing }: { listing: ListingType }) => {
           </Box>
         </Box>
       </Box>
-      <Divider sx={{ backgroundColor: '#444' }} />
+      <Divider />
       <Box sx={{ backgroundColor: theme.palette.background.paper, borderRadius: 2, padding: 2, marginTop: 2, boxShadow: 3 }}>
         <Typography variant="body1" sx={{ color: 'white', lineHeight: 1.6, textAlign: 'left' }}>
           {listing.text}
@@ -162,7 +164,7 @@ const ListingDetails = ({ listing }: { listing: ListingType }) => {
             <ListItemText primary={`HOA Fees: $${listing?.hoa_fee?.toLocaleString()}`} primaryTypographyProps={{ color: 'white' }} />
         </ListItem>
       </List>
-      <Divider sx={{ backgroundColor: '#444' }} />
+      <Divider />
       <Box className="text-center items-center justify-between gap-2 mt-2 flex">
         <Box className='flex flex-col items-start justify-start'>
           <Typography fontSize={12} variant="body2" noWrap color="textSecondary">MLS: {listing.mls}</Typography>
@@ -198,107 +200,75 @@ const ListingDetails = ({ listing }: { listing: ListingType }) => {
 };
 
 const Overview = ({ data, listing }: OverviewProps) => {
-  const [selectedListing, setSelectedListing] = useState<ListingType | 'loading' | null>(null);
-
-  const crimeData = {
-    labels: ['Crime Score'],
-    datasets: [
-      {
-        label: 'Crime Score',
-        data: [data.crime_score],
-        backgroundColor: ['rgba(255, 99, 132, 0.2)'],
-        borderColor: ['rgba(255, 99, 132, 1)'],
-        borderWidth: 1,
-      },
-    ],
-  };
-
-  const schoolData = {
-    labels: ['School Score'],
-    datasets: [
-      {
-        label: 'School Score',
-        data: [data.school_score],
-        backgroundColor: ['rgba(54, 162, 235, 0.2)'],
-        borderColor: ['rgba(54, 162, 235, 1)'],
-        borderWidth: 1,
-      },
-    ],
-  };
-
-  const marketTrendsData = {
-    labels: ['Average Price', 'Median Price', 'Range Price'],
-    datasets: [
-      {
-        label: 'Market Trends',
-        data: [
-          (JSON.parse(data.market_trends) as MarketTrends).average_price_2024,
-          (JSON.parse(data.market_trends) as MarketTrends).median_price_2024,
-          (JSON.parse(data.market_trends) as MarketTrends).range_estimated_price,
-        ],
-        backgroundColor: [
-          'rgba(75, 192, 192, 0.2)',
-          'rgba(153, 102, 255, 0.2)',
-          'rgba(255, 159, 64, 0.2)',
-        ],
-        borderColor: [
-          'rgba(75, 192, 192, 1)',
-          'rgba(153, 102, 255, 1)',
-          'rgba(255, 159, 64, 1)',
-        ],
-        borderWidth: 1,
-      },
-    ],
-  };
+  const theme = useTheme();
+  const mapBoxToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!;
 
   return (
-    <Box className="overflow-auto" sx={{ p: 3 }}>
-      <Typography variant="h6" color="white" gutterBottom>
-        Report Overview
-      </Typography>
-      <Grid container spacing={3}>
-      <Grid item xs={12} md={6}>
-          <Box sx={{ height: '50vh', overflowY: 'auto' }}>
+    <Box className="overflow-hidden" sx={{ height: '95%' }}>
+      <Grid container spacing={1} p={2} sx={{ height: '100%' }}>
+        <Grid item xs={12} md={6} sx={{ height: '100%' }}>
+          <Box sx={{ height: '100%', overflowY: 'auto', padding: 1, backgroundColor: theme.palette.background.paper }}>
             <ListingDetails listing={listing} />
           </Box>
-      </Grid>
-      <Grid item xs={12} md={6}>
-          <Card sx={{ height: '50vh' }}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Market Trends
-              </Typography>
-              <Pie 
-                data={marketTrendsData} 
-                options={{ 
-                  maintainAspectRatio: true, 
-                  aspectRatio: 1,
-                }} 
-                height={100} 
-                width={100} 
-              />
-            </CardContent>
-          </Card>
-      </Grid>
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Crime Score
-              </Typography>
-              <Bar data={crimeData} />
-            </CardContent>
-          </Card>
         </Grid>
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                School Score
-              </Typography>
-              <Bar data={schoolData} />
-            </CardContent>
-          </Card>
+        <Grid item xs={12} md={6} p={0} sx={{ height: '100%' }}>
+          <Grid container spacing={1} className='h-full' sx={{ display: 'flex', height: '100%' }}>
+            <Grid item xs={12} sx={{ height: '50%' }}>
+              <Card className='relative h-full'>
+                <CardContent>
+                  <Tooltip title={`Aggregate Scores and Summaries for each section`}>
+                    <IconInfoCircle color="#6f6f6f" className="absolute top-5 right-4" size={14} style={{ cursor: 'pointer' }} />
+                  </Tooltip>
+                  <Typography fontSize={14} fontWeight={600} sx={{ margin: 0 }}>
+                    Overview
+                  </Typography>
+                  <Typography fontSize={14} color="text.secondary" sx={{ marginBottom: 2 }}>
+                    Cash Flow by filling out the fields below.
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} sx={{ height: '50%' }}>
+              <Card className=''>
+                <CardContent className='relative'>
+                  <Tooltip title={`Location Overview`}>
+                    <IconInfoCircle color="#6f6f6f" className="absolute top-5 right-4" size={14} style={{ cursor: 'pointer' }} />
+                  </Tooltip>
+                  <Typography fontSize={14} fontWeight={600} sx={{ margin: 0 }}>
+                    Location
+                  </Typography>
+                  <Typography fontSize={14} color="text.secondary" sx={{ marginBottom: 2 }}>
+                    A quick overview of the location.
+                  </Typography>
+                  <Box sx={{ height: '250px' }} className='bg-black'>
+                    <Map
+                      mapboxAccessToken={mapBoxToken}
+                      initialViewState={{
+                        longitude: listing.longitude || -77.0364,
+                        latitude: listing.latitude || 38.8951,
+                        zoom: 14
+                      }}
+                      style={{ width: '100%', height: '100%' }}
+                      mapStyle={"mapbox://styles/mapbox/dark-v11"}
+                    >
+                      <NavigationControl position="top-right" />
+                      <Marker longitude={listing.longitude || 0} latitude={listing.latitude || 0}>
+                        <Box
+                          sx={{
+                            width: '25px',
+                            height: '25px',
+                            borderRadius: '50%',
+                            backgroundColor: 'green',
+                            cursor: 'pointer',
+                          }}
+                        />
+                      </Marker>
+                    </Map>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
         </Grid>
       </Grid>
     </Box>

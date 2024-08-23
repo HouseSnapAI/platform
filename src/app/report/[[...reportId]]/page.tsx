@@ -151,10 +151,7 @@ const ChatPage = () => {
           eventSource.onerror = () => {
             console.log('EventSource error, closing connection');
             eventSource.close();
-            if (status !== 'complete') {
-              console.log('Reopening EventSource as status is not complete');
-              setupEventSource();
-            }
+            window.location.reload()
           };
 
           return () => {
@@ -162,7 +159,7 @@ const ChatPage = () => {
             eventSource.close();
             window.location.reload()
           };
-      }
+        }
     };
 
     setupEventSource();
