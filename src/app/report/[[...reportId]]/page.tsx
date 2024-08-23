@@ -34,6 +34,7 @@ import PricingPaymentComponent from '@/components/reports/pricing/PricingPageCom
 import CashFlow from '@/components/reports/sections/CashFlow';
 import Overview from '@/components/reports/sections/Overview';
 import DevelopmentalPage from '@/components/reports/sections/DevelopmentalPage';
+import DemographicPage from '@/components/reports/sections/DemographicPage';
 
 
 const ChatPage = () => {
@@ -67,6 +68,8 @@ const ChatPage = () => {
       case 1:
         return <DevelopmentalPage data={data as Report} listing={listing as ListingType} />;
       case 2:
+        return <DemographicPage data={data as Report} listing={listing as ListingType} />;
+      case 3:
         return <CashFlow data={data as Report} listing={listing as ListingType} />;
       default:
         return <Overview data={data as Report} listing={listing as ListingType} />;
@@ -230,6 +233,7 @@ const ChatPage = () => {
                   }}  value={selectedTab} color="secondary" onChange={handleTabChange} sx={{ backgroundColor: theme.palette.background.paper, textTransform: 'none'  }}>
           <Tab label="Overview" color='secondary' sx={{ textTransform: 'none' }} />
           <Tab label="Developmental" sx={{ textTransform: 'none' }} />
+          <Tab label="Demographic" sx={{ textTransform: 'none' }} />
           <Tab label="Cash Flow" sx={{ textTransform: 'none' }} />
         </Tabs>
 
