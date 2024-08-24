@@ -69,8 +69,8 @@ const Filter = ({userInfo, setUserInfo, setIds, setIsLoading, callFunction}:{use
                 return JSON.stringify(userInfo[key as keyof User]) !== JSON.stringify(value);
             });
 
-            console.log(hasChanges)
-            console.log(userPreferences)
+            // console.log(hasChanges)
+            // console.log(userPreferences)
 
             if (hasChanges) {
                 try {
@@ -100,7 +100,7 @@ const Filter = ({userInfo, setUserInfo, setIds, setIsLoading, callFunction}:{use
 
                         
                         if (data.status !== 200) {
-                            console.log("WORKING")
+                            // console.log("WORKING")
                             setIds([])
                         } else {
                             const responseData = await data.json()
@@ -139,7 +139,7 @@ const Filter = ({userInfo, setUserInfo, setIds, setIsLoading, callFunction}:{use
             const getUserFilters = sessionStorage.getItem('userFilters');
             if (getUserFilters) {
                 const userPreferences: Partial<User> = JSON.parse(getUserFilters);
-                console.log(userPreferences)
+                // console.log(userPreferences)
                 setBeds(userPreferences.beds || 0)
                 setBaths(userPreferences.baths || 0)
                 setBudget([userPreferences.min_budget || 0, userPreferences.max_budget || 5000000])

@@ -94,7 +94,7 @@ const DemographicPage = ({data, listing}: Props) => {
         return columns.length % 2 !== 0 ? columns[mid].Description : `${columns[mid - 1].Description} - ${columns[mid].Description}`;
     };
 
-    console.log("Census Data", censusData)
+    // console.log("Census Data", censusData)
 
     return (
         <Box className='overflow-auto'>

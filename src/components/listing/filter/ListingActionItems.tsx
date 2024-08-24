@@ -39,10 +39,10 @@ const ListingActionItems = ({userInfo, listing}: ListingActionItemProps) => {
             setOpen(false)
             setReportOpen(false)
         } else if(userInfo && userInfo?.reports_remaining > 0 && reportExists.valid == false){
-            console.log('report clicked')
+            // console.log('report clicked')
             setReportOpen(true)
         } else {
-            console.log('no reports remaining')
+            // console.log('no reports remaining')
             setOpen(true)
         }
     }
@@ -52,7 +52,7 @@ const ListingActionItems = ({userInfo, listing}: ListingActionItemProps) => {
             if(listing != 'loading' && listing != null && userInfo != null){
                 const res = await checkReportByListing(listing?.id as string, userInfo?.id as string)
                 setReportExists(res)
-                console.log("RES",res)
+                // console.log("RES",res)
             }
         }
 

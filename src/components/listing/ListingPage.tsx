@@ -65,7 +65,6 @@ const ListingPage = ({userInfo, setUserInfo, listings, setIds, onHover, hoveredL
                       sessionStorage.removeItem('listing')
                       sessionStorage.removeItem('listingObj')
                       setSelectedListing(null)
-                      console.log("SETTING LISTING TO NULL")
                     }}
                 />
                 {/* <ListingActionItems userInfo={userInfo} listing={selectedListing} /> */}

@@ -24,9 +24,9 @@ interface ReportsPopupProps {
 const ReportsPopup = ({ anchorEl, open, onClose, userInfo, reports }: ReportsPopupProps) => {
   const theme = useTheme();
   
-  useEffect(() => {
-    console.log(reports);
-  }, [reports])
+  // useEffect(() => {
+  //   console.log(reports);
+  // }, [reports])
 
   return (
     <Popover

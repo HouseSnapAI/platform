@@ -112,7 +112,7 @@ const ChatPage = () => {
 
   const fetchChatHistory = () => {
       let currentListing = sessionStorage.getItem('listing');
-      console.log(currentListing)
+      // console.log(currentListing)
       if(currentListing == null || currentListing == "undefined") {
         currentListing = "HomePage"
       }
@@ -125,7 +125,7 @@ const ChatPage = () => {
         if(currentListing != "HomePage") {
 
           let listObj = JSON.parse(sessionStorage.getItem('listingObj')!!);
-          console.log(listObj)
+          // console.log(listObj)
           
           const init: Message = {
             role: listObj.full_street_line,
@@ -183,7 +183,7 @@ const ChatPage = () => {
 
   // If enter is clicked
   const handleClick = async (newChat: boolean, initVal: string = "Tell me more about this listing") => {
-    console.log("inside handle click", newChat)
+    // console.log("inside handle click", newChat)
     setLoading(true);
     let chatId: string | null = null;
     let currentListing = sessionStorage.getItem('listing');
@@ -192,7 +192,7 @@ const ChatPage = () => {
       currentListing = "HomePage"
     }
 
-    console.log("CURRENT LISTING ", currentListing)
+    // console.log("CURRENT LISTING ", currentListing)
 
     // If New chat
     if (newChat && userInfo) {
@@ -202,7 +202,7 @@ const ChatPage = () => {
       // Normal handle click
     } else if (userInfo) {
       chatId = JSON.parse(sessionStorage.getItem(currentListing)!!).chatId;
-      console.log(chatId)
+      // console.log(chatId)
     }
     if(user && chatId) {
       const storedChatObj = JSON.parse(sessionStorage.getItem(currentListing)!!)
@@ -235,7 +235,7 @@ const ChatPage = () => {
               ...(selectedListing && selectedListing !== 'loading' && { listing: selectedListing })
           })
       })
-      console.log("happening")
+      // console.log("happening")
       const data = await response.json()
 
       const chatObj = {
@@ -247,8 +247,8 @@ const ChatPage = () => {
         user_id: userInfo!!.id
       };
 
-      console.log(chatObj)
-      console.log(userInfo!!.id)
+      // console.log(chatObj)
+      // console.log(userInfo!!.id)
 
       let updatedChat = chatObj;
       if (!newChat) {
@@ -266,7 +266,7 @@ const ChatPage = () => {
 
         let userFilters = null;
         if(userF) { userFilters = JSON.parse(userF); }
-        console.log(userFilters);
+        // console.log(userFilters);
 
         // call filters API
         // Call on updateFilters from listing page function
@@ -327,13 +327,13 @@ useEffect(() => {
   }, [])
 
   const setCurrentListing = (listing: ListingType| 'loading' | null) => {
-    console.log("RUNNING")
+    // console.log("RUNNING")
     if (listing && listing !== 'loading') { 
     sessionStorage.setItem('listing', listing?.id as string);
     sessionStorage.setItem('listingObj', JSON.stringify(listing));
   }
 
-  console.log(sessionStorage.getItem('listing'))
+  // console.log(sessionStorage.getItem('listing'))
 
     fetchChatHistory();
 

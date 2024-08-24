@@ -19,7 +19,7 @@ export const POST = withApiAuthRequired(async function handler(req: NextRequest)
 
   const { user_id } = parseResult.data;
 
-  console.log(user_id)
+  // console.log(user_id)
 
   try {
     const { data, error } = await supabase
@@ -40,7 +40,6 @@ export const POST = withApiAuthRequired(async function handler(req: NextRequest)
     let reports: any[]  = [];
 
     for (let listingId of data) {
-        console.log(listingId.listing_id);
         try {
             const { data, error } = await supabase
                 .from('reports')
@@ -49,7 +48,6 @@ export const POST = withApiAuthRequired(async function handler(req: NextRequest)
                 .single();
             
             reports.push(data);
-            console.log(data)
 
         } catch (error) {
             console.error('Error getting User report:', error);

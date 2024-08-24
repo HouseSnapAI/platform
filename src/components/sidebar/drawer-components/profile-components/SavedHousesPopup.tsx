@@ -18,7 +18,7 @@ interface SavedHousesPopupProps {
   open: boolean;
   onClose: () => void;
   userInfo: User | null;
-  savedHouses: Partial<ListingRecordType>[] | undefined;
+  savedHouses: ListingRecordType[] | undefined;
   setSelectedListing: (listing: ListingType | 'loading' | null) => void;
   handleClose: () => void;
 }
@@ -26,9 +26,9 @@ interface SavedHousesPopupProps {
 const SavedHousesPopup = ({ anchorEl, open, onClose, userInfo, savedHouses, setSelectedListing, handleClose }: SavedHousesPopupProps) => {
   const theme = useTheme();
   
-  useEffect(() => {
-    console.log(savedHouses);
-  }, [savedHouses])
+  // useEffect(() => {
+  //   console.log(savedHouses);
+  // }, [savedHouses])
 
   return (
     <Popover
@@ -73,7 +73,13 @@ const SavedHousesPopup = ({ anchorEl, open, onClose, userInfo, savedHouses, setS
                     </Box>
                     <Box className='flex gap-2 relative flex-wrap justify-center'>
                       {
-                        savedHouses && savedHouses.map((savedHouse) => {
+                        savedHouses && savedHouses
+                          .sort((a: ListingRecordType, b: ListingRecordType) => {
+                            const dateA = new Date(a.engage_date).getTime();
+                            const dateB = new Date(b.engage_date).getTime();
+                            return dateB - dateA; // Sort in descending order
+                          })
+                          .map((savedHouse) => {
                           return (
                                 <HouseCard onClose={onClose} handleClose={handleClose} setSelectedListing={setSelectedListing} listing={savedHouse} />
                           )

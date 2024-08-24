@@ -43,7 +43,7 @@ const ProfilePopup = ({ setSelectedListing, handleClose }: ProfilePopupProps) =>
 
     const theme = useTheme()
 
-    const [savedHouses, setSavedHouses] = useState<Partial<ListingRecordType>[]>([]);
+    const [savedHouses, setSavedHouses] = useState<ListingRecordType[]>([]);
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [savedHousesOpen, setSavedHousesOpen] = useState(false);
     const [housesHistoryOpen, setHousesHistoryOpen] = useState(false);
@@ -62,7 +62,6 @@ const ProfilePopup = ({ setSelectedListing, handleClose }: ProfilePopupProps) =>
         })
 
         await fetchListing({ ids }).then(({ data }) => {
-            console.log("SAVED DATA",data);
             setSavedHouses(data);
         });
     }
@@ -80,20 +79,18 @@ const ProfilePopup = ({ setSelectedListing, handleClose }: ProfilePopupProps) =>
         })
 
         await fetchListing({ ids }).then(({ data }) => {
-            console.log(data);
+            // console.log(data);
             setHousesHistory(data);
         });
     }
 
     const setReportsHandler = async (data: any) => {
-        console.log(data);
         let user_id: string = data?.id;
         if(user_id == undefined || user_id == null) {
             return;
         }
         
         await fetchReportsByUser(user_id).then((res) => {
-            console.log("DATARES",res);
             if (res == null && data.reports_remaining > 0) {
                 setReports([])
             } else {
@@ -105,7 +102,6 @@ const ProfilePopup = ({ setSelectedListing, handleClose }: ProfilePopupProps) =>
     useEffect(() => {
         const fetchUserInfoData = async (email:string)=>{
             await fetchUserInfo(email).then(async (data) => {
-                console.log(data)
                 setUserInfo(data);
                 await setHistory(data)
                 await setSaved(data)

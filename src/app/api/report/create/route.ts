@@ -49,7 +49,7 @@ export const POST = withApiAuthRequired(async function handler(req: NextRequest)
       .single();
 
     if (recordExists) {
-      console.log("RECORD EXISTS", recordExists)
+      // console.log("RECORD EXISTS", recordExists)
       return NextResponse.json({ message: 'Record already exists', report: recordExists }, { status: 200 });
     }
     

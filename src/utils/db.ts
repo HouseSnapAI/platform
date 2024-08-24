@@ -58,7 +58,7 @@ export const createNewChat = async ({ user, initialMessage }: createNewChatType)
 
 export const updateChat = async (chat: Chat) => {
 
-  console.log(chat)
+  // console.log(chat)
 
   const response = await fetch('/api/chat/update', {
     method: 'POST',
@@ -112,7 +112,7 @@ export const updateEngagements = async ({
     });
 
     if (userUpdateResponse.status === 200) {
-      console.log('User engagements updated successfully');
+      // console.log('User engagements updated successfully');
       const updatedUser = {
         ...user,
         viewed: [...user.viewed || [], { engage_date: new Date().toISOString(), id: id }],
@@ -153,7 +153,7 @@ export const saveHouse = async ({id, user, listing}: {id:string, user: User, lis
     });
 
     if (response.status === 200) {
-      console.log('Saved House added successfully');
+      // console.log('Saved House added successfully');
       const updatedUser = {
         ...user,
         saved: [...user.saved || [], { engage_date: new Date().toISOString(), id: id }]
@@ -191,7 +191,7 @@ export const deleteSavedHouse = async ({id, user, listing}: {id:string, user: Us
     });
   
     if (response.status === 200) {
-      console.log('Saved House deleted successfully');
+      // console.log('Saved House deleted successfully');
       const updatedUser = {
         ...user,
         saved: user.saved.filter((house: any) => house.id !== id)
@@ -301,9 +301,8 @@ export const fetchReportsByUser = async(user_id: string) => {
 
   if (response.status === 200) {
     const data = await response.json()
-    console.log("DATA IN FETCHREP",data)
     if (data) {
-      console.log(data)
+      // console.log(data)
       return data;
     } else {
       return null;

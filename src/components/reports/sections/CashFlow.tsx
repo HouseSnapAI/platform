@@ -65,7 +65,6 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
     const { monthlyMortgagePayment, lowerEndTax, upperEndTax, adjustedAnnualRate } = await mortgageCalc(listing.list_price, creditScore, downpaymentValue);
     setMonthlyPayment(monthlyMortgagePayment);
     const prepaidInterestRateValue = adjustedAnnualRate/365 * (listing.list_price - downpaymentValue);
-    console.log("prepaidInterestRateValue",Number(prepaidInterestRateValue.toFixed(2)));
     setPrepaidInterestRate(prepaidInterestRateValue.toFixed(2));
     setTaxRange([lowerEndTax, upperEndTax]);
 
