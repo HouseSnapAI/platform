@@ -16,18 +16,21 @@ import { ListingRecordType, ListingType, User } from '@/utils/types';
 import { useTheme } from '@mui/material/styles';
 
 // ** Utils Imports
-import { fetchListing, fetchUserInfo } from '@/utils/db';
+import { fetchListing, fetchUserInfo, fetchReportsByUser } from '@/utils/db';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { getInitials } from '@/utils/utils';
 
 // ** Icon Imports
-import { IconAnalyze, IconEdit, IconFile, IconLogout, IconSettings } from '@tabler/icons-react';
+import { IconAnalyze, IconEdit, IconFile, IconLogout, IconSettings, IconLock } from '@tabler/icons-react';
 
 // ** Component Imports
 import SettingsPopup from './profile-components/SettingsPopup';
 import SavedHousesPopup from './profile-components/SavedHousesPopup';
 import HousesHistoryPopup from './profile-components/HousesHistoryPopup';
 import React from 'react';
+import ReportsPopup from './profile-components/ReportsPopup';
+import { Modal } from '@mui/material';
+import PricingPaymentComponent from '@/components/reports/pricing/PricingPageComponent';
 
 interface ProfilePopupProps {
     setSelectedListing: (listing: ListingType | 'loading' | null) => void;
@@ -44,8 +47,11 @@ const ProfilePopup = ({ setSelectedListing, handleClose }: ProfilePopupProps) =>
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [savedHousesOpen, setSavedHousesOpen] = useState(false);
     const [housesHistoryOpen, setHousesHistoryOpen] = useState(false);
+    const [modalOpen, setModalOpen] = useState(false);
+    const [reportsOpen, setReportsOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [housesHistory, setHousesHistory] = useState<ListingRecordType[]>([]);
+    const [reports, setReports] = useState<any[] | null>(null);
 
     const setSaved = async (data: any) => {
         const temp = data?.saved || [];
@@ -54,7 +60,6 @@ const ProfilePopup = ({ setSelectedListing, handleClose }: ProfilePopupProps) =>
         temp.forEach((item: any) => {
             ids.push(item.id)
         })
-        console.log(ids)
 
         await fetchListing({ ids }).then(({ data }) => {
             console.log("SAVED DATA",data);
@@ -73,12 +78,27 @@ const ProfilePopup = ({ setSelectedListing, handleClose }: ProfilePopupProps) =>
                 ids.push((element.id));
             }
         })
-        
-        console.log(ids)
 
         await fetchListing({ ids }).then(({ data }) => {
             console.log(data);
             setHousesHistory(data);
+        });
+    }
+
+    const setReportsHandler = async (data: any) => {
+        console.log(data);
+        let user_id: string = data?.id;
+        if(user_id == undefined || user_id == null) {
+            return;
+        }
+        
+        await fetchReportsByUser(user_id).then((res) => {
+            console.log(res);
+            if (res == null && data.reports_remaining > 0) {
+                setReports([])
+            } else {
+                setReports(res);
+            }        
         });
     }
 
@@ -89,6 +109,7 @@ const ProfilePopup = ({ setSelectedListing, handleClose }: ProfilePopupProps) =>
                 setUserInfo(data);
                 await setHistory(data)
                 await setSaved(data)
+                await setReportsHandler(data);
             });
           };
           
@@ -138,23 +159,27 @@ const ProfilePopup = ({ setSelectedListing, handleClose }: ProfilePopupProps) =>
         setAnchorEl(null);
     };
 
-    const getHousesHistory = (data: User) => {
-        if(data?.clicked == null || data?.clicked == undefined) {
-            return;
-        }
-        let temp: ListingRecordType[] = [];
-        let idTracker: string[] = [];
+    const handleReportsClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget.parentElement); 
+        setReportsOpen(true);
+    };
 
-        data.clicked.forEach((element) => {
-        if (!idTracker.includes(element.id)) {
-            temp.push((element));
-            idTracker.push(element.id);
-        }
-        })
-        setHousesHistory(temp);
-    }
+    const handleReportsClose = () => {
+        setReportsOpen(false);
+        setAnchorEl(null);
+    };
 
     return (
+    <>
+    <Modal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        aria-labelledby="modal-title"
+        aria-describedby="modal-description"
+        sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+    >
+        <PricingPaymentComponent userId={userInfo?.id as string} />
+    </Modal>
     <Box className=' flex w-full flex-col'>
       {userInfo?.name && userInfo?.email ? (
         <>
@@ -282,36 +307,67 @@ const ProfilePopup = ({ setSelectedListing, handleClose }: ProfilePopupProps) =>
                 </Button>
             </Box>
             <Box mt={1} pl={1} pr={1} pb={1} className='flex w-full gap-2 items-center justify-evenly' sx={{borderBottom: `1px solid ${theme.palette.divider}`}}> 
-                <Button
-                    sx={{ 
-                        textTransform: 'none',
-                        justifyContent: 'flex-start',
-                        paddingLeft: 1,
-                        paddingTop: 0.5,
-                        paddingBottom: 0.5,
-                    }}  
-                    color='primary' 
-                    fullWidth
-                    startIcon={
-                        <IconButton
-                            sx={{ 
-                                textTransform: 'none',
-                                justifyContent: 'flex-start',
-                                padding: 0,
-                            }}
-                        >
-                            <IconFile 
-                                size={20} 
-                                className="text-[#6f6f6f] p-0 hover:text-white duration-300 transition-all ease-in-out"/>
-                        </IconButton>
-                    }
-                >
-                    <Typography fontSize={12}>Reports</Typography>
-                </Button>
+                {
+                    reports == null ? 
+                        <Button
+                        onClick={() => setModalOpen(true)}
+                        sx={{ 
+                            textTransform: 'none',
+                            justifyContent: 'flex-start',
+                            paddingLeft: 1,
+                            paddingTop: 0.5,
+                            paddingBottom: 0.5,
+                            color: "#ababab",
+                            backgroundColor: "#212121",
+                        }}
+                        className='flex items-center cursor-default'  
+                        fullWidth
+                        startIcon={
+                                <IconLock 
+                                    size={20} 
+                                    className="text-[#6f6f6f] p-0"/>
+                        }
+
+                    >
+                        <Typography fontSize={12}>Reports</Typography>
+                    </Button>
+                :
+                    <Button
+                        onClick={handleReportsClick}
+                        sx={{ 
+                            textTransform: 'none',
+                            justifyContent: 'flex-start',
+                            paddingLeft: 1,
+                            paddingTop: 0.5,
+                            paddingBottom: 0.5,
+                        }}  
+                        color='primary' 
+                        fullWidth
+                        startIcon={
+                            <IconButton
+                                sx={{ 
+                                    textTransform: 'none',
+                                    justifyContent: 'flex-start',
+                                    padding: 0,
+                                }}
+                            >
+                                <IconFile 
+                                    size={20} 
+                                    className="text-[#6f6f6f] p-0 hover:text-white duration-300 transition-all ease-in-out"/>
+                            </IconButton>
+                        }
+                    >
+                        <Typography fontSize={12}>Reports</Typography>
+                    </Button> 
+                }
             </Box>
+
             <SettingsPopup anchorEl={anchorEl} open={settingsOpen} onClose={handleSettingsClose} userInfo={userInfo} setUserInfo={setUserInfo} />
             {savedHousesOpen && <SavedHousesPopup handleClose={handleClose} setSelectedListing={setSelectedListing} userInfo={userInfo} savedHouses={savedHouses} anchorEl={anchorEl} open={savedHousesOpen} onClose={handleSavedHousesClose} />}
+
             {housesHistoryOpen && <HousesHistoryPopup handleClose={handleClose} setSelectedListing={setSelectedListing} housesHistory={housesHistory} userInfo={userInfo} anchorEl={anchorEl} open={housesHistoryOpen} onClose={handleHousesHistoryClose} />}
+
+            {reportsOpen && <ReportsPopup reports={reports} userInfo={userInfo} anchorEl={anchorEl} open={reportsOpen} onClose={handleReportsClose} />}
         </>
           
       ) : (
@@ -359,6 +415,7 @@ const ProfilePopup = ({ setSelectedListing, handleClose }: ProfilePopupProps) =>
         </>
       )}
     </Box>
+    </>
   );
 };
 

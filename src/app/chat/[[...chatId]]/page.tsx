@@ -98,7 +98,15 @@ const ChatPage = () => {
 
   useEffect(() => {
     if (selectedListing && selectedListing !== 'loading') {
-      handleClick(true)
+      let currentListing = sessionStorage.getItem('listing');
+
+      if(currentListing == null || currentListing == "undefined") {
+        currentListing = "HomePage"
+      }
+      const storedChatObj = JSON.parse(sessionStorage.getItem(currentListing)!!)
+      if (!storedChatObj || !(storedChatObj.chat.chat_history[1].content == "Tell me more about this listing")) {
+        handleClick(true)
+      }
     }
   }, [selectedListing])
 
@@ -175,7 +183,7 @@ const ChatPage = () => {
 
   // If enter is clicked
   const handleClick = async (newChat: boolean, initVal: string = "Tell me more about this listing") => {
-    console.log("inside handle click")
+    console.log("inside handle click", newChat)
     setLoading(true);
     let chatId: string | null = null;
     let currentListing = sessionStorage.getItem('listing');
@@ -227,6 +235,7 @@ const ChatPage = () => {
               ...(selectedListing && selectedListing !== 'loading' && { listing: selectedListing })
           })
       })
+      console.log("happening")
       const data = await response.json()
 
       const chatObj = {
@@ -248,7 +257,8 @@ const ChatPage = () => {
 
       setChatHistory(updatedChat) // Double check if chat isnt updated properly
       storedChatObj.chat = updatedChat;
-
+      
+      
       setLoading(false);
 
       if (currentListing == "HomePage") {
