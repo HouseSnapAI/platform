@@ -125,7 +125,9 @@ export type Report = {
     elementary: School[]
   },
   rent_cash_flow: string, // JSON string
+  home_details: string, // JSON string
   status: string,
+  flags: string[]
 }
 
 export type School = {
@@ -211,7 +213,7 @@ export type MarketTrends = {
   recent_sold_properties: RecentSoldProperty[]
 }
 
-type RecentSoldProperty = {
+export type RecentSoldProperty = {
   property_url: string,
   mls: string,
   mls_id: string,
@@ -314,7 +316,7 @@ export type CensusData = {
   }
 }
 
-type CensusColumn = {
+export type CensusColumn = {
   'Column ID': string,
   Description: string,
   Estimate: number,
@@ -329,4 +331,58 @@ export type RentCashFlow = {
   rent_per_sqft: number,
   rent_per_lot_sqft: number,
   basis_number: number
+}
+
+// TBD
+export type HomeDetails = {
+  price: string,
+  views: string,
+  highlights: string[],
+  home_details: {
+    label: string,
+    details: string[]
+  }[],
+  neighborhood_kpis: {
+    title: string,
+    text: string
+  }[],
+  tax_history: {
+    year: string,
+    tax_paid: string,
+    tax_assessment: string,
+    land: string,
+    improvement: string
+  }[],
+  price_history: {
+    date: string,
+    event: string,
+    price: string,
+    change: string,
+    sq_ft_price: string
+  }[],
+  deed_history: {
+    date: string,
+    type: string,
+    sale_price: string,
+    title_company: string
+  }[],
+  mortgage_history: {
+    date: string,
+    status: string,
+    loan_amount: string,
+    loan_type: string
+  }[],
+  transportation: {
+    type: string,
+    name: string,
+    distance: string
+  }[],
+  bike_score: {
+    tagline: string,
+    score: string
+  },
+  walk_score: {
+    tagline: string,
+    score: string
+  }
 }
