@@ -382,7 +382,7 @@ const SafetyPage = ({crimeData, data, listing}: Props) => {
 
     return (
         <Box className='flex px-[10px] w-[100vw] justify-center gap-[10px]'>
-            <Box className='overflow-y-auto pb-[100px] flex flex-col bg-[#121212] w-[49.5%] rounded-md py-[20px] px-[20px]'>
+            <Box className='overflow-y-auto pb-[100px] flex flex-col bg-[#121212] w-[51] rounded-md py-[20px] px-[20px]'>
                 <Typography className='text-[#e4e4e4] text-[22px]'>Crime Score: {data.crime_score.toFixed(3)}</Typography>
                 <Box className=' mt-[20px] flex justify-start items-center gap-[10px] flex-wrap'>
                     <Typography className='text-[#ababab] text-[16px]'>Agencies:</Typography>
@@ -446,7 +446,7 @@ const SafetyPage = ({crimeData, data, listing}: Props) => {
                     </Box>
                 </Box>
 
-                <Box className='mt-[40px] flex justify-center gap-[20px] items-center'>
+                <Box className='mt-[40px] flex justify-center gap-[30px] items-center'>
                     <Box className='flex items-start justify-center w-[50%] flex-col gap-[10px]'>
                         <Typography className='text-[#ababab] text-[16px]'>Sex Data</Typography>
                         <Bar style={{width: "90%", height: "90%"}} data={sexBarData} options={sexBarOptions} />
@@ -469,7 +469,7 @@ const SafetyPage = ({crimeData, data, listing}: Props) => {
                 </Box>
                 
             </Box>
-            <Box className='flex flex-col bg-[#121212] w-[49.5%] rounded-md py-[20px] px-[20px]'>
+            <Box className='flex flex-col bg-[#121212] w-[48%] rounded-md py-[20px] px-[20px]'>
                 <Typography className='text-[#e4e4e4] text-[22px]'>Environmental Score: {0}</Typography>
             </Box>
         </Box>
