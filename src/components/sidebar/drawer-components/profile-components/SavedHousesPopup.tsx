@@ -53,7 +53,7 @@ const SavedHousesPopup = ({ anchorEl, open, onClose, userInfo, savedHouses, setS
       <Box sx={{
           maxHeight: '500px',
           minHeight: '300px',
-          width: `${savedHouses?.length == 1 ? '250px' : '480px'}`,
+          width: `${(savedHouses?.length == 1 || savedHouses?.length == 0) ? '250px' : '480px'}`,
           border: `1px solid ${theme.palette.divider}`,
           overflowY: 'auto',
           display: 'flex',

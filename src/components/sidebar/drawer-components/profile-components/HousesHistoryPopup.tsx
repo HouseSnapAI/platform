@@ -67,7 +67,7 @@ const HousesHistoryPopup = ({ anchorEl, open, onClose, userInfo, housesHistory, 
       <Box sx={{
           maxHeight: '500px',
           minHeight: '300px',
-          width: `${housesHistory?.length == 1 ? '250px' : '480px'}`,
+          width: `${(housesHistory?.length == 1 || housesHistory?.length == 0) ? '250px' : '480px'}`,
           border: `1px solid ${theme.palette.divider}`,
           overflowY: 'auto',
           display: 'flex',

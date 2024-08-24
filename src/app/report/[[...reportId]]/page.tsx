@@ -207,7 +207,7 @@ const ChatPage = () => {
         <Box className="flex w-full h-[45px] items-center justify-between" sx={{backgroundColor: theme.palette.background.paper}}>
           <Box className="w-[305px]"></Box>
           <Typography fontSize={16} className='text-[#c1c1c1]' >HouseSnap<span className="bg-gradient-to-r from-purple-400 via-pink-500 fade-in-on-scroll to-red-500 text-transparent bg-clip-text">AI</span></Typography>
-          <Box className="flex gap-2">
+          <Box className="flex gap-2 items-center">
             <Tooltip title="Back to Explore">
                 <IconButton onClick={() =>{window.location.href = '/chat'}}>
                     <IconMap className='text-[#c1c1c1]' />
@@ -219,8 +219,8 @@ const ChatPage = () => {
               <IconGraph className='text-[#c1c1c1] w-[19px]' />
             </Box>        
             <Box onClick={() => setOpen(true)} className="mt-[3px] flex justify-center items-center gap-[5px] mr-[30px] py-[4px] px-3 rounded-sm shadow-lg cursor-pointer bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 hover:scale-[1.05] hover:shadow-xl transition-all ease-in-out duration-500">
-              <Typography fontSize={14} className='text-white' >Buy More</Typography>
-              <IconPaywall className='text-white w-[19px]' />
+              <Typography fontSize={14} className='text-[#c1c1c1]' >Buy More</Typography>
+              <IconPaywall className='text-[#c1c1c1] w-[19px]' />
             </Box>
           </Box>
         </Box>
