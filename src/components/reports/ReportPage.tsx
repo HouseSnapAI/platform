@@ -36,6 +36,8 @@ const ReportPage = ({ listing, open, setOpen, userInfo }: ReportPageProps) => {
       const data = await response.json();
       const reportId = data.report.id;
 
+      localStorage.setItem('userInfo', JSON.stringify({...userInfo, reports_remaining: userInfo.reports_remaining - 1}));
+
       const { id, status, property_type, full_street_line, street, city, county, state, unit, zip_code, list_price, beds, full_baths, sqft, latitude, longitude, lot_sqft } = listing;
 
       const queueResponse = await fetch(`/api/report`, {
@@ -43,7 +45,8 @@ const ReportPage = ({ listing, open, setOpen, userInfo }: ReportPageProps) => {
         body: JSON.stringify({ report_id: reportId, client_id: userInfo.id, listing: { id, status, property_type, county, lot_sqft, full_street_line, street, city, state, unit, zip_code, list_price, beds, full_baths, sqft, latitude, longitude } }),
       });
       if (queueResponse.status === 200) {
-        window.location.href = `/report/${reportId}`;
+        window.open(`/report/${reportId}`, '_blank');
+        handleClose()
       } else {
         toast.error('Failed to queue report. Please try again.');
       }

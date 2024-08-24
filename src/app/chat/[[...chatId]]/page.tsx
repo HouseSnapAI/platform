@@ -378,8 +378,8 @@ useEffect(() => {
               <IconGraph className='text-[#c1c1c1] w-[19px]' />
             </Box>        
             <Box onClick={() => setOpen(true)} className="mt-[3px] flex justify-center items-center gap-[5px] mr-[30px] py-[4px] px-3 rounded-sm shadow-lg cursor-pointer bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 hover:scale-[1.05] hover:shadow-xl transition-all ease-in-out duration-500">
-              <Typography fontSize={14} className='text-[#c1c1c1]' >Buy More</Typography>
-              <IconPaywall className='text-[#c1c1c1] w-[19px]' />
+              <Typography fontSize={14} className='text-white' >Buy More</Typography>
+              <IconPaywall className='text-white w-[19px]' />
             </Box>
           </Box>
         </Box>

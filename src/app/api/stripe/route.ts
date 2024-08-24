@@ -36,7 +36,6 @@ export async function POST(req: NextRequest) {
 
       const additionalReports = lineItems.data[0].description == 'House Snapshot' ? 1 : lineItems.data[0].description == 'House Album' ? 3 : 7;
     
-
       // Log discount codes
       if (session.total_details?.amount_discount && session.total_details.breakdown?.discounts) {
         session.total_details.breakdown.discounts.forEach(discount => {
@@ -66,7 +65,7 @@ export async function POST(req: NextRequest) {
         .from('User')
         .update({ 
           plan: 'paid',
-          reports_remaining: newReportsRemaining
+          reports_remaining: newReportsRemaining,
         })
         .eq('id', userId);
 
@@ -83,7 +82,8 @@ export async function POST(req: NextRequest) {
         currency: session.currency,
         status: session.status,
         products: lineItems.data[0].description,
-        discount_code: discountCode
+        discount_code: discountCode,
+        customer_details: session.customer_details
       })
       console.log('Supabase update successful:', dataPayments);
     

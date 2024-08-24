@@ -265,6 +265,20 @@ export const checkReport = async (reportId: string, userId: string) => {
   }
 }
 
+export const checkReportByListing = async (listingId: string, userId: string) => {
+  const response = await fetch(`/api/report/check`, {
+    method: 'POST',
+    body: JSON.stringify({ listing_id: listingId, user_id: userId }),
+  });
+
+  if (response.status === 200) {
+    const data = await response.json()
+    return {valid: true, data: data}
+  } else {
+    return {valid: false, data:null}
+  }
+}
+
 export const fetchReport = async(report_id:string) => {
   const response = await fetch(`/api/report/fetch`, {
     method: 'POST',
@@ -273,13 +287,9 @@ export const fetchReport = async(report_id:string) => {
 
   if (response.status === 200) {
     const data = await response.json()
-    if (data.status === 'incomplete'){
-      return null
-    } else {
       return data
-    }
   } else {
-    return null
+    return {status: 'empty'}
   }
 }
 
