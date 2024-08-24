@@ -41,6 +41,18 @@ export const POST = withApiAuthRequired(async function handler(req: NextRequest)
   
 
   try {
+
+    const {data: recordExists, error: recordExistsError} = await supabase
+      .from('reports')
+      .select()
+      .eq('listing_id', listing_id)
+      .single();
+
+    if (recordExists) {
+      console.log("RECORD EXISTS", recordExists)
+      return NextResponse.json({ message: 'Record already exists', report: recordExists }, { status: 200 });
+    }
+    
     const { data: newRecord, error } = await supabase
       .from('reports')
       .insert({
@@ -53,13 +65,11 @@ export const POST = withApiAuthRequired(async function handler(req: NextRequest)
       console.error('Error creating record:', error);
       return NextResponse.json({ message: 'Error creating record' }, { status: 500 });
     }
-
     
     const { data: userRecordAssociation, error: ascError } = await supabase
       .from('user_reports')
       .insert({
         user_id: user_id,
-        report_id: newRecord.id,
         listing_id: listing_id
       })
       .select()

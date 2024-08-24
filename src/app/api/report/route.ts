@@ -58,7 +58,6 @@ const payloadSchema = z.object({
     primary_photo: z.string().optional(),
     alt_photos: z.array(z.string()).optional(),
   }),
-  report_id: z.string(),
   client_id: z.string(),
 });
 
@@ -107,10 +106,10 @@ export const POST = withApiAuthRequired(async function handler(req: NextRequest)
     }, { status: 400 });
   }
 
-  const { listing, report_id, client_id } = result.data;
+  const { listing, client_id } = result.data;
 
   try {
-    const payload = { report_id, listing, client_id };
+    const payload = { listing, client_id };
     const response = await sendMessageToSQS(payload);
     
     if (response.success) {

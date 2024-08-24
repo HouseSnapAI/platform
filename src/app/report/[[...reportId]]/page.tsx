@@ -52,7 +52,7 @@ const ChatPage = () => {
   // ** Listing States
   const [listing, setListing] = useState<ListingType | null>(null);
 
-  const { reportId } = useParams();
+  const { reportId: listingId } = useParams();
 
   const theme = useTheme();
 
@@ -102,13 +102,13 @@ const ChatPage = () => {
 
   useEffect(() => {
     const updateReport = async () => {
-      console.log('Checking report validity for reportId:', reportId[0], 'and userId:', userInfo?.id);
-      const valid = await checkReport(reportId[0] as string, userInfo?.id as string);
+      console.log('Checking report validity for reportId:', listingId[0], 'and userId:', userInfo?.id);
+      const valid = await checkReport(listingId[0] as string, userInfo?.id as string);
       console.log('Report validity:', valid);
       setAuthReport(valid);
       if(valid){
-        console.log('Fetching report for reportId:', reportId[0]);
-        const report = await fetchReport(reportId[0] as string);
+        console.log('Fetching report for reportId:', listingId[0]);
+        const report = await fetchReport(listingId[0] as string);
         if (report && report.status == 'complete'){
           console.log('Report fetched successfully:', report);
           setData({...report } as Report);
@@ -127,7 +127,7 @@ const ChatPage = () => {
     if(userInfo?.id){
       updateReport();
     }
-  }, [reportId[0], userInfo?.id]);
+  }, [listingId[0], userInfo?.id]);
 
   useEffect(() => {
     
@@ -144,7 +144,7 @@ const ChatPage = () => {
             setStatus(message.message);
             if (message.message === 'complete') {
                 console.log('Lambda finished message received');
-                const report = await fetchReport(reportId[0] as string);
+                const report = await fetchReport(listingId[0] as string);
                 if (report){
                   console.log('Report fetched successfully:', report);
                   setData({...report, status: 'populated'});

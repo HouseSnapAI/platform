@@ -4,7 +4,7 @@ import { supabase } from '@/supabase/client';
 import { z } from 'zod';
 
 const schema = z.object({
-  report_id: z.string(),
+  listing_id: z.string(),
 });
 
 export const POST = withApiAuthRequired(async function handler(req: NextRequest) {
@@ -17,13 +17,13 @@ export const POST = withApiAuthRequired(async function handler(req: NextRequest)
     return NextResponse.json({ message: 'Invalid request body', errors: parseResult.error.errors }, { status: 400 });
   }
 
-  const { report_id } = parseResult.data;
+  const { listing_id } = parseResult.data;
 
   try {
     const { data, error } = await supabase
       .from('reports')
       .select('*')
-      .eq('id', report_id)
+      .eq('listing_id', listing_id)
       .single();
 
     if (error) {

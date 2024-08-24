@@ -180,8 +180,21 @@ const ListingDrawerContent = ({ listing, email, setUserInfo, userInfo, onClose }
                     }
                   }} 
                   onChange={(synth, newTab) => setTab(newTab)}>
-                  <Tab sx={{textTransform: 'none'}} label="Summary" value="summary" />
-                  <Tab sx={{textTransform: 'none'}} label="Tools" value="tools" />
+                  <Tab 
+                    sx={{
+                      textTransform: 'none', 
+                      '&.Mui-selected': { color: theme.palette.text.primary }
+                    }} 
+                    label="Summary" 
+                    value="summary" 
+                  />
+                  <Tab sx={{
+                      textTransform: 'none', 
+                      '&.Mui-selected': { color: theme.palette.text.primary }
+                    }}  
+                    label="Tools" 
+                    value="tools" 
+                  />
                 </TabList>
                 <ListingActionItems listing={listing} userInfo={userInfo || null} />
               </Box>

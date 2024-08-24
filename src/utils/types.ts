@@ -110,7 +110,6 @@ export type Chat = {
 }
 
 export type Report = {
-  id: string,
   created_at: string,
   updated_at: string,
   listing_id: string,

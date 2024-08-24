@@ -252,10 +252,10 @@ export const fetchListing = async ({ ids }: FetchListingType) => {
 };
 
 // REPORT FUNCTIONS
-export const checkReport = async (reportId: string, userId: string) => {
+export const checkReport = async (listingId: string, userId: string) => {
   const response = await fetch(`/api/report/check`, {
     method: 'POST',
-    body: JSON.stringify({ report_id: reportId, user_id: userId }),
+    body: JSON.stringify({ listing_id: listingId, user_id: userId }),
   });
 
   if (response.status === 200) {
@@ -279,10 +279,10 @@ export const checkReportByListing = async (listingId: string, userId: string) =>
   }
 }
 
-export const fetchReport = async(report_id:string) => {
+export const fetchReport = async(listing_id:string) => {
   const response = await fetch(`/api/report/fetch`, {
     method: 'POST',
-    body: JSON.stringify({ report_id: report_id }),
+    body: JSON.stringify({ listing_id: listing_id }),
   });
 
   if (response.status === 200) {
@@ -301,6 +301,7 @@ export const fetchReportsByUser = async(user_id: string) => {
 
   if (response.status === 200) {
     const data = await response.json()
+    console.log("DATA IN FETCHREP",data)
     if (data) {
       console.log(data)
       return data;
