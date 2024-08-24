@@ -98,8 +98,6 @@ const DemographicPage = ({data, listing}: Props) => {
 
     return (
         <Box className='overflow-auto'>
-            <Typography variant='h4'>Demographic</Typography>
-            <Typography variant='h6'>data.year</Typography>
             <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
                     <Card className='relative'>
