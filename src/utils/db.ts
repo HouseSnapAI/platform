@@ -311,3 +311,23 @@ export const fetchReportsByUser = async(user_id: string) => {
     return null
   }
 }
+
+
+export const fetchCrimeData = async(crime_data_ids: number[]) => {
+  const response = await fetch(`/api/report/crime-data`, {
+    method: 'POST',
+    body: JSON.stringify({ crime_data_ids: crime_data_ids }),
+  });
+
+  if (response.status === 200) {
+    const data = await response.json()
+    if (data) {
+      console.log(data)
+      return data;
+    } else {
+      return null;
+    }
+  } else {
+    return null
+  }
+}

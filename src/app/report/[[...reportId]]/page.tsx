@@ -15,7 +15,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 
 // ** Type Imports
-import { User, Report, ListingType } from '@/utils/types';
+import { User, Report, ListingType, CrimeDataType } from '@/utils/types';
 
 // ** Style Imports
 import { useTheme } from '@mui/material/styles';
@@ -24,7 +24,7 @@ import { useTheme } from '@mui/material/styles';
 import { useUser } from '@auth0/nextjs-auth0/client';
 
 // ** Util Imports
-import { checkReport, fetchReport, fetchUserInfo } from '@/utils/db';
+import { checkReport, fetchCrimeData, fetchReport, fetchUserInfo } from '@/utils/db';
 
 // ** Icon Imports
 import { IconGraph, IconMap, IconPaywall } from '@tabler/icons-react';
@@ -35,6 +35,7 @@ import CashFlow from '@/components/reports/sections/CashFlow';
 import Overview from '@/components/reports/sections/Overview';
 import DevelopmentalPage from '@/components/reports/sections/DevelopmentalPage';
 import DemographicPage from '@/components/reports/sections/DemographicPage';
+import SafetyPage from '@/components/reports/sections/SafetyPage';
 
 
 const ChatPage = () => {
@@ -47,6 +48,7 @@ const ChatPage = () => {
   const [data, setData] = useState<Report | Partial<Report>>({status: 'empty'});
   const [status, setStatus] = useState('empty');
   const [authReport, setAuthReport] = useState(false);
+  const [crimeData, setCrimeData] = useState<CrimeDataType>();
 
   // ** Listing States
   const [listing, setListing] = useState<ListingType | null>(null);
@@ -71,6 +73,8 @@ const ChatPage = () => {
         return <DemographicPage data={data as Report} listing={listing as ListingType} />;
       case 3:
         return <CashFlow data={data as Report} listing={listing as ListingType} />;
+      case 4:
+        return <SafetyPage crimeData={crimeData} data={data as Report} listing={listing as ListingType} />
       default:
         return <Overview data={data as Report} listing={listing as ListingType} />;
     }
@@ -187,6 +191,26 @@ const ChatPage = () => {
 
   }, [user?.email])
 
+  useEffect(() => {
+    
+    const getCrimeData = async() => {
+      if (data.status == "complete") {
+        console.log(data);
+        const crimeIds = data.crime_data_ids
+        console.log(crimeIds);
+        
+        if(crimeIds != undefined) {
+          await fetchCrimeData(crimeIds).then(crimeData => {
+            console.log(crimeData);
+            setCrimeData(crimeData);
+          });
+        }
+      }
+    }
+
+    getCrimeData();
+  }, [data])
+
   const [open, setOpen] = useState<boolean>(false)
 
   return (
@@ -204,7 +228,7 @@ const ChatPage = () => {
         </Modal>
 
         {/* Header */}
-        <Box className="flex w-full h-[45px] items-center justify-between" sx={{backgroundColor: theme.palette.background.paper}}>
+        <Box className="flex w-full h-[42px] items-center justify-between" sx={{backgroundColor: theme.palette.background.paper}}>
           <Box className="w-[305px]"></Box>
           <Typography fontSize={16} className='text-[#c1c1c1]' >HouseSnap<span className="bg-gradient-to-r from-purple-400 via-pink-500 fade-in-on-scroll to-red-500 text-transparent bg-clip-text">AI</span></Typography>
           <Box className="flex gap-2 items-center">
@@ -235,6 +259,7 @@ const ChatPage = () => {
           <Tab label="Developmental" sx={{ textTransform: 'none' }} />
           <Tab label="Demographic" sx={{ textTransform: 'none' }} />
           <Tab label="Cash Flow" sx={{ textTransform: 'none' }} />
+          <Tab label="Safety" sx={{ textTransform: 'none' }} />
         </Tabs>
 
         {/* Main Body */}

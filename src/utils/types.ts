@@ -10,6 +10,23 @@ export type DrawerContentType = {
   props: any
 }
 
+export type CrimeDataType = {
+  offense_linked_to_another_offense: any[],
+  crime_location: any[],
+  offender_age: any[],
+  offender_ethnicity: any[],
+  offender_race: any[],
+  offender_sex: any[],
+  all_violent_crime_trend: any[],
+  type_of_weapon: any[],
+  victim_age: any[],
+  victim_ethnicity: any[],
+  victim_race: any[],
+  victim_sex: any[],
+  victim_relationship_to_offender: any[],
+  agencies: string[],
+}
+
 // LISTINGTYPE
 export type ListingType = {
   id: string,
