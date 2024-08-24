@@ -268,54 +268,54 @@ type AgentPhone = {
 
 export type CensusData = {
   B01001: {
-    TableTitle: string,
-    TableDescription: string,
+    'Table Title': string,
+    'Table Description': string,
     Columns: CensusColumn[]
   },
   B02001: {
-    TableTitle: string,
-    TableDescription: string,
+    'Table Title': string,
+    'Table Description': string,
     Columns: CensusColumn[]
   },
   B03002: {
-    TableTitle: string,
-    TableDescription: string,
+    'Table Title': string,
+    'Table Description': string,
     Columns: CensusColumn[]
   },
   B19001: {
-    TableTitle: string,
-    TableDescription: string,
+    'Table Title': string,
+    'Table Description': string,
     Columns: CensusColumn[]
   },
   B19013: {
-    TableTitle: string,
-    TableDescription: string,
+    'Table Title': string,
+    'Table Description': string,
     Columns: CensusColumn[]
   },
   B23025: {
-    TableTitle: string,
-    TableDescription: string,
+    'Table Title': string,
+    'Table Description': string,
     Columns: CensusColumn[]
   },
   B25001: {
-    TableTitle: string,
-    TableDescription: string,
+    'Table Title': string,
+    'Table Description': string,
     Columns: CensusColumn[]
   },
   B25002: {
-    TableTitle: string,
-    TableDescription: string,
+    'Table Title': string,
+    'Table Description': string,
     Columns: CensusColumn[]
   },
   B25003: {
-    TableTitle: string,
-    TableDescription: string,
+    'Table Title': string,
+    'Table Description': string,
     Columns: CensusColumn[]
   }
 }
 
 type CensusColumn = {
-  ColumnID: string,
+  'Column ID': string,
   Description: string,
   Estimate: number,
   Error: number,
