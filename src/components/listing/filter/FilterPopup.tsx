@@ -66,10 +66,10 @@ const FilterPopup = ({ type, anchorEl, open, onClose, value, setValue }: FilterP
         return (
           <Box>
             <Typography color='text.primary' fontSize={14} fontWeight={600} sx={{marginBottom: 1}}>
-              Budget <span style={{color: theme.palette.text.secondary}}> ({value[0] >= 1000000 ? `${(value[0] / 1000000).toFixed(1)}M` : value[0] >= 1000 ? `${(value[0] / 1000).toFixed(1)}K` : value[0]} – 
+              Budget <span style={{color: theme.palette.text.secondary}} className='font-medium'> ({value[0] >= 1000000 ? `${(value[0] / 1000000).toFixed(1)}M` : value[0] >= 1000 ? `${(value[0] / 1000).toFixed(1)}K` : value[0]} – 
               {value[1] >= 1000000 ? `${(value[1] / 1000000).toFixed(1)}M` : value[1] >= 1000 ? `${(value[1] / 1000).toFixed(1)}K` : value[1]})</span>
             </Typography>
-            <Box display="flex" justifyContent="space-between">
+            <Box display="flex" justifyContent="space-between" className='gap-2'>
               <TextField
                 type="number"
                 value={value[0]}
@@ -136,9 +136,9 @@ const FilterPopup = ({ type, anchorEl, open, onClose, value, setValue }: FilterP
         return (
           <Box>
             <Typography color='text.primary' fontSize={14} fontWeight={600} sx={{marginBottom: 1}}>
-              Size of House <span style={{color: theme.palette.text.secondary}}> ({value[0].toLocaleString()} sqft – {value[1].toLocaleString()} sqft)</span>
+              Size of House <span style={{color: theme.palette.text.secondary}} className='font-medium'> ({value[0].toLocaleString()} sqft – {value[1].toLocaleString()} sqft)</span>
             </Typography>
-            <Box display="flex" justifyContent="space-between">
+            <Box display="flex" justifyContent="space-between" className='gap-2'>
               <TextField
                 type="number"
                 value={value[0]}
@@ -168,6 +168,7 @@ const FilterPopup = ({ type, anchorEl, open, onClose, value, setValue }: FilterP
               fullWidth
               variant="outlined"
               size="small"
+              inputProps={{ style: { fontSize: '14px' } }}
             />
           </Box>
         );

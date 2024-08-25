@@ -9,6 +9,9 @@ import { Bounce } from 'react-toastify';
 // ** MUI Imports
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
+
+// ** Style Imports
+import { useTheme } from '@mui/material/styles';
 import { styled } from '@mui/system';
 
 // ** Types Imports
@@ -40,6 +43,8 @@ const Listing = ({ listing, onHover, lastHoveredListing, setLastHoveredListing, 
 }) => {
   const [isHovering, setIsHovering] = useState(false);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const theme = useTheme();
 
   const handleMouseEnter = () => {
     setIsHovering(true);
@@ -94,7 +99,7 @@ const Listing = ({ listing, onHover, lastHoveredListing, setLastHoveredListing, 
   return (
     <>
       <BlinkingBox 
-        className={`group flex flex-col items-center h-[200px] w-[200px] justify-center p-3 border-[1px] cursor-pointer ${lastHoveredListing?.id === listing.id ? 'border-blue-500' : 'border-[#393939]'} rounded-sm ${isHovering && lastHoveredListing?.id !== listing.id ? 'blink-rapidly' : ''} ease-in-out duration-300`}
+        className={`group flex flex-col items-center h-[200px] w-[200px] justify-center p-3 border-[1px] cursor-pointer ${lastHoveredListing?.id === listing.id ? `border-[#c243d8]` : 'border-[#393939]'} rounded-sm ${isHovering && lastHoveredListing?.id !== listing.id ? 'blink-rapidly' : ''} ease-in-out duration-300`}
         sx={{
           backgroundColor: 'transparent',
         }}

@@ -105,7 +105,7 @@ const ChatPage = () => {
         currentListing = "HomePage"
       }
       const storedChatObj = JSON.parse(sessionStorage.getItem(currentListing)!!)
-      if (!storedChatObj || !(storedChatObj.chat.chat_history[1].content == "Tell me more about this listing")) {
+      if (!storedChatObj || !(storedChatObj.chat.chat_history?.[1]?.content == "Tell me more about this listing")) {
         handleClick(true)
       }
     }

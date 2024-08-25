@@ -63,7 +63,7 @@ const Message = ({ message }: { message: Message }) => {
         <Box className="flex flex-col justify-start items-start mr-10 ">
           <Typography fontSize={14.5} className='text-white ml-[5px]' mb={1}>HouseSnap<span className="bg-gradient-to-r from-purple-400 via-pink-500 fade-in-on-scroll to-red-500 text-transparent bg-clip-text">AI</span></Typography>
           <Box className='bg-[#222222] py-[10px] pr-[10px] pl-[12px] rounded-md shadow-md'>
-            <Typography align='left' fontSize={13.5} color='text.secondary'>Hi! Welcome to {message.role}</Typography>
+            <Typography align='left' fontSize={13.5} color='text.primary'>Hi! Welcome to {message.role}</Typography>
           </Box>
         </Box>
         <div ref={chatEndRef} className='bg-red-500'></div>
