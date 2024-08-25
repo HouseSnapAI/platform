@@ -7,7 +7,7 @@ import Modal from '@mui/material/Modal'
 import Typography from '@mui/material/Typography'
 
 // ** Icon Imports
-import { IconLock} from '@tabler/icons-react'
+import { IconLock, IconSparkles} from '@tabler/icons-react'
 
 // ** Types
 import { ListingType, User } from '@/utils/types'
@@ -63,7 +63,7 @@ const ListingActionItems = ({userInfo, listing}: ListingActionItemProps) => {
 <>
         <Button disabled={reportExists.valid == null} className='bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 px-[10px] py-[5px] shadow-md rounded-sm cursor-pointer hover:scale-[1.05] hover:shadow-xl transition-all ease-in-out duration-500 flex items-center justify-center gap-[3px]' onClick={handleReportClick} sx={{textTransform: 'none'}}>
         <Typography fontSize={14} className='text-[#ffffff]' >SnapShot</Typography>
-        <IconLock className='w-[18px]' color={theme.palette.text.primary} />
+        <IconSparkles className='w-[18px]' color={theme.palette.text.primary} />
         
         </Button>
         <Modal

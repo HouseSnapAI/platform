@@ -29,7 +29,7 @@ import ListingPage from '@/components/listing/ListingPage';
 import MapPage from '@/components/map/MapPage';
 import { Modal, Tooltip, Typography } from '@mui/material';
 import React from 'react';
-import { IconGraph, IconPaywall } from '@tabler/icons-react';
+import { IconCreditCardRefund, IconGraph } from '@tabler/icons-react';
 import PricingPaymentComponent from '@/components/reports/pricing/PricingPageComponent';
 import { getInitials } from '@/utils/utils';
 
@@ -398,7 +398,7 @@ useEffect(() => {
             </Box>        
             <Box onClick={() => setOpen(true)} className="mt-[3px] flex justify-center items-center gap-[5px] mr-[30px] py-[4px] px-3 rounded-sm shadow-lg cursor-pointer bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 hover:scale-[1.05] hover:shadow-xl transition-all ease-in-out duration-500">
               <Typography fontSize={14} className='text-white' >Buy More</Typography>
-              <IconPaywall className='text-white w-[19px]' />
+              <IconCreditCardRefund stroke={1.5} className='text-white w-[19px]' />
             </Box>
           </Box>
         </Box>

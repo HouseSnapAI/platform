@@ -109,11 +109,6 @@ const Listing = ({ listing, onHover, lastHoveredListing, setLastHoveredListing, 
           {`${listing?.full_street_line} `}
         </Typography>
         <Typography variant='caption' className='text-center text-white/70 group-hover:text-white ease-in-out duration-300'>{listing?.beds} Bed {listing?.full_baths + (listing?.half_baths || 0)} Bath {listing?.sqft} sqft - <span className="font-semibold">{formatPrice(Number(listing?.list_price))}</span></Typography>
-        {lastHoveredListing?.id === listing.id && (
-          <Typography variant='caption' className='text-center text-white/70 group-hover:text-white ease-in-out duration-300'>
-            SnapScore: 68
-          </Typography>
-        )}
       </BlinkingBox>
     </>
   )
