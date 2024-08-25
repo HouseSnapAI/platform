@@ -153,20 +153,17 @@ const ChatPage = () => {
                   setData({status: 'empty'});
                 }
                 eventSource.close();
-                window.location.reload()
             }
           };
 
           eventSource.onerror = () => {
             console.log('EventSource error, closing connection');
             eventSource.close();
-            window.location.reload()
           };
 
           return () => {
             console.log('Closing EventSource');
             eventSource.close();
-            window.location.reload()
           };
         }
     };
