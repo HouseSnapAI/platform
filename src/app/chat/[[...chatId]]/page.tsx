@@ -27,10 +27,11 @@ import { initChat } from '@/utils/vars';
 import { createNewChat, fetchListing, fetchUserInfo, updateChat } from '@/utils/db';
 import ListingPage from '@/components/listing/ListingPage';
 import MapPage from '@/components/map/MapPage';
-import { Modal, Typography } from '@mui/material';
+import { Modal, Tooltip, Typography } from '@mui/material';
 import React from 'react';
 import { IconGraph, IconPaywall } from '@tabler/icons-react';
 import PricingPaymentComponent from '@/components/reports/pricing/PricingPageComponent';
+import { getInitials } from '@/utils/utils';
 
 const ChatPage = () => {
 
@@ -333,23 +334,30 @@ useEffect(() => {
     sessionStorage.setItem('listingObj', JSON.stringify(listing));
   }
 
+
+  
   // console.log(sessionStorage.getItem('listing'))
+  
+  fetchChatHistory();
+  
+  setSelectedListing(listing);
+}
 
-    fetchChatHistory();
-
-    setSelectedListing(listing);
-  }
+  const handleProfileClick = () => {
+    setDrawerContent({ title: 'Profile', component: 'ProfilePopup', props: userInfo });
+    setDrawerOpen(true);
+  };
 
   const [open, setOpen] = useState<boolean>(false)
 
   return (
     userInfo ? 
     <Box className="flex w-[100vw] h-[100vh] overflow-hidden flex-row bg-black relative">
-      <SideBar 
+      {/* <SideBar 
         setDrawerContent={setDrawerContent}
         setDrawerOpen={setDrawerOpen}
         userInfo={userInfo}
-      />
+      /> */}
 
       <PersistentDrawer 
         open={drawerOpen} 
@@ -368,8 +376,19 @@ useEffect(() => {
         >
             <PricingPaymentComponent userId={userInfo?.id as string} />
         </Modal>
-        <Box className="flex w-full h-[45px] items-center justify-between" sx={{backgroundColor: theme.palette.background.paper}}>
-          <Box className="w-[105px]"></Box>
+        <Box className="flex w-full h-[55px] items-center justify-between" sx={{backgroundColor: theme.palette.background.paper}}>
+          {/* PROFILE BUTTON */}
+          <Box 
+              className="w-[40px] h-[40px] ml-4 rounded-full flex items-center justify-center bg-gradient-to-r outline outline-black from-purple-400 via-pink-500 to-red-500 border border-black hover:outline hover:outline-3 hover:outline-white transition-all duration-300 cursor-pointer relative"
+              onClick={handleProfileClick}
+          >
+      
+            <Tooltip title={userInfo?.name || 'Guest User'} placement="right">            
+                <Typography variant="h6" className="text-white">
+                {getInitials(userInfo?.name || 'Guest User')}
+                </Typography> 
+            </Tooltip>
+          </Box>
           <Typography fontSize={16} className='text-[#c1c1c1]' >HouseSnap<span className="bg-gradient-to-r from-purple-400 via-pink-500 fade-in-on-scroll to-red-500 text-transparent bg-clip-text">AI</span></Typography>
           <Box className="flex gap-2">
             <Box className="mt-[3px] flex justify-center items-center gap-[5px] bg-[#383838] py-[4px] px-3 rounded-sm shadow-lg">

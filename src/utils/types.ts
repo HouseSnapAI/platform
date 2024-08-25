@@ -118,16 +118,19 @@ export type Report = {
   school_score: number,
   market_trends: string, // JSON string
   census_data: string, // JSON string
-  top_schools: {
-    high: School[],
-    middle: School[],
-    elementary: School[]
-  },
+  top_schools: string, // JSON string
   rent_cash_flow: string, // JSON string
   home_details: string, // JSON string
   status: string,
   flags: string[]
 }
+
+export type TopSchools = {
+  high: School[],
+  middle: School[],
+  elementary: School[]
+}
+
 
 export type School = {
   KG?: string,

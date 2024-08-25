@@ -234,11 +234,26 @@ const ChatPage = () => {
                       bgcolor: "#c243d8",
                     }
                   }}  value={selectedTab} color="secondary" onChange={handleTabChange} sx={{ backgroundColor: theme.palette.background.paper, textTransform: 'none'  }}>
-          <Tab label="Overview" color='secondary' sx={{ textTransform: 'none' }} />
-          <Tab label="House Score" sx={{ textTransform: 'none' }} />
-          <Tab label="Developmental" sx={{ textTransform: 'none' }} />
-          <Tab label="Demographic" sx={{ textTransform: 'none' }} />
-          <Tab label="Cash Flow" sx={{ textTransform: 'none' }} />
+          <Tab label="Overview" color='secondary' sx={{
+                      textTransform: 'none', 
+                      '&.Mui-selected': { color: theme.palette.text.primary }
+                    }}  />
+          <Tab label="House Score" sx={{
+                      textTransform: 'none', 
+                      '&.Mui-selected': { color: theme.palette.text.primary }
+                    }}  />
+          <Tab label="Developmental" sx={{
+                      textTransform: 'none', 
+                      '&.Mui-selected': { color: theme.palette.text.primary }
+                    }}  />
+          <Tab label="Demographic" sx={{
+                      textTransform: 'none', 
+                      '&.Mui-selected': { color: theme.palette.text.primary }
+                    }}  />
+          <Tab label="Cash Flow" sx={{
+                      textTransform: 'none', 
+                      '&.Mui-selected': { color: theme.palette.text.primary }
+                    }}  />
         </Tabs>
 
         {/* Main Body */}
