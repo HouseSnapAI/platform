@@ -26,9 +26,9 @@ type DevelopmentalPageProps = {
 
 // ** Chart
 import { Doughnut } from 'react-chartjs-2';
-import { Chart as ChartJS, ArcElement, Tooltip as ChartTooltip, Legend } from 'chart.js';
+import { Chart as ChartJS, ArcElement, Tooltip as ChartTooltip, Legend, LinearScale, CategoryScale, BarElement } from 'chart.js';
 
-ChartJS.register(ArcElement, ChartTooltip, Legend);
+ChartJS.register(ArcElement, ChartTooltip, Legend, LinearScale, CategoryScale, BarElement);
 
 const DevelopmentalPage = ({ data, listing }: DevelopmentalPageProps) => {
   const chartData = (score: number) => ({
