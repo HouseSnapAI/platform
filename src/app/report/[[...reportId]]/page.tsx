@@ -32,10 +32,10 @@ import { IconCreditCardRefund, IconGraph, IconMap } from '@tabler/icons-react';
 // ** Component Imports
 import PricingPaymentComponent from '@/components/reports/pricing/PricingPageComponent';
 import CashFlow from '@/components/reports/sections/CashFlow';
-import Overview from '@/components/reports/sections/Overview';
 import DevelopmentalPage from '@/components/reports/sections/DevelopmentalPage';
 import DemographicPage from '@/components/reports/sections/DemographicPage';
 import HouseScore from '@/components/reports/sections/HouseScore';
+import MarketTrends from '@/components/reports/sections/MarketTrends';
 
 
 const ChatPage = () => {
@@ -65,9 +65,9 @@ const ChatPage = () => {
   const renderTabContent = () => {
     switch (selectedTab) {
       case 0:
-        return <Overview data={data as Report} listing={listing as ListingType} />;
-      case 1:
         return <HouseScore data={data as Report} listing={listing as ListingType} />;
+      case 1:
+        return <MarketTrends data={data as Report} listing={listing as ListingType} />;
       case 2:
         return <DevelopmentalPage data={data as Report} listing={listing as ListingType} />;
       case 3:
@@ -75,7 +75,7 @@ const ChatPage = () => {
       case 4:
         return <CashFlow data={data as Report} listing={listing as ListingType} />;
       default:
-        return <Overview data={data as Report} listing={listing as ListingType} />;
+        return <HouseScore data={data as Report} listing={listing as ListingType} />;
     }
   };
 
@@ -235,7 +235,7 @@ const ChatPage = () => {
                       textTransform: 'none', 
                       '&.Mui-selected': { color: theme.palette.text.primary }
                     }}  />
-          <Tab label="House Score" sx={{
+          <Tab label="Market Trends" sx={{
                       textTransform: 'none', 
                       '&.Mui-selected': { color: theme.palette.text.primary }
                     }}  />

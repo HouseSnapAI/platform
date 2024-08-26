@@ -179,7 +179,7 @@ export type School = {
   "Free/Discounted\nLunch Recipients"?: string
 }
 
-export type MarketTrends = {
+export type MarketTrendsType = {
   average_year_built: number,
   median_year_built: number,
   range_year_built: number,
@@ -212,7 +212,54 @@ export type MarketTrends = {
   median_price_2021: number,
   average_price_2020: number,
   median_price_2020: number,
-  recent_sold_properties: RecentSoldProperty[]
+  recent_sold_properties: RecentSoldProperty[],
+  comparable_homes: ComparableHome
+}
+
+export type ComparableHome = {
+  property_url?: string,
+  mls?: string,
+  mls_id?: string,
+  status?: 'FOR_SALE' | 'PENDING' | 'SOLD' | '',
+  text?: string,
+  style?: 'LAND' | 'APARTMENT' | 'MOBILE' | 'OTHER' | 'TOWNHOMES' | 'CONDOS' | 'CONDO_TOWNHOME_ROWHOME_COOP' | 'MULTI_FAMILY' | 'SINGLE_FAMILY' | 'COOP' | 'FARM' | 'DUPLEX_TRIPLEX',
+  full_street_line?: string,
+  street?: string,
+  city?: string,
+  state?: string,
+  unit?: string,
+  zip_code?: string,
+  list_price?: number,
+  beds?: number,
+  days_on_mls?: number,
+  full_baths?: number,
+  half_baths?: number,
+  sqft?: number,
+  year_built?: number,
+  list_date?: string,
+  sold_price?: number,
+  last_sold_date?: string,
+  assessed_value?: number,
+  estimated_value?: number,
+  lot_sqft?: number,
+  price_per_sqft?: number,
+  latitude: number,
+  longitude: number,
+  neighborhoods?: string, // comma separated string of neighborhood names
+  county?: string,
+  fips_code?: string,
+  stories?: string,
+  hoa_fee?: number,
+  parking_garage?: string,
+  agent?: string,
+  agent_email?: string,
+  agent_phones?: any,
+  broker?: string,
+  broker_phone?: string,
+  broker_website?: string,
+  nearby_schools?: string // comma separated string of school names
+  primary_photo?: string,
+  alt_photos?: string // comma separated string of urls
 }
 
 export type RecentSoldProperty = {
