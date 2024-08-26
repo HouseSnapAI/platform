@@ -9,8 +9,9 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 
 // ** Chart Imports
-import { Bar } from 'react-chartjs-2';
+import { Bar, Line, Doughnut } from 'react-chartjs-2';
 import { ChartOptions } from 'chart.js';
+import { Chart as ChartJS, ArcElement, Tooltip as ChartTooltip, Legend, PointElement, LineController, LineElement } from 'chart.js';
 
 // ** Types
 import { ListingType, Report, CensusData, CrimeDataType } from '@/utils/types';
@@ -27,10 +28,7 @@ type Props = {
     listing: ListingType;
 }
 
-import { Doughnut } from 'react-chartjs-2';
-import { Chart as ChartJS, ArcElement, Tooltip as ChartTooltip, Legend } from 'chart.js';
-
-ChartJS.register(ArcElement, ChartTooltip, Legend);
+ChartJS.register(ArcElement, ChartTooltip, Legend, PointElement, LineController, LineElement);
 
 const SafetyPage = ({crimeData, data, listing}: Props) => {
 
@@ -38,6 +36,77 @@ const SafetyPage = ({crimeData, data, listing}: Props) => {
     const randomNum = () => Math.floor(Math.random() * (235 - 52 + 1) + 52);
 
     const randomRGB = () => `rgb(${randomNum()}, ${randomNum()}, ${randomNum()})`;
+
+    const crimeTrendLabels: string[] = [];
+    const crimeTrendValuesReported: any[] = [];
+    const crimeTrendValuesCleared: any[] = [];
+
+    Object.keys(crimeData?.all_violent_crime_trend[0]).map((data) => {
+        if (data != "series") {
+            crimeTrendLabels.push(data)
+            crimeTrendValuesReported.push(crimeData?.all_violent_crime_trend[0][data])
+            crimeTrendValuesCleared.push(crimeData?.all_violent_crime_trend[1][data])
+        }
+        
+    })
+
+    const crimeTrendData = {
+        labels: crimeTrendLabels,
+        datasets: [
+          {
+            label: 'Reported Crimes',
+            data: crimeTrendValuesReported,
+            borderColor: "rgb(177, 52, 235, 0.7)",
+            backgroundColor: "rgb(177, 52, 235, 0.7)",
+            yAxisID: 'y',
+          },
+          {
+            label: 'Cleared Crimes',
+            data: crimeTrendValuesCleared,
+            borderColor: "#666",
+            backgroundColor: "#666",
+            yAxisID: 'y1',
+          }
+        ]
+      };
+
+    const crimeTrendOptions: ChartOptions<"line"> = {
+        responsive: true,
+        interaction: {
+            mode: 'index',
+            intersect: false,
+        },
+        plugins: {
+            
+        },
+        scales: {
+            x: {
+                grid: {
+                    color: theme.palette.divider, // Set grid lines to white
+                    z: -1, // Ensure grid lines are behind the bars
+                },
+            },
+            y: {
+                type: 'linear',
+                display: true,
+                position: 'left',
+                grid: {
+                    color: theme.palette.divider, // Set grid lines to white
+                    z: -1, // Ensure grid lines are behind the bars
+                },
+            },
+            y1: {
+                type: 'linear',
+                display: true,
+                position: 'right',
+        
+                // grid line settings
+                grid: {
+                drawOnChartArea: false, // only want the grid lines for one axis to show up
+                },
+            },
+        }
+    }
 
     const offenseTypeLabels: any[] = [];
     const offenseTypeValues: any[] = [];
@@ -134,6 +203,24 @@ const SafetyPage = ({crimeData, data, listing}: Props) => {
         crimeData?.victim_race[5].value,
     ];
 
+    const relationshipLabels: any[] = [];
+    const relationshipValues: any[] = [];
+    const tempLabelsRel: any[] = [];
+    const tempValsRel: any[] = [];
+
+    console.log(crimeData?.victim_relationship_to_offender)
+
+    crimeData?.victim_relationship_to_offender.map((relationship) => {
+        if (relationship.value != 0) {
+            relationshipLabels.push(relationship.key)
+            relationshipValues.push(relationship.value)
+            tempLabelsRel.push(relationship.key)
+            tempValsRel.push(relationship.value)
+        }
+    })
+
+    
+
     const sexLabels = ["Male", "Female", "Unknown"];
     let totalOffender = crimeData?.offender_sex[0].Male + crimeData?.offender_sex[0].Female + crimeData?.offender_sex[0].Unknown;
     let totalVictim = crimeData?.victim_sex[0].Male + crimeData?.victim_sex[0].Female + crimeData?.victim_sex[0].Unknown;
@@ -147,9 +234,6 @@ const SafetyPage = ({crimeData, data, listing}: Props) => {
         crimeData?.victim_sex[0].Female / totalVictim,
         crimeData?.victim_sex[0].Unknown / totalVictim,
     ];
-
-    console.log(sexValuesOffender)
-    console.log(sexValuesVictim)
 
     const sexBarData = {
         labels: sexLabels,
@@ -374,6 +458,30 @@ const SafetyPage = ({crimeData, data, listing}: Props) => {
         
       };
 
+      const relationshipOptions = {
+        cutout: '70%', // Adjust cutout to make the chart smaller,
+        aspectRatio: 1,
+        title: "crime",
+        plugins: {
+          tooltip: { 
+            enabled: true,
+            callbacks: {
+                label: function(context: any) {
+                    let label = context.label,
+                      currentValue = context.raw,
+                      total = context.chart._metasets[context.datasetIndex].total;
+        
+                    let percentage = parseFloat((currentValue/total*100).toFixed(1));
+        
+                  return percentage + '%';
+                }
+            } 
+        },
+          legend: { display: false },
+        },
+        
+      };
+
     useEffect(() => {
         console.log(data);
         console.log(crimeData);
@@ -382,7 +490,7 @@ const SafetyPage = ({crimeData, data, listing}: Props) => {
 
     return (
         <Box className='flex px-[10px] w-[100vw] justify-center gap-[10px]'>
-            <Box className='overflow-y-auto pb-[100px] flex flex-col bg-[#121212] w-[51] rounded-md py-[20px] px-[20px]'>
+            <Box className='overflow-y-auto pb-[100px] flex flex-col bg-[#121212] w-[52%] rounded-md py-[20px] px-[20px]'>
                 <Typography className='text-[#e4e4e4] text-[22px]'>Crime Score: {data.crime_score.toFixed(3)}</Typography>
                 <Box className=' mt-[20px] flex justify-start items-center gap-[10px] flex-wrap'>
                     <Typography className='text-[#ababab] text-[16px]'>Agencies:</Typography>
@@ -393,6 +501,10 @@ const SafetyPage = ({crimeData, data, listing}: Props) => {
                             </Box>
                         ))
                     }
+                </Box>
+                <Box className="mt-[40px] flex flex-col">
+                    <Typography className='text-[#ababab] text-[16px]'>Crime Trend</Typography>
+                    <Line  data={crimeTrendData} options={crimeTrendOptions} />
                 </Box>
                 <Box className='flex justify-around items-center  mt-[40px] flex-wrap w-[100%]'>
                     <Box className='flex bg-[#181818] rounded-md shadow-lg flex-col justify-center items-center min-w-[150px] w-[27%] py-[15px] gap-[10px]'>
@@ -413,7 +525,7 @@ const SafetyPage = ({crimeData, data, listing}: Props) => {
                         </Box>
                         <Typography className='text-[#949494] text-[15px]'>Weapon(s)</Typography>
                     </Box>
-                </Box>
+                BN</Box>
 
                 <Box className='mt-[20px] flex items-start justify-center w-[100%] flex-col gap-[10px]'>
                     <Typography className='text-[#ababab] text-[16px]'>Age Data</Typography>
@@ -452,7 +564,7 @@ const SafetyPage = ({crimeData, data, listing}: Props) => {
                         <Bar style={{width: "90%", height: "90%"}} data={sexBarData} options={sexBarOptions} />
                     </Box>
 
-                    <Box className='bg-[#181818] rounded-lg shadow-md gap-[30px] flex justify-center items-center py-[20px] px-[20px]'>
+                    <Box className='bg-[#181818] rounded-lg shadow-lg gap-[30px] flex justify-center items-center py-[20px] px-[20px]'>
                         <Box className='flex flex-col justify-center gap-[10px]'>
                             <Typography className='text-[#ababab] text-[16px] mb-[10px] underline'>Offender</Typography>
                             <Typography className='text-[#838383] text-[14px]'>Male: {crimeData?.offender_sex[0].Male} crimes</Typography>
@@ -467,9 +579,39 @@ const SafetyPage = ({crimeData, data, listing}: Props) => {
                         </Box>
                     </Box>
                 </Box>
+
+                <Box className="mt-[50px] flex flex-col gap-[20px]">
+                    <Typography className='text-[#ababab] text-[16px]'>Relationship to Victim Data</Typography>
+                    <Box className="flex items-center justify-around">
+                        <Box className='bg-[#181818] rounded-lg shadow-lg gap-[10px] flex flex-col justify-center py-[20px] px-[20px]'>
+                            <Typography className='text-[#ababab] text-[16px] mb-[10px] underline'>Most Common</Typography>
+                            <Box className="flex justify-center items-center gap-[30px]">
+                                <Box className='flex flex-col justify-center gap-[10px]'>
+                                    
+                                    <Typography className='text-[#838383] text-[14px]'>{relationshipLabels.splice(relationshipValues.indexOf(Math.max(...relationshipValues)), 1)} - {relationshipValues.splice(relationshipValues.indexOf(Math.max(...relationshipValues)), 1)}</Typography>
+                                    <Typography className='text-[#838383] text-[14px]'>{relationshipLabels.splice(relationshipValues.indexOf(Math.max(...relationshipValues)), 1)} - {relationshipValues.splice(relationshipValues.indexOf(Math.max(...relationshipValues)), 1)}</Typography>
+                                    <Typography className='text-[#838383] text-[14px]'>{relationshipLabels.splice(relationshipValues.indexOf(Math.max(...relationshipValues)), 1)} - {relationshipValues.splice(relationshipValues.indexOf(Math.max(...relationshipValues)), 1)}</Typography>
+                                    <Typography className='text-[#838383] text-[14px]'>{relationshipLabels.splice(relationshipValues.indexOf(Math.max(...relationshipValues)), 1)} - {relationshipValues.splice(relationshipValues.indexOf(Math.max(...relationshipValues)), 1)}</Typography>
+                                </Box>
+                                <Box className='flex flex-col justify-center gap-[10px]'>
+                                    
+                                    <Typography className='text-[#838383] text-[14px]'>{relationshipLabels.splice(relationshipValues.indexOf(Math.max(...relationshipValues)), 1)} - {relationshipValues.splice(relationshipValues.indexOf(Math.max(...relationshipValues)), 1)}</Typography>
+                                    <Typography className='text-[#838383] text-[14px]'>{relationshipLabels.splice(relationshipValues.indexOf(Math.max(...relationshipValues)), 1)} - {relationshipValues.splice(relationshipValues.indexOf(Math.max(...relationshipValues)), 1)}</Typography>
+                                    <Typography className='text-[#838383] text-[14px]'>{relationshipLabels.splice(relationshipValues.indexOf(Math.max(...relationshipValues)), 1)} - {relationshipValues.splice(relationshipValues.indexOf(Math.max(...relationshipValues)), 1)}</Typography>
+                                    <Typography className='text-[#838383] text-[14px]'>{relationshipLabels.splice(relationshipValues.indexOf(Math.max(...relationshipValues)), 1)} - {relationshipValues.splice(relationshipValues.indexOf(Math.max(...relationshipValues)), 1)}</Typography>
+                                </Box>
+                            </Box>
+                        </Box>
+                        <Box className="flex flex-col items-center justify-center">
+                            <Box className='h-[200px] w-[200px]  flex justify-center items-center'>
+                                <Doughnut data={typeData(tempLabelsRel, tempValsRel)} options={relationshipOptions} />
+                            </Box>
+                        </Box>
+                    </Box>
+                </Box>
                 
             </Box>
-            <Box className='flex flex-col bg-[#121212] w-[48%] rounded-md py-[20px] px-[20px]'>
+            <Box className='flex flex-col bg-[#121212] w-[47%] rounded-md py-[20px] px-[20px]'>
                 <Typography className='text-[#e4e4e4] text-[22px]'>Environmental Score: {0}</Typography>
             </Box>
         </Box>
