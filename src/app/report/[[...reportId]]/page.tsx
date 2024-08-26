@@ -195,13 +195,13 @@ const ChatPage = () => {
     
     const getCrimeData = async() => {
       if (data.status == "complete") {
-        console.log(data);
+        // console.log("DATAINCRIME", data);
         const crimeIds = data.crime_data_ids
-        console.log(crimeIds);
+        // console.log("CRIME IDS", crimeIds);
         
         if(crimeIds != undefined) {
           await fetchCrimeData(crimeIds).then(crimeData => {
-            console.log(crimeData);
+            // console.log("CRIME DATA:", crimeData);
             setCrimeData(crimeData);
           });
         }

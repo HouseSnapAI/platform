@@ -8,7 +8,7 @@ const schema = z.object({
   crime_data_ids: z.array(z.number()),
 });
 
-export const POST = (async function handler(req: NextRequest) {
+export const POST = withApiAuthRequired(async function handler(req: NextRequest) {
   if (req.method !== 'POST') {
     return NextResponse.json({ message: 'Method not allowed' }, { status: 405 });
   }
@@ -33,7 +33,7 @@ export const POST = (async function handler(req: NextRequest) {
 
     
 
-    console.log(data);
+    // console.log(data);
     let dataNew: CrimeDataType = {
       offense_linked_to_another_offense: [],
       crime_location: [],
@@ -54,7 +54,7 @@ export const POST = (async function handler(req: NextRequest) {
     for (let i = 0; i < data.length; i++) {
       let temp = data[i];
 
-      if (temp.offense_linked_to_another_offense[0].value != "No data") {
+      if (temp.offense_linked_to_another_offense && temp.offense_linked_to_another_offense[0]?.value != "No data") {
         if (dataNew.offense_linked_to_another_offense.length == 0) {
           dataNew.offense_linked_to_another_offense = temp.offense_linked_to_another_offense;
         } else {
@@ -64,7 +64,7 @@ export const POST = (async function handler(req: NextRequest) {
         }
       }
 
-      if (temp.crime_location[0].value != "No data") {
+      if (temp.crime_location && temp.crime_location[0]?.value != "No data") {
         if (dataNew.crime_location.length == 0) {
           dataNew.crime_location = temp.crime_location;
         } else {
@@ -74,7 +74,7 @@ export const POST = (async function handler(req: NextRequest) {
         }
       }
 
-      if (temp.offender_age[0].value != "No data") {
+      if (temp.offender_age && temp.offender_age[0]?.value != "No data") {
         if (dataNew.offender_age.length == 0) {
           dataNew.offender_age = temp.offender_age;
         } else {
@@ -84,7 +84,7 @@ export const POST = (async function handler(req: NextRequest) {
         }
       }
 
-      if (temp.offender_ethnicity[0].value != "No data") {
+      if (temp.offender_ethnicity && temp.offender_ethnicity[0]?.value != "No data") {
         if (dataNew.offender_ethnicity.length == 0) {
           dataNew.offender_ethnicity = temp.offender_ethnicity;
         } else {
@@ -94,7 +94,7 @@ export const POST = (async function handler(req: NextRequest) {
         }
       }
 
-      if (temp.offender_race[0].value != "No data") {
+      if (temp.offender_race && temp.offender_race[0]?.value != "No data") {
         if (dataNew.offender_race.length == 0) {
           dataNew.offender_race = temp.offender_race;
         } else {
@@ -104,7 +104,7 @@ export const POST = (async function handler(req: NextRequest) {
         }
       }
 
-      if (temp.offender_sex[0].series != null) {
+      if (temp.offender_sex && temp.offender_sex[0]?.series != null) {
         if (dataNew.offender_sex.length == 0) {
           dataNew.offender_sex = temp.offender_sex;
         } else {
@@ -114,7 +114,7 @@ export const POST = (async function handler(req: NextRequest) {
         }
       }
 
-      if (true) {
+      if (temp.all_violent_crime_trend) {
         if (dataNew.all_violent_crime_trend.length == 0) {
           dataNew.all_violent_crime_trend = temp.all_violent_crime_trend;
         } else {
@@ -128,7 +128,7 @@ export const POST = (async function handler(req: NextRequest) {
         }
       }
 
-      if (temp.type_of_weapon[0].value != "No data") {
+      if (temp.type_of_weapon && temp.type_of_weapon[0]?.value != "No data") {
         if (dataNew.type_of_weapon.length == 0) {
           dataNew.type_of_weapon = temp.type_of_weapon;
         } else {
@@ -138,7 +138,7 @@ export const POST = (async function handler(req: NextRequest) {
         }
       }
 
-      if (temp.victim_age[0].value != "No data") {
+      if (temp.victim_age && temp.victim_age[0]?.value != "No data") {
         if (dataNew.victim_age.length == 0) {
           dataNew.victim_age = temp.victim_age;
         } else {
@@ -148,7 +148,7 @@ export const POST = (async function handler(req: NextRequest) {
         }
       }
 
-      if (temp.victim_ethnicity[0].value != "No data") {
+      if (temp.victim_ethnicity && temp.victim_ethnicity[0]?.value != "No data") {
         if (dataNew.victim_ethnicity.length == 0) {
           dataNew.victim_ethnicity = temp.victim_ethnicity;
         } else {
@@ -158,7 +158,7 @@ export const POST = (async function handler(req: NextRequest) {
         }
       }
 
-      if (temp.victim_race[0].value != "No data") {
+      if (temp.victim_race && temp.victim_race[0]?.value != "No data") {
         if (dataNew.victim_race.length == 0) {
           dataNew.victim_race = temp.victim_race;
         } else {
@@ -168,7 +168,7 @@ export const POST = (async function handler(req: NextRequest) {
         }
       }
 
-      if (temp.victim_sex[0].series != null) {
+      if (temp.victim_sex && temp.victim_sex[0]?.series != null) {
         if (dataNew.victim_sex.length == 0) {
           dataNew.victim_sex = temp.victim_sex;
         } else {
@@ -178,7 +178,7 @@ export const POST = (async function handler(req: NextRequest) {
         }
       }
 
-      if (temp.victim_relationship_to_offender[0].value != "No data") {
+      if (temp.victim_relationship_to_offender && temp.victim_relationship_to_offender[0]?.value != "No data") {
         if (dataNew.victim_relationship_to_offender.length == 0) {
           dataNew.victim_relationship_to_offender = temp.victim_relationship_to_offender;
         } else {

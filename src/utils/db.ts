@@ -321,8 +321,9 @@ export const fetchCrimeData = async(crime_data_ids: number[]) => {
 
   if (response.status === 200) {
     const data = await response.json()
+    // console.log("DATAINDB", data)
     if (data) {
-      console.log(data)
+      // console.log(data)
       return data;
     } else {
       return null;

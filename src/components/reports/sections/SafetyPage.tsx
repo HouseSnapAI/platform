@@ -41,15 +41,18 @@ const SafetyPage = ({crimeData, data, listing}: Props) => {
     const crimeTrendValuesReported: any[] = [];
     const crimeTrendValuesCleared: any[] = [];
 
-    Object.keys(crimeData?.all_violent_crime_trend[0]).map((data) => {
-        if (data != "series") {
-            crimeTrendLabels.push(data)
-            crimeTrendValuesReported.push(crimeData?.all_violent_crime_trend[0][data])
-            crimeTrendValuesCleared.push(crimeData?.all_violent_crime_trend[1][data])
-        }
-        
-    })
+    if(crimeData?.all_violent_crime_trend[0]){
 
+        Object.keys(crimeData?.all_violent_crime_trend[0]).map((data) => {
+            if (data != "series") {
+                crimeTrendLabels.push(data)
+                crimeTrendValuesReported.push(crimeData?.all_violent_crime_trend[0][data])
+                crimeTrendValuesCleared.push(crimeData?.all_violent_crime_trend[1][data])
+            }
+            
+        })
+    }
+        
     const crimeTrendData = {
         labels: crimeTrendLabels,
         datasets: [
