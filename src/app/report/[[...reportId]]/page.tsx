@@ -15,7 +15,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 
 // ** Type Imports
-import { User, Report, ListingType } from '@/utils/types';
+import { User, Report, ListingType, CrimeDataType } from '@/utils/types';
 
 // ** Style Imports
 import { useTheme } from '@mui/material/styles';
@@ -24,7 +24,7 @@ import { useTheme } from '@mui/material/styles';
 import { useUser } from '@auth0/nextjs-auth0/client';
 
 // ** Util Imports
-import { checkReport, fetchReport, fetchUserInfo } from '@/utils/db';
+import { checkReport, fetchCrimeData, fetchReport, fetchUserInfo } from '@/utils/db';
 
 // ** Icon Imports
 import { IconCreditCardRefund, IconGraph, IconMap } from '@tabler/icons-react';
@@ -36,6 +36,7 @@ import DevelopmentalPage from '@/components/reports/sections/DevelopmentalPage';
 import DemographicPage from '@/components/reports/sections/DemographicPage';
 import HouseScore from '@/components/reports/sections/HouseScore';
 import MarketTrends from '@/components/reports/sections/MarketTrends';
+import SafetyPage from '@/components/reports/sections/SafetyPage';
 
 
 const ChatPage = () => {
@@ -48,6 +49,7 @@ const ChatPage = () => {
   const [data, setData] = useState<Report | Partial<Report>>({status: 'empty'});
   const [status, setStatus] = useState('empty');
   const [authReport, setAuthReport] = useState(false);
+  const [crimeData, setCrimeData] = useState<CrimeDataType>();
 
   // ** Listing States
   const [listing, setListing] = useState<ListingType | null>(null);
@@ -74,6 +76,8 @@ const ChatPage = () => {
         return <DemographicPage data={data as Report} listing={listing as ListingType} />;
       case 4:
         return <CashFlow data={data as Report} listing={listing as ListingType} />;
+      case 5:
+        return <SafetyPage crimeData={crimeData} data={data as Report} listing={listing as ListingType} />
       default:
         return <HouseScore data={data as Report} listing={listing as ListingType} />;
     }
@@ -187,6 +191,26 @@ const ChatPage = () => {
 
   }, [user?.email])
 
+  useEffect(() => {
+    
+    const getCrimeData = async() => {
+      if (data.status == "complete") {
+        console.log(data);
+        const crimeIds = data.crime_data_ids
+        console.log(crimeIds);
+        
+        if(crimeIds != undefined) {
+          await fetchCrimeData(crimeIds).then(crimeData => {
+            console.log(crimeData);
+            setCrimeData(crimeData);
+          });
+        }
+      }
+    }
+
+    getCrimeData();
+  }, [data])
+
   const [open, setOpen] = useState<boolean>(false)
 
   return (
@@ -251,6 +275,10 @@ const ChatPage = () => {
                       textTransform: 'none', 
                       '&.Mui-selected': { color: theme.palette.text.primary }
                     }}  />
+          <Tab label="Safety" sx={{
+                      textTransform: 'none', 
+                      '&.Mui-selected': { color: theme.palette.text.primary }
+                    }}  />          
         </Tabs>
 
         {/* Main Body */}
