@@ -17,7 +17,7 @@ import { useTheme } from '@mui/material/styles';
 import { IconInfoCircle, IconMinus, IconPlus, IconChevronDown} from '@tabler/icons-react';
 
 // ** Types
-import { ListingType, Report, School, TopSchools } from '@/utils/types';
+import { ListingType, Report, TopSchools } from '@/utils/types';
 
 type DevelopmentalPageProps = {
   data: Report;
@@ -25,34 +25,41 @@ type DevelopmentalPageProps = {
 }
 
 // ** Chart
-import { Doughnut } from 'react-chartjs-2';
-import { Chart as ChartJS, ArcElement, Tooltip as ChartTooltip, Legend, LinearScale, CategoryScale, BarElement } from 'chart.js';
+import { PieChart, Pie, Cell, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 
-ChartJS.register(ArcElement, ChartTooltip, Legend, LinearScale, CategoryScale, BarElement);
+// Register Chart.js components
+import { Chart as ChartJS, ArcElement, Tooltip as ChartTooltip, Legend, LinearScale, CategoryScale } from 'chart.js';
+ChartJS.register(ArcElement, ChartTooltip, Legend, LinearScale, CategoryScale);
 
 const DevelopmentalPage = ({ data, listing }: DevelopmentalPageProps) => {
-  const chartData = (score: number) => ({
-    datasets: [
-      {
-        data: [score, 100 - score],
-        backgroundColor: [theme.palette.primary.dark, 'rgba(224, 224, 224, 0)'],
-        borderColor: [theme.palette.primary.main, 'rgba(224, 224, 224, 0)'],
-        hoverBackgroundColor: [theme.palette.primary.dark, 'rgba(224, 224, 224, 0)'],
-        hoverBorderColor: [theme.palette.primary.main, 'rgba(224, 224, 224, 0)'],
-        borderRadius: 10, // Rounded corners
-      },
-    ],
-  });
-
-  const chartOptions = {
-    cutout: '80%', // Adjust cutout to make the chart smaller
-    plugins: {
-      tooltip: { enabled: false },
-      legend: { display: false },
-    },
-  };
-
   const theme = useTheme();
+
+  const chartData = (score: number) => [
+    { name: 'Score', value: score },
+    { name: 'Remaining', value: 100 - score },
+  ];
+
+  const COLORS = [theme.palette.primary.dark, 'rgba(224, 224, 224, 0)'];
+
+  const renderPieChart = (score: number) => (
+    <ResponsiveContainer width="100%" height={200}>
+      <PieChart>
+        <Pie
+          data={chartData(score)}
+          innerRadius="80%"
+          outerRadius="100%"
+          fill="#8884d8"
+          paddingAngle={5}
+          dataKey="value"
+        >
+          {chartData(score).map((entry, index) => (
+            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+          ))}
+        </Pie>
+        <RechartsTooltip />
+      </PieChart>
+    </ResponsiveContainer>
+  );
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [topSchools, setTopSchools] = useState<TopSchools>(JSON.parse(data.top_schools));
@@ -95,77 +102,77 @@ const DevelopmentalPage = ({ data, listing }: DevelopmentalPageProps) => {
     <Box>
       <Grid container spacing={2}>
         <Grid item xs={4}>
-          <Card className='relative'> {/* Adjust size of the card */}
+          <Card className='relative'>
             <CardContent className='flex items-center'>
-                <Box className='flex flex-col'>
+              <Box className='flex flex-col'>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography fontSize={14} fontWeight={600} sx={{ margin: 0 }}>
-                  School Score
-                </Typography>
-                <Tooltip title={`Calculated using up to date Mortgage Prime Rates.`}>
-                  <IconInfoCircle color="#6f6f6f" className="absolute top-5 right-4" size={14} style={{ cursor: 'pointer' }} />
-                </Tooltip>
-              </Box>
-              <Typography fontSize={14} color="text.secondary" sx={{ marginBottom: 2 }}>
-                A comprehensive score on the schools in the area
-              </Typography>
-                    <Box className='relative w-[200px] h-[200px] flex flex-col items-center justify-center'>
-                        <Typography fontSize={16} align="center" sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
-                            {data.school_score.toFixed(0)}
-                        </Typography>
-                        <Doughnut data={chartData(data.school_score)} options={chartOptions} />
-                    </Box>
+                  <Typography fontSize={14} fontWeight={600} sx={{ margin: 0 }}>
+                    School Score
+                  </Typography>
+                  <Tooltip title={`Calculated using up to date Mortgage Prime Rates.`}>
+                    <IconInfoCircle color="#6f6f6f" className="absolute top-5 right-4" size={14} style={{ cursor: 'pointer' }} />
+                  </Tooltip>
                 </Box>
+                <Typography fontSize={14} color="text.secondary" sx={{ marginBottom: 2 }}>
+                  A comprehensive score on the schools in the area
+                </Typography>
+                <Box className='relative w-[200px] h-[200px] flex flex-col items-center justify-center'>
+                  <Typography fontSize={16} align="center" sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+                    {data.school_score.toFixed(0)}
+                  </Typography>
+                  {renderPieChart(data.school_score)}
+                </Box>
+              </Box>
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={4}>
-          <Card className='relative'> {/* Adjust size of the card */}
-          <CardContent className='flex items-center'>
-                <Box className='flex flex-col'>
+          <Card className='relative'>
+            <CardContent className='flex items-center'>
+              <Box className='flex flex-col'>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography fontSize={14} fontWeight={600} sx={{ margin: 0 }}>
-                  Amenities Score
-                </Typography>
-                <Tooltip title={`Calculated using up to date Mortgage Prime Rates.`}>
-                  <IconInfoCircle color="#6f6f6f" className="absolute top-5 right-4" size={14} style={{ cursor: 'pointer' }} />
-                </Tooltip>
-              </Box>
-              <Typography fontSize={14} color="text.secondary" sx={{ marginBottom: 2 }}>
-                A comprehensive score on the schools in the area
-              </Typography>
-                    <Box className='relative w-[200px] h-[200px] flex flex-col items-center justify-center'>
-                        <Typography fontSize={16} align="center" sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
-                            {data.school_score.toFixed(0)}
-                        </Typography>
-                        <Doughnut data={chartData(data.school_score)} options={chartOptions} />
-                    </Box>
+                  <Typography fontSize={14} fontWeight={600} sx={{ margin: 0 }}>
+                    Amenities Score
+                  </Typography>
+                  <Tooltip title={`Calculated using up to date Mortgage Prime Rates.`}>
+                    <IconInfoCircle color="#6f6f6f" className="absolute top-5 right-4" size={14} style={{ cursor: 'pointer' }} />
+                  </Tooltip>
                 </Box>
+                <Typography fontSize={14} color="text.secondary" sx={{ marginBottom: 2 }}>
+                  A comprehensive score on the schools in the area
+                </Typography>
+                <Box className='relative w-[200px] h-[200px] flex flex-col items-center justify-center'>
+                  <Typography fontSize={16} align="center" sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+                    {data.school_score.toFixed(0)}
+                  </Typography>
+                  {renderPieChart(data.school_score)}
+                </Box>
+              </Box>
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={4}>
-          <Card className='relative'> {/* Adjust size of the card */}
-          <CardContent className='flex items-center'>
-                <Box className='flex flex-col'>
+          <Card className='relative'>
+            <CardContent className='flex items-center'>
+              <Box className='flex flex-col'>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography fontSize={14} fontWeight={600} sx={{ margin: 0 }}>
-                  Transportation Score
-                </Typography>
-                <Tooltip title={`Calculated using up to date Mortgage Prime Rates.`}>
-                  <IconInfoCircle color="#6f6f6f" className="absolute top-5 right-4" size={14} style={{ cursor: 'pointer' }} />
-                </Tooltip>
-              </Box>
-              <Typography fontSize={14} color="text.secondary" sx={{ marginBottom: 2 }}>
-                A comprehensive score on the schools in the area
-              </Typography>
-                    <Box className='relative w-[200px] h-[200px] flex flex-col items-center justify-center'>
-                        <Typography fontSize={16} align="center" sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
-                            {data.school_score.toFixed(0)}
-                        </Typography>
-                        <Doughnut data={chartData(data.school_score)} options={chartOptions} />
-                    </Box>
+                  <Typography fontSize={14} fontWeight={600} sx={{ margin: 0 }}>
+                    Transportation Score
+                  </Typography>
+                  <Tooltip title={`Calculated using up to date Mortgage Prime Rates.`}>
+                    <IconInfoCircle color="#6f6f6f" className="absolute top-5 right-4" size={14} style={{ cursor: 'pointer' }} />
+                  </Tooltip>
                 </Box>
+                <Typography fontSize={14} color="text.secondary" sx={{ marginBottom: 2 }}>
+                  A comprehensive score on the schools in the area
+                </Typography>
+                <Box className='relative w-[200px] h-[200px] flex flex-col items-center justify-center'>
+                  <Typography fontSize={16} align="center" sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+                    {data.school_score.toFixed(0)}
+                  </Typography>
+                  {renderPieChart(data.school_score)}
+                </Box>
+              </Box>
             </CardContent>
           </Card>
         </Grid>
