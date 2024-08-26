@@ -375,11 +375,20 @@ export type CensusColumn = {
 }
 
 export type RentCashFlow = {
-  estimated_rent: number,
-  fifty_pct_rule: number,
+  tax_history: any, 
   rent_per_sqft: number,
-  rent_per_lot_sqft: number,
-  basis_number: number
+  CMA_approach: {
+    estimated_rent: number,
+    comparable_properties: any[] 
+  },
+  value_percentage_approach: {
+    rent_low: number,
+    rent_high: number
+  },
+  grm_approach: {
+    estimated_grm: number,
+    estimated_monthly_rent: number
+  }
 }
 
 // TBD
