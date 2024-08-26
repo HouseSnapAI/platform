@@ -127,7 +127,6 @@ export type Chat = {
 }
 
 export type Report = {
-  id: string,
   created_at: string,
   updated_at: string,
   listing_id: string,
@@ -136,14 +135,19 @@ export type Report = {
   school_score: number,
   market_trends: string, // JSON string
   census_data: string, // JSON string
-  top_schools: {
-    high: School[],
-    middle: School[],
-    elementary: School[]
-  },
+  top_schools: string, // JSON string
   rent_cash_flow: string, // JSON string
+  home_details: string, // JSON string
   status: string,
+  flags: string[]
 }
+
+export type TopSchools = {
+  high: School[],
+  middle: School[],
+  elementary: School[]
+}
+
 
 export type School = {
   KG?: string,
@@ -192,7 +196,7 @@ export type School = {
   "Free/Discounted\nLunch Recipients"?: string
 }
 
-export type MarketTrends = {
+export type MarketTrendsType = {
   average_year_built: number,
   median_year_built: number,
   range_year_built: number,
@@ -225,10 +229,57 @@ export type MarketTrends = {
   median_price_2021: number,
   average_price_2020: number,
   median_price_2020: number,
-  recent_sold_properties: RecentSoldProperty[]
+  recent_sold_properties: RecentSoldProperty[],
+  comparable_homes: ComparableHome
 }
 
-type RecentSoldProperty = {
+export type ComparableHome = {
+  property_url?: string,
+  mls?: string,
+  mls_id?: string,
+  status?: 'FOR_SALE' | 'PENDING' | 'SOLD' | '',
+  text?: string,
+  style?: 'LAND' | 'APARTMENT' | 'MOBILE' | 'OTHER' | 'TOWNHOMES' | 'CONDOS' | 'CONDO_TOWNHOME_ROWHOME_COOP' | 'MULTI_FAMILY' | 'SINGLE_FAMILY' | 'COOP' | 'FARM' | 'DUPLEX_TRIPLEX',
+  full_street_line?: string,
+  street?: string,
+  city?: string,
+  state?: string,
+  unit?: string,
+  zip_code?: string,
+  list_price?: number,
+  beds?: number,
+  days_on_mls?: number,
+  full_baths?: number,
+  half_baths?: number,
+  sqft?: number,
+  year_built?: number,
+  list_date?: string,
+  sold_price?: number,
+  last_sold_date?: string,
+  assessed_value?: number,
+  estimated_value?: number,
+  lot_sqft?: number,
+  price_per_sqft?: number,
+  latitude: number,
+  longitude: number,
+  neighborhoods?: string, // comma separated string of neighborhood names
+  county?: string,
+  fips_code?: string,
+  stories?: string,
+  hoa_fee?: number,
+  parking_garage?: string,
+  agent?: string,
+  agent_email?: string,
+  agent_phones?: any,
+  broker?: string,
+  broker_phone?: string,
+  broker_website?: string,
+  nearby_schools?: string // comma separated string of school names
+  primary_photo?: string,
+  alt_photos?: string // comma separated string of urls
+}
+
+export type RecentSoldProperty = {
   property_url: string,
   mls: string,
   mls_id: string,
@@ -331,7 +382,7 @@ export type CensusData = {
   }
 }
 
-type CensusColumn = {
+export type CensusColumn = {
   'Column ID': string,
   Description: string,
   Estimate: number,
@@ -341,9 +392,72 @@ type CensusColumn = {
 }
 
 export type RentCashFlow = {
-  estimated_rent: number,
-  fifty_pct_rule: number,
+  tax_history: any, 
   rent_per_sqft: number,
-  rent_per_lot_sqft: number,
-  basis_number: number
+  CMA_approach: {
+    estimated_rent: number,
+    comparable_properties: any[] 
+  },
+  value_percentage_approach: {
+    rent_low: number,
+    rent_high: number
+  },
+  grm_approach: {
+    estimated_grm: number,
+    estimated_monthly_rent: number
+  }
+}
+
+// TBD
+export type HomeDetails = {
+  price: string,
+  views: string,
+  highlights: string[],
+  home_details: {
+    label: string,
+    details: string[]
+  }[],
+  neighborhood_kpis: {
+    title: string,
+    text: string
+  }[],
+  tax_history: {
+    year: string,
+    tax_paid: string,
+    tax_assessment: string,
+    land: string,
+    improvement: string
+  }[],
+  price_history: {
+    date: string,
+    event: string,
+    price: string,
+    change: string,
+    sq_ft_price: string
+  }[],
+  deed_history: {
+    date: string,
+    type: string,
+    sale_price: string,
+    title_company: string
+  }[],
+  mortgage_history: {
+    date: string,
+    status: string,
+    loan_amount: string,
+    loan_type: string
+  }[],
+  transportation: {
+    type: string,
+    name: string,
+    distance: string
+  }[],
+  bike_score: {
+    tagline: string,
+    score: string
+  },
+  walk_score: {
+    tagline: string,
+    score: string
+  }
 }

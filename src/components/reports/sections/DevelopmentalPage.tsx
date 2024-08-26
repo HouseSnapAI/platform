@@ -17,7 +17,7 @@ import { useTheme } from '@mui/material/styles';
 import { IconInfoCircle, IconMinus, IconPlus, IconChevronDown} from '@tabler/icons-react';
 
 // ** Types
-import { ListingType, Report, School } from '@/utils/types';
+import { ListingType, Report, School, TopSchools } from '@/utils/types';
 
 type DevelopmentalPageProps = {
   data: Report;
@@ -55,6 +55,7 @@ const DevelopmentalPage = ({ data, listing }: DevelopmentalPageProps) => {
   const theme = useTheme();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [topSchools, setTopSchools] = useState<TopSchools>(JSON.parse(data.top_schools));
 
   const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>, schoolType: string) => {
     setAnchorEl(event.currentTarget);
@@ -80,6 +81,15 @@ const DevelopmentalPage = ({ data, listing }: DevelopmentalPageProps) => {
       [schoolType]: !prevState[schoolType],
     }));
   };
+
+  if(!topSchools) {
+    console.log(data.top_schools)
+    return <Box>
+      <Typography fontSize={14} fontWeight={600} sx={{ margin: 0 }}>
+        Loading...
+      </Typography>
+    </Box>
+  }
 
   return (
     <Box>
@@ -167,31 +177,31 @@ const DevelopmentalPage = ({ data, listing }: DevelopmentalPageProps) => {
                   <IconInfoCircle color="#6f6f6f" className="absolute top-5 right-4" size={14} style={{ cursor: 'pointer' }} />
               </Tooltip>
               <Box className='flex justify-between items-center'>
-                <Typography fontSize={14}>{data.top_schools.elementary[0].Name}</Typography>
-                <Typography fontSize={14} color={data.top_schools.elementary[0].Score > 80 ? "success.main" : "error.main"}>
-                    {data.top_schools.elementary[0].Score.toFixed(0 )}
+                <Typography fontSize={14}>{topSchools.elementary[0]?.Name || 'N/A'}</Typography>
+                <Typography fontSize={14} color={topSchools.elementary[0]?.Score > 80 ? "success.main" : "error.main"}>
+                    {topSchools.elementary[0]?.Score?.toFixed(0) || 'N/A'}
                 </Typography>
               </Box>
               <Box className='flex justify-between items-center'>
-                <Typography fontSize={14} color="text.secondary">{data.top_schools.elementary[0].Address} {data.top_schools.elementary[0].City}, {data.top_schools.elementary[0].Zip}</Typography>
+                <Typography fontSize={14} color="text.secondary">{topSchools.elementary[0]?.Address || 'N/A'} {topSchools.elementary[0]?.City || 'N/A'}, {topSchools.elementary[0]?.Zip || 'N/A'}</Typography>
               </Box>
               <Box className='flex justify-between items-center'>
-                <Typography fontSize={14} color="text.primary">Distance: {data.top_schools.elementary[0].Distance}</Typography>
-                {parseFloat(data.top_schools.elementary[0].Distance) > 1.5 ? <IconMinus size={14} color={theme.palette.error.main} /> : <IconPlus size={14} color={theme.palette.primary.main} />}
+                <Typography fontSize={14} color="text.primary">Distance: {topSchools.elementary[0]?.Distance || 'N/A'}</Typography>
+                {parseFloat(topSchools.elementary[0]?.Distance || '0') > 1.5 ? <IconMinus size={14} color={theme.palette.error.main} /> : <IconPlus size={14} color={theme.palette.primary.main} />}
               </Box>
               <Box className='flex justify-between items-center'>
-                <Typography fontSize={14} color="text.secondary">Grades: {data.top_schools.elementary[0].Grades}</Typography>
+                <Typography fontSize={14} color="text.secondary">Grades: {topSchools.elementary[0]?.Grades || 'N/A'}</Typography>
               </Box>
               <Box className='flex justify-between items-center'>
-                <Typography fontSize={14} color="text.secondary">Phone: {data.top_schools.elementary[0].Phone}</Typography>
+                <Typography fontSize={14} color="text.secondary">Phone: {topSchools.elementary[0]?.Phone || 'N/A'}</Typography>
               </Box>
               <Box className='flex justify-between items-center'>
-                <Typography fontSize={14} color="text.primary">Enrollment: {data.top_schools.elementary[0].Enrollment}</Typography>
-                {data.top_schools.elementary[0]["Student/\nTeacher Ratio"] > 30 ? <IconMinus size={14} color={theme.palette.error.main} /> : <IconPlus size={14} color={theme.palette.primary.main} />}
+                <Typography fontSize={14} color="text.primary">Enrollment: {topSchools.elementary[0]?.Enrollment || 'N/A'}</Typography>
+                {topSchools.elementary[0]?.["Student/\nTeacher Ratio"] > 30 ? <IconMinus size={14} color={theme.palette.error.main} /> : <IconPlus size={14} color={theme.palette.primary.main} />}
               </Box>
               <Box className='flex justify-between items-center'>
-                <Typography fontSize={14} color="text.primary">Student/Teacher Ratio: {data.top_schools.elementary[0]["Student/\nTeacher Ratio"]}</Typography>
-                {data.top_schools.elementary[0]["Student/\nTeacher Ratio"] > 30 ? <IconMinus size={14} color={theme.palette.error.main} /> : <IconPlus size={14} color={theme.palette.primary.main} />}
+                <Typography fontSize={14} color="text.primary">Student/Teacher Ratio: {topSchools.elementary[0]?.["Student/\nTeacher Ratio"] || 'N/A'}</Typography>
+                {topSchools.elementary[0]?.["Student/\nTeacher Ratio"] > 30 ? <IconMinus size={14} color={theme.palette.error.main} /> : <IconPlus size={14} color={theme.palette.primary.main} />}
               </Box>
               <Box className='flex justify-between items-center'>
                 <Typography fontSize={14} className="flex items-center" color="text.secondary">
@@ -216,45 +226,45 @@ const DevelopmentalPage = ({ data, listing }: DevelopmentalPageProps) => {
               >
                 <Box p={2}>
                   <Box className='flex justify-between items-center'>
-                    <Typography fontSize={14} color="text.primary">Hispanic: <span className='text-[#6f6f6f]'>{data.top_schools.elementary[0].Hispanic}</span></Typography>
+                    <Typography fontSize={14} color="text.primary">Hispanic: <span className='text-[#6f6f6f]'>{topSchools.elementary[0]?.Hispanic || 'N/A'}</span></Typography>
                   </Box>
                   <Box className='flex justify-between items-center'>
-                    <Typography fontSize={14} color="text.primary">Asian: <span className='text-[#6f6f6f]'>{data.top_schools.elementary[0].Asian}</span></Typography>
+                    <Typography fontSize={14} color="text.primary">Asian: <span className='text-[#6f6f6f]'>{topSchools.elementary[0]?.Asian || 'N/A'}</span></Typography>
                   </Box>
                   <Box className='flex justify-between items-center'>
-                    <Typography fontSize={14} color="text.primary">Black: <span className='text-[#6f6f6f]'>{data.top_schools.elementary[0].Black}</span></Typography>
+                    <Typography fontSize={14} color="text.primary">Black: <span className='text-[#6f6f6f]'>{topSchools.elementary[0]?.Black || 'N/A'}</span></Typography>
                   </Box>
                   <Box className='flex justify-between items-center'>
-                    <Typography fontSize={14} color="text.primary">White: <span className='text-[#6f6f6f]'>{data.top_schools.elementary[0].White}</span></Typography>
+                    <Typography fontSize={14} color="text.primary">White: <span className='text-[#6f6f6f]'>{topSchools.elementary[0]?.White || 'N/A'}</span></Typography>
                   </Box>
                   <Box className='flex justify-between items-center'>
-                    <Typography fontSize={14} color="text.primary">American Indian: <span className='text-[#6f6f6f]'>{data.top_schools.elementary[0]["American\nIndian"]}</span></Typography>
+                    <Typography fontSize={14} color="text.primary">American Indian: <span className='text-[#6f6f6f]'>{topSchools.elementary[0]?.["American\nIndian"] || 'N/A'}</span></Typography>
                   </Box>
                   <Box className='flex justify-between items-center'>
-                    <Typography fontSize={14} color="text.primary">Pacific Islander: <span className='text-[#6f6f6f]'>{data.top_schools.elementary[0]["Pacific\nIslander"]}</span></Typography>
+                    <Typography fontSize={14} color="text.primary">Pacific Islander: <span className='text-[#6f6f6f]'>{topSchools.elementary[0]?.["Pacific\nIslander"] || 'N/A'}</span></Typography>
                   </Box>
                   <Box className='flex justify-between items-center'>
-                    <Typography fontSize={14} color="text.primary">Two or More Races: <span className='text-[#6f6f6f]'>{data.top_schools.elementary[0]["Two or\nMore Races"]}</span></Typography>
+                    <Typography fontSize={14} color="text.primary">Two or More Races: <span className='text-[#6f6f6f]'>{topSchools.elementary[0]?.["Two or\nMore Races"] || 'N/A'}</span></Typography>
                   </Box>
                 </Box>
               </Popover>
               <Box className='flex justify-between items-center'>
-                <Typography fontSize={14} color="text.primary">Full-time Teachers: {data.top_schools.elementary[0]["Full-time Teachers"]}</Typography>
+                <Typography fontSize={14} color="text.primary">Full-time Teachers: {topSchools.elementary[0]?.["Full-time Teachers"] || 'N/A'}</Typography>
               </Box>
               <Box className='flex justify-between items-center'>
-                <Typography fontSize={14} color="text.primary">State Percentile: {data.top_schools.elementary[0]["State Percentile (2023)"]}</Typography>
-                {parseFloat(data.top_schools.elementary[0]["State Percentile (2023)"] || "") < 80 ? <IconMinus size={14} color={theme.palette.error.main} /> : <IconPlus size={14} color={theme.palette.primary.main} />}
+                <Typography fontSize={14} color="text.primary">State Percentile: {topSchools.elementary[0]?.["State Percentile (2023)"] || 'N/A'}</Typography>
+                {parseFloat(topSchools.elementary[0]?.["State Percentile (2023)"] || '0') < 80 ? <IconMinus size={14} color={theme.palette.error.main} /> : <IconPlus size={14} color={theme.palette.primary.main} />}
               </Box>
               <Box className='flex justify-between items-center'>
-                <Typography fontSize={14} color="text.secondary">Statewide Rank: {data.top_schools.elementary[0]["Statewide Rank (2023)"]}</Typography>
+                <Typography fontSize={14} color="text.secondary">Statewide Rank: {topSchools.elementary[0]?.["Statewide Rank (2023)"] || 'N/A'}</Typography>
               </Box>
               <Box className='flex justify-between items-center'>
-                <Typography fontSize={14} color="text.primary">Average Standard Score: {data.top_schools.elementary[0]["Average Standard Score (2023)"]}</Typography>
-                {parseFloat(data.top_schools.elementary[0]["Average Standard Score (2023)"] || "") < 80 ? <IconMinus size={14} color={theme.palette.error.main} /> : <IconPlus size={14} color={theme.palette.primary.main} />}
+                <Typography fontSize={14} color="text.primary">Average Standard Score: {topSchools.elementary[0]?.["Average Standard Score (2023)"] || 'N/A'}</Typography>
+                {parseFloat(topSchools.elementary[0]?.["Average Standard Score (2023)"] || '0') < 80 ? <IconMinus size={14} color={theme.palette.error.main} /> : <IconPlus size={14} color={theme.palette.primary.main} />}
               </Box>
               <Box className='flex justify-between items-center'>
-                <Typography fontSize={14} color="text.primary">Rank Change from Previous Year: {data.top_schools.elementary[0]["Rank Change from Previous Year"]}</Typography>
-                {parseFloat(data.top_schools.elementary[0]["Rank Change from Previous Year"] || "") < 0 ? <IconMinus size={14} color={theme.palette.error.main} /> : <IconPlus size={14} color={theme.palette.primary.main} />}
+                <Typography fontSize={14} color="text.primary">Rank Change from Previous Year: {topSchools.elementary[0]?.["Rank Change from Previous Year"] || 'N/A'}</Typography>
+                {parseFloat(topSchools.elementary[0]?.["Rank Change from Previous Year"] || '0') < 0 ? <IconMinus size={14} color={theme.palette.error.main} /> : <IconPlus size={14} color={theme.palette.primary.main} />}
               </Box>
             </CardContent>
           </Card>
@@ -267,31 +277,31 @@ const DevelopmentalPage = ({ data, listing }: DevelopmentalPageProps) => {
                   <IconInfoCircle color="#6f6f6f" className="absolute top-5 right-4" size={14} style={{ cursor: 'pointer' }} />
               </Tooltip>
               <Box className='flex justify-between items-center'>
-                <Typography fontSize={14}>{data.top_schools.middle[0].Name}</Typography>
-                <Typography fontSize={14} color={data.top_schools.middle[0].Score > 80 ? "success.main" : "error.main"}>
-                    {data.top_schools.middle[0].Score.toFixed(0)}
+                <Typography fontSize={14}>{topSchools.middle[0]?.Name || 'N/A'}</Typography>
+                <Typography fontSize={14} color={topSchools.middle[0]?.Score > 80 ? "success.main" : "error.main"}>
+                    {topSchools.middle[0]?.Score?.toFixed(0) || 'N/A'}
                 </Typography>
               </Box>
               <Box className='flex justify-between items-center'>
-                <Typography fontSize={14} color="text.secondary">{data.top_schools.middle[0].Address} {data.top_schools.middle[0].City}, {data.top_schools.middle[0].Zip}</Typography>
+                <Typography fontSize={14} color="text.secondary">{topSchools.middle[0]?.Address || 'N/A'} {topSchools.middle[0]?.City || 'N/A'}, {topSchools.middle[0]?.Zip || 'N/A'}</Typography>
               </Box>
               <Box className='flex justify-between items-center'>
-                <Typography fontSize={14} color="text.primary">Distance: {data.top_schools.middle[0].Distance}</Typography>
-                {parseFloat(data.top_schools.middle[0].Distance) > 1.5 ? <IconMinus size={14} color={theme.palette.error.main} /> : <IconPlus size={14} color={theme.palette.primary.main} />}
+                <Typography fontSize={14} color="text.primary">Distance: {topSchools.middle[0]?.Distance || 'N/A'}</Typography>
+                {parseFloat(topSchools.middle[0]?.Distance || '0') > 1.5 ? <IconMinus size={14} color={theme.palette.error.main} /> : <IconPlus size={14} color={theme.palette.primary.main} />}
               </Box>
               <Box className='flex justify-between items-center'>
-                <Typography fontSize={14} color="text.secondary">Grades: {data.top_schools.middle[0].Grades}</Typography>
+                <Typography fontSize={14} color="text.secondary">Grades: {topSchools.middle[0]?.Grades || 'N/A'}</Typography>
               </Box>
               <Box className='flex justify-between items-center'>
-                <Typography fontSize={14} color="text.secondary">Phone: {data.top_schools.middle[0].Phone}</Typography>
+                <Typography fontSize={14} color="text.secondary">Phone: {topSchools.middle[0]?.Phone || 'N/A'}</Typography>
               </Box>
               <Box className='flex justify-between items-center'>
-                <Typography fontSize={14} color="text.primary">Enrollment: {data.top_schools.middle[0].Enrollment}</Typography>
-                {data.top_schools.middle[0]["Student/\nTeacher Ratio"] > 30 ? <IconMinus size={14} color={theme.palette.error.main} /> : <IconPlus size={14} color={theme.palette.primary.main} />}
+                <Typography fontSize={14} color="text.primary">Enrollment: {topSchools.middle[0]?.Enrollment || 'N/A'}</Typography>
+                {topSchools.middle[0]?.["Student/\nTeacher Ratio"] > 30 ? <IconMinus size={14} color={theme.palette.error.main} /> : <IconPlus size={14} color={theme.palette.primary.main} />}
               </Box>
               <Box className='flex justify-between items-center'>
-                <Typography fontSize={14} color="text.primary">Student/Teacher Ratio: {data.top_schools.middle[0]["Student/\nTeacher Ratio"]}</Typography>
-                {data.top_schools.middle[0]["Student/\nTeacher Ratio"] > 30 ? <IconMinus size={14} color={theme.palette.error.main} /> : <IconPlus size={14} color={theme.palette.primary.main} />}
+                <Typography fontSize={14} color="text.primary">Student/Teacher Ratio: {topSchools.middle[0]?.["Student/\nTeacher Ratio"] || 'N/A'}</Typography>
+                {topSchools.middle[0]?.["Student/\nTeacher Ratio"] > 30 ? <IconMinus size={14} color={theme.palette.error.main} /> : <IconPlus size={14} color={theme.palette.primary.main} />}
               </Box>
               <Box className='flex justify-between items-center'>
                 <Typography fontSize={14} className="flex items-center" color="text.secondary">
@@ -316,45 +326,45 @@ const DevelopmentalPage = ({ data, listing }: DevelopmentalPageProps) => {
               >
                 <Box p={2}>
                   <Box className='flex justify-between items-center'>
-                    <Typography fontSize={14} color="text.primary">Hispanic: <span className='text-[#6f6f6f]'>{data.top_schools.middle[0].Hispanic}</span></Typography>
+                    <Typography fontSize={14} color="text.primary">Hispanic: <span className='text-[#6f6f6f]'>{topSchools.middle[0]?.Hispanic || 'N/A'}</span></Typography>
                   </Box>
                   <Box className='flex justify-between items-center'>
-                    <Typography fontSize={14} color="text.primary">Asian: <span className='text-[#6f6f6f]'>{data.top_schools.middle[0].Asian}</span></Typography>
+                    <Typography fontSize={14} color="text.primary">Asian: <span className='text-[#6f6f6f]'>{topSchools.middle[0]?.Asian || 'N/A'}</span></Typography>
                   </Box>
                   <Box className='flex justify-between items-center'>
-                    <Typography fontSize={14} color="text.primary">Black: <span className='text-[#6f6f6f]'>{data.top_schools.middle[0].Black}</span></Typography>
+                    <Typography fontSize={14} color="text.primary">Black: <span className='text-[#6f6f6f]'>{topSchools.middle[0]?.Black || 'N/A'}</span></Typography>
                   </Box>
                   <Box className='flex justify-between items-center'>
-                    <Typography fontSize={14} color="text.primary">White: <span className='text-[#6f6f6f]'>{data.top_schools.middle[0].White}</span></Typography>
+                    <Typography fontSize={14} color="text.primary">White: <span className='text-[#6f6f6f]'>{topSchools.middle[0]?.White || 'N/A'}</span></Typography>
                   </Box>
                   <Box className='flex justify-between items-center'>
-                    <Typography fontSize={14} color="text.primary">American Indian: <span className='text-[#6f6f6f]'>{data.top_schools.middle[0]["American\nIndian"]}</span></Typography>
+                    <Typography fontSize={14} color="text.primary">American Indian: <span className='text-[#6f6f6f]'>{topSchools.middle[0]?.["American\nIndian"] || 'N/A'}</span></Typography>
                   </Box>
                   <Box className='flex justify-between items-center'>
-                    <Typography fontSize={14} color="text.primary">Pacific Islander: <span className='text-[#6f6f6f]'>{data.top_schools.middle[0]["Pacific\nIslander"]}</span></Typography>
+                    <Typography fontSize={14} color="text.primary">Pacific Islander: <span className='text-[#6f6f6f]'>{topSchools.middle[0]?.["Pacific\nIslander"] || 'N/A'}</span></Typography>
                   </Box>
                   <Box className='flex justify-between items-center'>
-                    <Typography fontSize={14} color="text.primary">Two or More Races: <span className='text-[#6f6f6f]'>{data.top_schools.middle[0]["Two or\nMore Races"]}</span></Typography>
+                    <Typography fontSize={14} color="text.primary">Two or More Races: <span className='text-[#6f6f6f]'>{topSchools.middle[0]?.["Two or\nMore Races"] || 'N/A'}</span></Typography>
                   </Box>
                 </Box>
               </Popover>
               <Box className='flex justify-between items-center'>
-                <Typography fontSize={14} color="text.primary">Full-time Teachers: {data.top_schools.middle[0]["Full-time Teachers"]}</Typography>
+                <Typography fontSize={14} color="text.primary">Full-time Teachers: {topSchools.middle[0]?.["Full-time Teachers"] || 'N/A'}</Typography>
               </Box>
               <Box className='flex justify-between items-center'>
-                <Typography fontSize={14} color="text.primary">State Percentile: {data.top_schools.middle[0]["State Percentile (2023)"]}</Typography>
-                {parseFloat(data.top_schools.middle[0]["State Percentile (2023)"] || "") < 80 ? <IconMinus size={14} color={theme.palette.error.main} /> : <IconPlus size={14} color={theme.palette.primary.main} />}
+                <Typography fontSize={14} color="text.primary">State Percentile: {topSchools.middle[0]?.["State Percentile (2023)"] || 'N/A'}</Typography>
+                {parseFloat(topSchools.middle[0]?.["State Percentile (2023)"] || '0') < 80 ? <IconMinus size={14} color={theme.palette.error.main} /> : <IconPlus size={14} color={theme.palette.primary.main} />}
               </Box>
               <Box className='flex justify-between items-center'>
-                <Typography fontSize={14} color="text.secondary">Statewide Rank: {data.top_schools.middle[0]["Statewide Rank (2023)"]}</Typography>
+                <Typography fontSize={14} color="text.secondary">Statewide Rank: {topSchools.middle[0]?.["Statewide Rank (2023)"] || 'N/A'}</Typography>
               </Box>
               <Box className='flex justify-between items-center'>
-                <Typography fontSize={14} color="text.primary">Average Standard Score: {data.top_schools.middle[0]["Average Standard Score (2023)"]}</Typography>
-                {parseFloat(data.top_schools.middle[0]["Average Standard Score (2023)"] || "") < 80 ? <IconMinus size={14} color={theme.palette.error.main} /> : <IconPlus size={14} color={theme.palette.primary.main} />}
+                <Typography fontSize={14} color="text.primary">Average Standard Score: {topSchools.middle[0]?.["Average Standard Score (2023)"] || 'N/A'}</Typography>
+                {parseFloat(topSchools.middle[0]?.["Average Standard Score (2023)"] || '0') < 80 ? <IconMinus size={14} color={theme.palette.error.main} /> : <IconPlus size={14} color={theme.palette.primary.main} />}
               </Box>
               <Box className='flex justify-between items-center'>
-                <Typography fontSize={14} color="text.primary">Rank Change from Previous Year: {data.top_schools.middle[0]["Rank Change from Previous Year"]}</Typography>
-                {parseFloat(data.top_schools.middle[0]["Rank Change from Previous Year"] || "") < 0 ? <IconMinus size={14} color={theme.palette.error.main} /> : <IconPlus size={14} color={theme.palette.primary.main} />}
+                <Typography fontSize={14} color="text.primary">Rank Change from Previous Year: {topSchools.middle[0]?.["Rank Change from Previous Year"] || 'N/A'}</Typography>
+                {parseFloat(topSchools.middle[0]?.["Rank Change from Previous Year"] || '0') < 0 ? <IconMinus size={14} color={theme.palette.error.main} /> : <IconPlus size={14} color={theme.palette.primary.main} />}
               </Box>
             </CardContent>
           </Card>
@@ -367,31 +377,31 @@ const DevelopmentalPage = ({ data, listing }: DevelopmentalPageProps) => {
                   <IconInfoCircle color="#6f6f6f" className="absolute top-5 right-4" size={14} style={{ cursor: 'pointer' }} />
               </Tooltip>
               <Box className='flex justify-between items-center'>
-                <Typography fontSize={14}>{data.top_schools.high[0].Name}</Typography>
-                <Typography fontSize={14} color={data.top_schools.high[0].Score > 80 ? "success.main" : "error.main"}>
-                    {data.top_schools.high[0].Score.toFixed(0)}
+                <Typography fontSize={14}>{topSchools.high[0]?.Name || 'N/A'}</Typography>
+                <Typography fontSize={14} color={topSchools.high[0]?.Score > 80 ? "success.main" : "error.main"}>
+                    {topSchools.high[0]?.Score?.toFixed(0) || 'N/A'}
                 </Typography>
               </Box>
               <Box className='flex justify-between items-center'>
-                <Typography fontSize={14} color="text.secondary">{data.top_schools.high[0].Address} {data.top_schools.high[0].City}, {data.top_schools.high[0].Zip}</Typography>
+                <Typography fontSize={14} color="text.secondary">{topSchools.high[0]?.Address || 'N/A'} {topSchools.high[0]?.City || 'N/A'}, {topSchools.high[0]?.Zip || 'N/A'}</Typography>
               </Box>
               <Box className='flex justify-between items-center'>
-                <Typography fontSize={14} color="text.primary">Distance: {data.top_schools.high[0].Distance}</Typography>
-                {parseFloat(data.top_schools.high[0].Distance) > 1.5 ? <IconMinus size={14} color={theme.palette.error.main} /> : <IconPlus size={14} color={theme.palette.primary.main} />}
+                <Typography fontSize={14} color="text.primary">Distance: {topSchools.high[0]?.Distance || 'N/A'}</Typography>
+                {parseFloat(topSchools.high[0]?.Distance || '0') > 1.5 ? <IconMinus size={14} color={theme.palette.error.main} /> : <IconPlus size={14} color={theme.palette.primary.main} />}
               </Box>
               <Box className='flex justify-between items-center'>
-                <Typography fontSize={14} color="text.secondary">Grades: {data.top_schools.high[0].Grades}</Typography>
+                <Typography fontSize={14} color="text.secondary">Grades: {topSchools.high[0]?.Grades || 'N/A'}</Typography>
               </Box>
               <Box className='flex justify-between items-center'>
-                <Typography fontSize={14} color="text.secondary">Phone: {data.top_schools.high[0].Phone}</Typography>
+                <Typography fontSize={14} color="text.secondary">Phone: {topSchools.high[0]?.Phone || 'N/A'}</Typography>
               </Box>
               <Box className='flex justify-between items-center'>
-                <Typography fontSize={14} color="text.primary">Enrollment: {data.top_schools.high[0].Enrollment}</Typography>
-                {data.top_schools.high[0]["Student/\nTeacher Ratio"] > 30 ? <IconMinus size={14} color={theme.palette.error.main} /> : <IconPlus size={14} color={theme.palette.primary.main} />}
+                <Typography fontSize={14} color="text.primary">Enrollment: {topSchools.high[0]?.Enrollment || 'N/A'}</Typography>
+                {topSchools.high[0]?.["Student/\nTeacher Ratio"] > 30 ? <IconMinus size={14} color={theme.palette.error.main} /> : <IconPlus size={14} color={theme.palette.primary.main} />}
               </Box>
               <Box className='flex justify-between items-center'>
-                <Typography fontSize={14} color="text.primary">Student/Teacher Ratio: {data.top_schools.high[0]["Student/\nTeacher Ratio"]}</Typography>
-                {data.top_schools.high[0]["Student/\nTeacher Ratio"] > 30 ? <IconMinus size={14} color={theme.palette.error.main} /> : <IconPlus size={14} color={theme.palette.primary.main} />}
+                <Typography fontSize={14} color="text.primary">Student/Teacher Ratio: {topSchools.high[0]?.["Student/\nTeacher Ratio"] || 'N/A'}</Typography>
+                {topSchools.high[0]?.["Student/\nTeacher Ratio"] > 30 ? <IconMinus size={14} color={theme.palette.error.main} /> : <IconPlus size={14} color={theme.palette.primary.main} />}
               </Box>
               <Box className='flex justify-between items-center'>
                 <Typography fontSize={14} className="flex items-center" color="text.secondary">
@@ -416,45 +426,45 @@ const DevelopmentalPage = ({ data, listing }: DevelopmentalPageProps) => {
               >
                 <Box p={2}>
                   <Box className='flex justify-between items-center'>
-                    <Typography fontSize={14} color="text.primary">Hispanic: <span className='text-[#6f6f6f]'>{data.top_schools.high[0].Hispanic}</span></Typography>
+                    <Typography fontSize={14} color="text.primary">Hispanic: <span className='text-[#6f6f6f]'>{topSchools.high[0]?.Hispanic || 'N/A'}</span></Typography>
                   </Box>
                   <Box className='flex justify-between items-center'>
-                    <Typography fontSize={14} color="text.primary">Asian: <span className='text-[#6f6f6f]'>{data.top_schools.high[0].Asian}</span></Typography>
+                    <Typography fontSize={14} color="text.primary">Asian: <span className='text-[#6f6f6f]'>{topSchools.high[0]?.Asian || 'N/A'}</span></Typography>
                   </Box>
                   <Box className='flex justify-between items-center'>
-                    <Typography fontSize={14} color="text.primary">Black: <span className='text-[#6f6f6f]'>{data.top_schools.high[0].Black}</span></Typography>
+                    <Typography fontSize={14} color="text.primary">Black: <span className='text-[#6f6f6f]'>{topSchools.high[0]?.Black || 'N/A'}</span></Typography>
                   </Box>
                   <Box className='flex justify-between items-center'>
-                    <Typography fontSize={14} color="text.primary">White: <span className='text-[#6f6f6f]'>{data.top_schools.high[0].White}</span></Typography>
+                    <Typography fontSize={14} color="text.primary">White: <span className='text-[#6f6f6f]'>{topSchools.high[0]?.White || 'N/A'}</span></Typography>
                   </Box>
                   <Box className='flex justify-between items-center'>
-                    <Typography fontSize={14} color="text.primary">American Indian: <span className='text-[#6f6f6f]'>{data.top_schools.high[0]["American\nIndian"]}</span></Typography>
+                    <Typography fontSize={14} color="text.primary">American Indian: <span className='text-[#6f6f6f]'>{topSchools.high[0]?.["American\nIndian"] || 'N/A'}</span></Typography>
                   </Box>
                   <Box className='flex justify-between items-center'>
-                    <Typography fontSize={14} color="text.primary">Pacific Islander: <span className='text-[#6f6f6f]'>{data.top_schools.high[0]["Pacific\nIslander"]}</span></Typography>
+                    <Typography fontSize={14} color="text.primary">Pacific Islander: <span className='text-[#6f6f6f]'>{topSchools.high[0]?.["Pacific\nIslander"] || 'N/A'}</span></Typography>
                   </Box>
                   <Box className='flex justify-between items-center'>
-                    <Typography fontSize={14} color="text.primary">Two or More Races: <span className='text-[#6f6f6f]'>{data.top_schools.high[0]["Two or\nMore Races"]}</span></Typography>
+                    <Typography fontSize={14} color="text.primary">Two or More Races: <span className='text-[#6f6f6f]'>{topSchools.high[0]?.["Two or\nMore Races"] || 'N/A'}</span></Typography>
                   </Box>
                 </Box>
               </Popover>
               <Box className='flex justify-between items-center'>
-                <Typography fontSize={14} color="text.primary">Full-time Teachers: {data.top_schools.high[0]["Full-time Teachers"]}</Typography>
+                <Typography fontSize={14} color="text.primary">Full-time Teachers: {topSchools.high[0]?.["Full-time Teachers"] || 'N/A'}</Typography>
               </Box>
               <Box className='flex justify-between items-center'>
-                <Typography fontSize={14} color="text.primary">State Percentile: {data.top_schools.high[0]["State Percentile (2023)"]}</Typography>
-                {parseFloat(data.top_schools.high[0]["State Percentile (2023)"] || "") < 80 ? <IconMinus size={14} color={theme.palette.error.main} /> : <IconPlus size={14} color={theme.palette.primary.main} />}
+                <Typography fontSize={14} color="text.primary">State Percentile: {topSchools.high[0]?.["State Percentile (2023)"] || 'N/A'}</Typography>
+                {parseFloat(topSchools.high[0]?.["State Percentile (2023)"] || '0') < 80 ? <IconMinus size={14} color={theme.palette.error.main} /> : <IconPlus size={14} color={theme.palette.primary.main} />}
               </Box>
               <Box className='flex justify-between items-center'>
-                <Typography fontSize={14} color="text.secondary">Statewide Rank: {data.top_schools.high[0]["Statewide Rank (2023)"]}</Typography>
+                <Typography fontSize={14} color="text.secondary">Statewide Rank: {topSchools.high[0]?.["Statewide Rank (2023)"] || 'N/A'}</Typography>
               </Box>
               <Box className='flex justify-between items-center'>
-                <Typography fontSize={14} color="text.primary">Average Standard Score: {data.top_schools.high[0]["Average Standard Score (2023)"]}</Typography>
-                {parseFloat(data.top_schools.high[0]["Average Standard Score (2023)"] || "") < 80 ? <IconMinus size={14} color={theme.palette.error.main} /> : <IconPlus size={14} color={theme.palette.primary.main} />}
+                <Typography fontSize={14} color="text.primary">Average Standard Score: {topSchools.high[0]?.["Average Standard Score (2023)"] || 'N/A'}</Typography>
+                {parseFloat(topSchools.high[0]?.["Average Standard Score (2023)"] || '0') < 80 ? <IconMinus size={14} color={theme.palette.error.main} /> : <IconPlus size={14} color={theme.palette.primary.main} />}
               </Box>
               <Box className='flex justify-between items-center'>
-                <Typography fontSize={14} color="text.primary">Rank Change from Previous Year: {data.top_schools.high[0]["Rank Change from Previous Year"]}</Typography>
-                {parseFloat(data.top_schools.high[0]["Rank Change from Previous Year"] || "") < 0 ? <IconMinus size={14} color={theme.palette.error.main} /> : <IconPlus size={14} color={theme.palette.primary.main} />}
+                <Typography fontSize={14} color="text.primary">Rank Change from Previous Year: {topSchools.high[0]?.["Rank Change from Previous Year"] || 'N/A'}</Typography>
+                {parseFloat(topSchools.high[0]?.["Rank Change from Previous Year"] || '0') < 0 ? <IconMinus size={14} color={theme.palette.error.main} /> : <IconPlus size={14} color={theme.palette.primary.main} />}
               </Box>
             </CardContent>
           </Card>

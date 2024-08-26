@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: "webhook error", error: err }, { status: 400 });
   }
 
-  console.log("EVENT TYPE", event.type);
+  // console.log("EVENT TYPE", event.type);
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session;
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
       // Retrieve line items
       const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
 
-      console.log("LINE ITEMS", lineItems);
+      // console.log("LINE ITEMS", lineItems);
       let discountCode;
 
       const additionalReports = lineItems.data[0].description == 'House Snapshot' ? 1 : lineItems.data[0].description == 'House Album' ? 3 : 7;
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
       // Log discount codes
       if (session.total_details?.amount_discount && session.total_details.breakdown?.discounts) {
         session.total_details.breakdown.discounts.forEach(discount => {
-          console.log(`Discount Code: ${discount.discount.promotion_code}`);
+          // console.log(`Discount Code: ${discount.discount.promotion_code}`);
         });
 
         discountCode = session.total_details.breakdown.discounts[0].discount.promotion_code;
@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
         discount_code: discountCode,
         customer_details: session.customer_details
       })
-      console.log('Supabase update successful:', dataPayments);
+      // console.log('Supabase update successful:', dataPayments);
     
     }
   }

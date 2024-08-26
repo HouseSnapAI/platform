@@ -96,7 +96,7 @@ const ChatInterface = ({ setInputValue, inputValue, chatHistory, handleClick, us
             <form
                 onSubmit={(e) => {
                     e.preventDefault();
-                    console.log(chatHistory)
+                    // console.log(chatHistory)
                     
                 }}
                 className='w-full flex flex-row items-center justify-between gap-2 fade-in-on-scroll cursor-pointer mb-10 rounded-md transition-all ease-in-out duration-300'
@@ -117,7 +117,7 @@ const ChatInterface = ({ setInputValue, inputValue, chatHistory, handleClick, us
                             type='submit'
                             onClick={() => {
                                 if(chatHistory.chat_history.length == 1) {
-                                    console.log("here");
+                                    // console.log("here");
                                     handleClick(true);
                                 }
                                 else

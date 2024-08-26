@@ -1,14 +1,18 @@
 // ** Next Imports
-import{ useState } from 'react';
+import React from 'react';
 
 // ** MUI Imports
-import { Popover, Typography, Box, TextField, Chip, Select, MenuItem, Slider, Autocomplete } from '@mui/material';
+import Popover from '@mui/material/Popover';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import Chip from '@mui/material/Chip';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import Autocomplete from '@mui/material/Autocomplete';
 
 // ** Style Imports
 import { useTheme } from '@mui/material/styles';
-
-// ** Custom Component Imports
-import ChatSlider from '@/components/chat-interface/message/message-components/ChatSlider';
 
 type FilterPopupProps = {
     type: string;
@@ -28,16 +32,17 @@ const FilterPopup = ({ type, anchorEl, open, onClose, value, setValue }: FilterP
       case 'propertyType':
         return (
           <Box>
-            <Typography color='text.secondary' fontSize={14}>Property Types</Typography>
+            <Typography color='text.primary' fontSize={14} fontWeight={600} sx={{marginBottom: 1}}>Property Types</Typography>
             <Select
               multiple
               value={Array.isArray(value) ? value : []}
               onChange={(e) => setValue(e.target.value)}
               fullWidth
+              size='small'
               renderValue={(selected) => (
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                   {(selected as string[]).map((value: string) => (
-                    <Chip key={value} label={value.split('_').map(word => word.charAt(0).toUpperCase() + word.toLowerCase().slice(1)).join(' ')} />
+                    <Chip color='secondary' key={value} label={value.split('_').map(word => word.charAt(0).toUpperCase() + word.toLowerCase().slice(1)).join(' ')} />
                   ))}
                 </Box>
               )}
@@ -60,21 +65,37 @@ const FilterPopup = ({ type, anchorEl, open, onClose, value, setValue }: FilterP
       case 'budget':
         return (
           <Box>
-            <Typography color='text.secondary' fontSize={14}>
-              Budget: ({value[0] >= 1000000 ? `${(value[0] / 1000000).toFixed(1)}M` : value[0] >= 1000 ? `${(value[0] / 1000).toFixed(1)}K` : value[0]} – 
-              {value[1] >= 1000000 ? `${(value[1] / 1000000).toFixed(1)}M` : value[1] >= 1000 ? `${(value[1] / 1000).toFixed(1)}K` : value[1]})
+            <Typography color='text.primary' fontSize={14} fontWeight={600} sx={{marginBottom: 1}}>
+              Budget <span style={{color: theme.palette.text.secondary}} className='font-medium'> ({value[0] >= 1000000 ? `${(value[0] / 1000000).toFixed(1)}M` : value[0] >= 1000 ? `${(value[0] / 1000).toFixed(1)}K` : value[0]} – 
+              {value[1] >= 1000000 ? `${(value[1] / 1000000).toFixed(1)}M` : value[1] >= 1000 ? `${(value[1] / 1000).toFixed(1)}K` : value[1]})</span>
             </Typography>
-            <ChatSlider value={value} setValue={setValue} />
+            <Box display="flex" justifyContent="space-between" className='gap-2'>
+              <TextField
+                type="number"
+                value={value[0]}
+                onChange={(e) => setValue([Number(e.target.value), value[1]])}
+                size="small"
+                InputProps={{ inputProps: { min: 0 } }}
+              />
+              <TextField
+                type="number"
+                value={value[1]}
+                onChange={(e) => setValue([value[0], Number(e.target.value)])}
+                size="small"
+                InputProps={{ inputProps: { min: 0 } }}
+              />
+            </Box>
           </Box>
         );
       case 'beds':
         return (
           <Box>
-            <Typography color='text.secondary' fontSize={14}>Beds</Typography>
+            <Typography color='text.primary' fontSize={14} fontWeight={600} sx={{marginBottom: 1}}>Beds</Typography>
             <TextField
               type="number"
               value={value}
               onChange={(e) => setValue(Number(e.target.value))}
+              size="small"
               InputProps={{ inputProps: { min: 1, max: 10, step: 1 } }}
             />
           </Box>
@@ -82,11 +103,12 @@ const FilterPopup = ({ type, anchorEl, open, onClose, value, setValue }: FilterP
       case 'baths':
         return (
           <Box>
-            <Typography color='text.secondary' fontSize={14}>Baths</Typography>
+            <Typography color='text.primary' fontSize={14} fontWeight={600} sx={{marginBottom: 1}}>Baths</Typography>
             <TextField
               type="number"
               value={value}
               onChange={(e) => setValue(Number(e.target.value))}
+              size="small"
               InputProps={{ inputProps: { min: 1, max: 10, step: 1 } }}
             />
           </Box>
@@ -94,7 +116,7 @@ const FilterPopup = ({ type, anchorEl, open, onClose, value, setValue }: FilterP
       case 'location':
         return (
           <Box>
-            <Typography color='text.secondary' fontSize={14}>Locations</Typography>
+            <Typography color='text.primary' fontSize={14} fontWeight={600} sx={{marginBottom: 1}}>Locations</Typography>
             <Autocomplete
               multiple
               freeSolo
@@ -113,22 +135,31 @@ const FilterPopup = ({ type, anchorEl, open, onClose, value, setValue }: FilterP
       case 'houseSize':
         return (
           <Box>
-            <Typography color='text.secondary' fontSize={14}>
-              Size of House: {value[0].toLocaleString()} sqft – {value[1].toLocaleString()} sqft
+            <Typography color='text.primary' fontSize={14} fontWeight={600} sx={{marginBottom: 1}}>
+              Size of House <span style={{color: theme.palette.text.secondary}} className='font-medium'> ({value[0].toLocaleString()} sqft – {value[1].toLocaleString()} sqft)</span>
             </Typography>
-            <Slider
-              value={value}
-              onChange={(e, newValue) => setValue(newValue as [number, number])}
-              valueLabelDisplay="off"
-              min={0}
-              max={5000}
-            />
+            <Box display="flex" justifyContent="space-between" className='gap-2'>
+              <TextField
+                type="number"
+                value={value[0]}
+                onChange={(e) => setValue([Number(e.target.value), value[1]])}
+                size="small"
+                InputProps={{ inputProps: { min: 0 } }}
+              />
+              <TextField
+                type="number"
+                value={value[1]}
+                onChange={(e) => setValue([value[0], Number(e.target.value)])}
+                size="small"
+                InputProps={{ inputProps: { min: 0 } }}
+              />
+            </Box>
           </Box>
         );
       case 'houseDescription':
         return (
           <Box>
-            <Typography color='text.secondary' fontSize={14}>House Description</Typography>
+            <Typography color='text.primary' fontSize={14} fontWeight={600} sx={{marginBottom: 1}}>House Description</Typography>
             <TextField
               multiline
               rows={4}
@@ -136,6 +167,8 @@ const FilterPopup = ({ type, anchorEl, open, onClose, value, setValue }: FilterP
               onChange={(e) => setValue(e.target.value)}
               fullWidth
               variant="outlined"
+              size="small"
+              inputProps={{ style: { fontSize: '14px' } }}
             />
           </Box>
         );
@@ -157,11 +190,13 @@ const FilterPopup = ({ type, anchorEl, open, onClose, value, setValue }: FilterP
         vertical: 'top',
         horizontal: 'left',
       }}
+      sx={{ '& .MuiInputBase-input': { paddingRight: "4px", paddingLeft: "8px", paddingTop: "2px", paddingBottom: "2px" } }}
     >
       <Box sx={{
-        width: '300px',
+        maxWidth: '300px',
         padding: 2,
-        border: `1px solid ${theme.palette.divider}`,
+        // border: `1px solid ${theme.palette.divider}`,
+        boxShadow: 2,
       }}>
         {renderContent()}
       </Box>

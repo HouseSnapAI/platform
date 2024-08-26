@@ -9,8 +9,8 @@ export const POST = (async (req: NextRequest) => {
 
         const { prompt, userFilters } = await req.json();
 
-        console.log(prompt);
-        console.log(userFilters);
+        // console.log(prompt);
+        // console.log(userFilters);
         
         const UserFilters = z.object({
             beds: z.number(),
@@ -41,9 +41,9 @@ export const POST = (async (req: NextRequest) => {
         
         const message = completion.choices[0]?.message;
         if (message?.parsed) {
-            console.log(message.parsed);
+            // console.log(message.parsed);
         } else {
-            console.log(message.refusal);
+            // console.log(message.refusal);
         }
   
       

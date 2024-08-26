@@ -7,7 +7,7 @@ import Modal from '@mui/material/Modal'
 import Typography from '@mui/material/Typography'
 
 // ** Icon Imports
-import { IconLock, } from '@tabler/icons-react'
+import { IconLock, IconSparkles} from '@tabler/icons-react'
 
 // ** Types
 import { ListingType, User } from '@/utils/types'
@@ -16,8 +16,10 @@ import { ListingType, User } from '@/utils/types'
 import PricingPaymentComponent from '@/components/reports/pricing/PricingPageComponent'
 import ReportPage from '@/components/reports/ReportPage'
 import { checkReportByListing } from '@/utils/db'
+import Button from '@mui/material/Button'
 
-// ** Util Imports
+// ** Style Imports
+import { useTheme } from '@mui/material/styles'
 
 type ListingActionItemProps = {
     userInfo: User | null
@@ -27,18 +29,20 @@ type ListingActionItemProps = {
 const ListingActionItems = ({userInfo, listing}: ListingActionItemProps) => {
     const [open, setOpen] = useState<boolean>(false)
     const [reportOpen, setReportOpen] = useState<boolean>(false)
-    const [reportExists, setReportExists] = useState<{valid: boolean, data: any}>({valid: false, data: null})
+    const [reportExists, setReportExists] = useState<{valid: boolean|null, data: any}>({valid: null, data: null})
+
+    const theme = useTheme()
 
     const handleReportClick = () => {
         if(reportExists.valid){
-            window.open(`/report/${reportExists.data.report_id}`, '_blank')
+            window.open(`/report/${reportExists.data.listing_id}`, '_blank')
             setOpen(false)
             setReportOpen(false)
-        } else if(userInfo && userInfo?.reports_remaining > 0){
-            console.log('report clicked')
+        } else if(userInfo && userInfo?.reports_remaining > 0 && reportExists.valid == false){
+            // console.log('report clicked')
             setReportOpen(true)
         } else {
-            console.log('no reports remaining')
+            // console.log('no reports remaining')
             setOpen(true)
         }
     }
@@ -48,7 +52,7 @@ const ListingActionItems = ({userInfo, listing}: ListingActionItemProps) => {
             if(listing != 'loading' && listing != null && userInfo != null){
                 const res = await checkReportByListing(listing?.id as string, userInfo?.id as string)
                 setReportExists(res)
-                console.log("RES",res)
+                // console.log("RES",res)
             }
         }
 
@@ -57,11 +61,11 @@ const ListingActionItems = ({userInfo, listing}: ListingActionItemProps) => {
 
   return (
 <>
-        <Box className='bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 px-[10px] py-[5px] shadow-md rounded-sm cursor-pointer hover:scale-[1.05] hover:shadow-xl transition-all ease-in-out duration-500 flex items-center justify-center gap-[3px]' onClick={handleReportClick}>
+        <Button disabled={reportExists.valid == null} className='bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 px-[10px] py-[5px] shadow-md rounded-sm cursor-pointer hover:scale-[1.05] hover:shadow-xl transition-all ease-in-out duration-500 flex items-center justify-center gap-[3px]' onClick={handleReportClick} sx={{textTransform: 'none'}}>
         <Typography fontSize={14} className='text-[#ffffff]' >SnapShot</Typography>
-        <IconLock className='w-[18px]' />
+        <IconSparkles className='w-[18px]' color={theme.palette.text.primary} />
         
-        </Box>
+        </Button>
         <Modal
             open={open}
             onClose={() => setOpen(false)}

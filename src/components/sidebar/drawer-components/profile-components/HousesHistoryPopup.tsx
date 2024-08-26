@@ -87,11 +87,17 @@ const HousesHistoryPopup = ({ anchorEl, open, onClose, userInfo, housesHistory, 
                     </Box>
                     <Box className='flex gap-2 relative flex-wrap justify-center'>
                       {
-                        housesHistory && housesHistory.map((houseHistory) => {
-                          return (
-                                <HouseCard onClose={onClose} handleClose={handleClose} setSelectedListing={setSelectedListing} listing={houseHistory} />
-                          )
-                        })
+                        housesHistory && housesHistory
+                          .sort((a, b) => {
+                            const dateA = new Date(a.engage_date).getTime();
+                            const dateB = new Date(b.engage_date).getTime();
+                            return dateB - dateA; // Sort in descending order
+                          })
+                          .map((houseHistory) => {
+                            return (
+                                  <HouseCard onClose={onClose} handleClose={handleClose} setSelectedListing={setSelectedListing} listing={houseHistory} />
+                                )
+                              })
                       }
                     </Box>
                   </Box>

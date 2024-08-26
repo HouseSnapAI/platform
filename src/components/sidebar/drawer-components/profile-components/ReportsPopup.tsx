@@ -8,7 +8,7 @@ import Box from '@mui/material/Box';
 
 // ** Style Imports
 import { useTheme } from '@mui/material/styles';
-import { ListingRecordType, ListingType, User } from '@/utils/types';
+import { ListingRecordType, ListingType, Report, User } from '@/utils/types';
 import { Fade, Grow, Skeleton } from '@mui/material';
 import HouseCard from './house-card/HouseCard';
 
@@ -18,15 +18,15 @@ interface ReportsPopupProps {
   open: boolean;
   onClose: () => void;
   userInfo: User | null;
-  reports: any[] | null;
+  reports: Report[] | null;
 }
 
 const ReportsPopup = ({ anchorEl, open, onClose, userInfo, reports }: ReportsPopupProps) => {
   const theme = useTheme();
   
-  useEffect(() => {
-    console.log(reports);
-  }, [reports])
+  // useEffect(() => {
+  //   console.log(reports);
+  // }, [reports])
 
   return (
     <Popover
@@ -71,7 +71,7 @@ const ReportsPopup = ({ anchorEl, open, onClose, userInfo, reports }: ReportsPop
                             reports && reports.map((report) => {
                                 return (
                                     <Box>
-                                        <Typography>{report.id}</Typography>
+                                        <Typography>{report.listing_id}</Typography>
                                     </Box>
                                 )
                             })

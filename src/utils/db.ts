@@ -58,7 +58,7 @@ export const createNewChat = async ({ user, initialMessage }: createNewChatType)
 
 export const updateChat = async (chat: Chat) => {
 
-  console.log(chat)
+  // console.log(chat)
 
   const response = await fetch('/api/chat/update', {
     method: 'POST',
@@ -112,7 +112,7 @@ export const updateEngagements = async ({
     });
 
     if (userUpdateResponse.status === 200) {
-      console.log('User engagements updated successfully');
+      // console.log('User engagements updated successfully');
       const updatedUser = {
         ...user,
         viewed: [...user.viewed || [], { engage_date: new Date().toISOString(), id: id }],
@@ -153,7 +153,7 @@ export const saveHouse = async ({id, user, listing}: {id:string, user: User, lis
     });
 
     if (response.status === 200) {
-      console.log('Saved House added successfully');
+      // console.log('Saved House added successfully');
       const updatedUser = {
         ...user,
         saved: [...user.saved || [], { engage_date: new Date().toISOString(), id: id }]
@@ -191,7 +191,7 @@ export const deleteSavedHouse = async ({id, user, listing}: {id:string, user: Us
     });
   
     if (response.status === 200) {
-      console.log('Saved House deleted successfully');
+      // console.log('Saved House deleted successfully');
       const updatedUser = {
         ...user,
         saved: user.saved.filter((house: any) => house.id !== id)
@@ -252,10 +252,10 @@ export const fetchListing = async ({ ids }: FetchListingType) => {
 };
 
 // REPORT FUNCTIONS
-export const checkReport = async (reportId: string, userId: string) => {
+export const checkReport = async (listingId: string, userId: string) => {
   const response = await fetch(`/api/report/check`, {
     method: 'POST',
-    body: JSON.stringify({ report_id: reportId, user_id: userId }),
+    body: JSON.stringify({ listing_id: listingId, user_id: userId }),
   });
 
   if (response.status === 200) {
@@ -279,10 +279,10 @@ export const checkReportByListing = async (listingId: string, userId: string) =>
   }
 }
 
-export const fetchReport = async(report_id:string) => {
+export const fetchReport = async(listing_id:string) => {
   const response = await fetch(`/api/report/fetch`, {
     method: 'POST',
-    body: JSON.stringify({ report_id: report_id }),
+    body: JSON.stringify({ listing_id: listing_id }),
   });
 
   if (response.status === 200) {
@@ -302,7 +302,7 @@ export const fetchReportsByUser = async(user_id: string) => {
   if (response.status === 200) {
     const data = await response.json()
     if (data) {
-      console.log(data)
+      // console.log(data)
       return data;
     } else {
       return null;

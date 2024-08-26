@@ -19,12 +19,12 @@ export const POST = withApiAuthRequired(async function handler(req: NextRequest)
 
   const { user_id } = parseResult.data;
 
-  console.log(user_id)
+  // console.log(user_id)
 
   try {
     const { data, error } = await supabase
       .from('user_reports')
-      .select('report_id')
+      .select('listing_id')
       .eq('user_id', user_id)
 
     if (error) {
@@ -39,18 +39,15 @@ export const POST = withApiAuthRequired(async function handler(req: NextRequest)
     // Fetch all reports
     let reports: any[]  = [];
 
-    for (let reportId of data) {
-        let id = reportId.report_id;
-        console.log(id);
+    for (let listingId of data) {
         try {
             const { data, error } = await supabase
                 .from('reports')
-                .select('id, created_at, updated_at, listing_id')
-                .eq('id', id)
+                .select('listing_id, created_at, updated_at')
+                .eq('listing_id', listingId.listing_id)
                 .single();
             
             reports.push(data);
-            console.log(data)
 
         } catch (error) {
             console.error('Error getting User report:', error);

@@ -14,7 +14,7 @@ export const POST = withApiAuthRequired(async function handler(req: NextRequest)
     return NextResponse.json({ message: 'Invalid request body' }, { status: 400 });
   }
 
-  console.log("RECEOVED DATA" + chat)
+  // console.log("RECEOVED DATA" + chat)
 
   try {
     // Update chat messages

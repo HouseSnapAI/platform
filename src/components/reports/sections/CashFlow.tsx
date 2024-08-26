@@ -47,6 +47,8 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
   const [monthlyPayment, setMonthlyPayment] = useState<number|null>(null);
   const [taxRange, setTaxRange] = useState<number[]>([listing.list_price * 0.01 / 12, listing.list_price * 0.02 / 12]);
 
+  console.log("cashFlow", cashFlow)
+
 // State for Cash Reserves
   const [loanAmount, setLoanAmount] = useState<string>((listing.list_price - ((20 / 100) * listing.list_price) ) * 0.01 + ''); //gbu
   const [appraisalFee, setAppraisalFee] = useState<string>('600');  //gbu
@@ -65,7 +67,6 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
     const { monthlyMortgagePayment, lowerEndTax, upperEndTax, adjustedAnnualRate } = await mortgageCalc(listing.list_price, creditScore, downpaymentValue);
     setMonthlyPayment(monthlyMortgagePayment);
     const prepaidInterestRateValue = adjustedAnnualRate/365 * (listing.list_price - downpaymentValue);
-    console.log("prepaidInterestRateValue",Number(prepaidInterestRateValue.toFixed(2)));
     setPrepaidInterestRate(prepaidInterestRateValue.toFixed(2));
     setTaxRange([lowerEndTax, upperEndTax]);
 
@@ -423,15 +424,6 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
                       {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(cashFlow.rent_per_sqft)}
                     </Typography>
                   </Box>
-                  {/* Rent per Lot Sqft */}
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb:1 }}>
-                    <Typography fontSize={14} color="text.secondary" className="flex items-center" > 
-                      <IconLineDashed size={10} color="#6f6f6f" /> Rent per Lot Sqft
-                    </Typography>
-                    <Typography fontSize={14} color="text.secondary">
-                      {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(cashFlow.rent_per_lot_sqft)}
-                    </Typography>
-                  </Box>
                   {/* Estimated Maintenance */}
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
                     <Typography fontSize={14} >Estimated Maintainance </Typography>
@@ -514,7 +506,7 @@ const CashFlow = ({ data, listing }: CashFlowProps) => {
               Estimated Rent Split by Charge Type
               </Typography>
               <Typography fontSize={14} color="text.secondary" sx={{ marginBottom: 2 }}>
-              Total Estimated Rent: <span className="text-white">{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(cashFlow.estimatedCashFlow)}</span>
+              Total Estimated Rent: <span className="text-white">{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(cashFlow['CMA_approach']?.estimatedCashFlow || 0)}</span>
               </Typography>
               <Box className="flex flex-col gap-2 p-4 h-[350px]">
                 <Pie data={chartData} options={chartOptions} className="self-center" />

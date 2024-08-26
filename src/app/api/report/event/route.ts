@@ -13,7 +13,7 @@ export const GET = async function handler(req: NextRequest) {
 
   const url = new URL(req.url);
   const clientId = url.searchParams.get('clientId');
-  console.log('Client ID:', clientId);
+  // console.log('Client ID:', clientId);
   if (!clientId) {
     return new Response('Client ID is required', { status: 400 });
   }
@@ -56,8 +56,8 @@ function notifyClient(clientId: string, message: any) {
 export const POST = async function handler(req: NextRequest) {
   const body = await req.json();
   const { message, clientId } = body;
-  console.log('Message:', message);
-  console.log('Client ID In POST:', clientId);
+  // console.log('Message:', message);
+  // console.log('Client ID In POST:', clientId);
   if (clientId) {
     notifyClient(clientId, { message });
     return NextResponse.json({ message: 'Client notified' }, { status: 200 });

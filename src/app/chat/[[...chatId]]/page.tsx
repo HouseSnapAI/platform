@@ -27,10 +27,11 @@ import { initChat } from '@/utils/vars';
 import { createNewChat, fetchListing, fetchUserInfo, updateChat } from '@/utils/db';
 import ListingPage from '@/components/listing/ListingPage';
 import MapPage from '@/components/map/MapPage';
-import { Modal, Typography } from '@mui/material';
+import { Modal, Tooltip, Typography } from '@mui/material';
 import React from 'react';
-import { IconGraph, IconPaywall } from '@tabler/icons-react';
+import { IconCreditCardRefund, IconGraph } from '@tabler/icons-react';
 import PricingPaymentComponent from '@/components/reports/pricing/PricingPageComponent';
+import { getInitials } from '@/utils/utils';
 
 const ChatPage = () => {
 
@@ -104,7 +105,7 @@ const ChatPage = () => {
         currentListing = "HomePage"
       }
       const storedChatObj = JSON.parse(sessionStorage.getItem(currentListing)!!)
-      if (!storedChatObj || !(storedChatObj.chat.chat_history[1].content == "Tell me more about this listing")) {
+      if (!storedChatObj || !(storedChatObj.chat.chat_history?.[1]?.content == "Tell me more about this listing")) {
         handleClick(true)
       }
     }
@@ -112,7 +113,7 @@ const ChatPage = () => {
 
   const fetchChatHistory = () => {
       let currentListing = sessionStorage.getItem('listing');
-      console.log(currentListing)
+      // console.log(currentListing)
       if(currentListing == null || currentListing == "undefined") {
         currentListing = "HomePage"
       }
@@ -125,7 +126,7 @@ const ChatPage = () => {
         if(currentListing != "HomePage") {
 
           let listObj = JSON.parse(sessionStorage.getItem('listingObj')!!);
-          console.log(listObj)
+          // console.log(listObj)
           
           const init: Message = {
             role: listObj.full_street_line,
@@ -183,7 +184,7 @@ const ChatPage = () => {
 
   // If enter is clicked
   const handleClick = async (newChat: boolean, initVal: string = "Tell me more about this listing") => {
-    console.log("inside handle click", newChat)
+    // console.log("inside handle click", newChat)
     setLoading(true);
     let chatId: string | null = null;
     let currentListing = sessionStorage.getItem('listing');
@@ -192,7 +193,7 @@ const ChatPage = () => {
       currentListing = "HomePage"
     }
 
-    console.log("CURRENT LISTING ", currentListing)
+    // console.log("CURRENT LISTING ", currentListing)
 
     // If New chat
     if (newChat && userInfo) {
@@ -202,7 +203,7 @@ const ChatPage = () => {
       // Normal handle click
     } else if (userInfo) {
       chatId = JSON.parse(sessionStorage.getItem(currentListing)!!).chatId;
-      console.log(chatId)
+      // console.log(chatId)
     }
     if(user && chatId) {
       const storedChatObj = JSON.parse(sessionStorage.getItem(currentListing)!!)
@@ -235,7 +236,7 @@ const ChatPage = () => {
               ...(selectedListing && selectedListing !== 'loading' && { listing: selectedListing })
           })
       })
-      console.log("happening")
+      // console.log("happening")
       const data = await response.json()
 
       const chatObj = {
@@ -247,8 +248,8 @@ const ChatPage = () => {
         user_id: userInfo!!.id
       };
 
-      console.log(chatObj)
-      console.log(userInfo!!.id)
+      // console.log(chatObj)
+      // console.log(userInfo!!.id)
 
       let updatedChat = chatObj;
       if (!newChat) {
@@ -266,7 +267,7 @@ const ChatPage = () => {
 
         let userFilters = null;
         if(userF) { userFilters = JSON.parse(userF); }
-        console.log(userFilters);
+        // console.log(userFilters);
 
         // call filters API
         // Call on updateFilters from listing page function
@@ -327,29 +328,36 @@ useEffect(() => {
   }, [])
 
   const setCurrentListing = (listing: ListingType| 'loading' | null) => {
-    console.log("RUNNING")
+    // console.log("RUNNING")
     if (listing && listing !== 'loading') { 
     sessionStorage.setItem('listing', listing?.id as string);
     sessionStorage.setItem('listingObj', JSON.stringify(listing));
   }
 
-  console.log(sessionStorage.getItem('listing'))
 
-    fetchChatHistory();
+  
+  // console.log(sessionStorage.getItem('listing'))
+  
+  fetchChatHistory();
+  
+  setSelectedListing(listing);
+}
 
-    setSelectedListing(listing);
-  }
+  const handleProfileClick = () => {
+    setDrawerContent({ title: 'Profile', component: 'ProfilePopup', props: userInfo });
+    setDrawerOpen(true);
+  };
 
   const [open, setOpen] = useState<boolean>(false)
 
   return (
     userInfo ? 
     <Box className="flex w-[100vw] h-[100vh] overflow-hidden flex-row bg-black relative">
-      <SideBar 
+      {/* <SideBar 
         setDrawerContent={setDrawerContent}
         setDrawerOpen={setDrawerOpen}
         userInfo={userInfo}
-      />
+      /> */}
 
       <PersistentDrawer 
         open={drawerOpen} 
@@ -368,8 +376,19 @@ useEffect(() => {
         >
             <PricingPaymentComponent userId={userInfo?.id as string} />
         </Modal>
-        <Box className="flex w-full h-[45px] items-center justify-between" sx={{backgroundColor: theme.palette.background.paper}}>
-          <Box className="w-[105px]"></Box>
+        <Box className="flex w-full h-[55px] items-center justify-between" sx={{backgroundColor: theme.palette.background.paper}}>
+          {/* PROFILE BUTTON */}
+          <Box 
+              className="w-[40px] h-[40px] ml-4 rounded-full flex items-center justify-center bg-gradient-to-r outline outline-black from-purple-400 via-pink-500 to-red-500 border border-black hover:outline hover:outline-3 hover:outline-white transition-all duration-300 cursor-pointer relative"
+              onClick={handleProfileClick}
+          >
+      
+            <Tooltip title={userInfo?.name || 'Guest User'} placement="right">            
+                <Typography variant="h6" className="text-white">
+                {getInitials(userInfo?.name || 'Guest User')}
+                </Typography> 
+            </Tooltip>
+          </Box>
           <Typography fontSize={16} className='text-[#c1c1c1]' >HouseSnap<span className="bg-gradient-to-r from-purple-400 via-pink-500 fade-in-on-scroll to-red-500 text-transparent bg-clip-text">AI</span></Typography>
           <Box className="flex gap-2">
             <Box className="mt-[3px] flex justify-center items-center gap-[5px] bg-[#383838] py-[4px] px-3 rounded-sm shadow-lg">
@@ -379,7 +398,7 @@ useEffect(() => {
             </Box>        
             <Box onClick={() => setOpen(true)} className="mt-[3px] flex justify-center items-center gap-[5px] mr-[30px] py-[4px] px-3 rounded-sm shadow-lg cursor-pointer bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 hover:scale-[1.05] hover:shadow-xl transition-all ease-in-out duration-500">
               <Typography fontSize={14} className='text-white' >Buy More</Typography>
-              <IconPaywall className='text-white w-[19px]' />
+              <IconCreditCardRefund stroke={1.5} className='text-white w-[19px]' />
             </Box>
           </Box>
         </Box>

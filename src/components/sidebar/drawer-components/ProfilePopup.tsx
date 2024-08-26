@@ -43,7 +43,7 @@ const ProfilePopup = ({ setSelectedListing, handleClose }: ProfilePopupProps) =>
 
     const theme = useTheme()
 
-    const [savedHouses, setSavedHouses] = useState<Partial<ListingRecordType>[]>([]);
+    const [savedHouses, setSavedHouses] = useState<ListingRecordType[]>([]);
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [savedHousesOpen, setSavedHousesOpen] = useState(false);
     const [housesHistoryOpen, setHousesHistoryOpen] = useState(false);
@@ -62,7 +62,6 @@ const ProfilePopup = ({ setSelectedListing, handleClose }: ProfilePopupProps) =>
         })
 
         await fetchListing({ ids }).then(({ data }) => {
-            console.log("SAVED DATA",data);
             setSavedHouses(data);
         });
     }
@@ -80,20 +79,18 @@ const ProfilePopup = ({ setSelectedListing, handleClose }: ProfilePopupProps) =>
         })
 
         await fetchListing({ ids }).then(({ data }) => {
-            console.log(data);
+            // console.log(data);
             setHousesHistory(data);
         });
     }
 
     const setReportsHandler = async (data: any) => {
-        console.log(data);
         let user_id: string = data?.id;
         if(user_id == undefined || user_id == null) {
             return;
         }
         
         await fetchReportsByUser(user_id).then((res) => {
-            console.log(res);
             if (res == null && data.reports_remaining > 0) {
                 setReports([])
             } else {
@@ -105,7 +102,6 @@ const ProfilePopup = ({ setSelectedListing, handleClose }: ProfilePopupProps) =>
     useEffect(() => {
         const fetchUserInfoData = async (email:string)=>{
             await fetchUserInfo(email).then(async (data) => {
-                console.log(data)
                 setUserInfo(data);
                 await setHistory(data)
                 await setSaved(data)
@@ -194,22 +190,19 @@ const ProfilePopup = ({ setSelectedListing, handleClose }: ProfilePopupProps) =>
                     </Tooltip>
                 </Box>
                 <Box className='flex flex-col'>
-                    <Typography fontSize={12} color='text.secondary'>{userInfo?.name}</Typography>
+                    <Typography fontSize={12} color='text.primary'>{userInfo?.name}</Typography>
                     <Typography fontSize={12} color='text.secondary'> {userInfo?.email}</Typography>
                 </Box>
-                <IconButton href='/api/auth/logout'>
-                    <IconEdit className='text-[#6f6f6f] hover:text-white duration-300 transition-all ease-in-out' />
-                </IconButton>
             {/* Add more user info as needed */}
             </Box>
             <Box mt={1} pl={1} pr={1} pb={1} className='flex w-full gap-2 items-center justify-evenly' sx={{borderBottom: `1px solid ${theme.palette.divider}`}}> 
                 <Button onClick={handleSavedHousesClick} sx={{textTransform: 'none', borderColor: theme.palette.divider }} className='flex flex-col' variant='outlined'>
-                    <Typography fontSize={14} noWrap textAlign={'left'}>{userInfo?.saved?.length||0}</Typography>
-                    <Typography fontSize={10} noWrap className='text-[#6f6f6f]'>Saved Houses</Typography>
+                    <Typography fontSize={14} color='text.primary' noWrap textAlign={'left'}>{userInfo?.saved?.length||0}</Typography>
+                    <Typography fontSize={10} color='text.secondary' noWrap>Saved Houses</Typography>
                 </Button>
                 <Button onClick={handleHousesHistoryClick} sx={{textTransform: 'none', borderColor: theme.palette.divider }} className='flex flex-col' variant='outlined'>
-                    <Typography fontSize={14} noWrap textAlign={'left'}>{userInfo?.clicked?.length||0}</Typography>
-                    <Typography fontSize={10} noWrap className='text-[#6f6f6f]'>Houses History</Typography>
+                    <Typography fontSize={14} color='text.primary' noWrap textAlign={'left'}>{userInfo?.clicked?.length||0}</Typography>
+                    <Typography fontSize={10} color='text.secondary' noWrap>Houses History</Typography>
                 </Button>
             </Box>
             <Box mt={1} pl={1} pr={1} pb={1} className='flex w-full gap-2 items-center justify-evenly' sx={{borderBottom: `1px solid ${theme.palette.divider}`}}> 
@@ -225,7 +218,6 @@ const ProfilePopup = ({ setSelectedListing, handleClose }: ProfilePopupProps) =>
                         paddingTop: 0.5,
                         paddingBottom: 0.5,
                     }}  
-                    color='primary' 
                     fullWidth
                     startIcon={
                         <IconButton
@@ -241,10 +233,10 @@ const ProfilePopup = ({ setSelectedListing, handleClose }: ProfilePopupProps) =>
                         </IconButton>
                     }
                 >
-                    <Typography fontSize={12}>Logout</Typography>
+                    <Typography color='text.primary' fontSize={12}>Logout</Typography>
                 </Button>
             </Box>
-            <Box mt={1} pl={1} pr={1} pb={1} className='flex w-full gap-2 items-center justify-evenly' sx={{borderBottom: `1px solid ${theme.palette.divider}`}}> 
+            {/* <Box mt={1} pl={1} pr={1} pb={1} className='flex w-full gap-2 items-center justify-evenly' sx={{borderBottom: `1px solid ${theme.palette.divider}`}}> 
                 <Button
                     onClick={handleSettingsClick}
                     sx={{ 
@@ -277,8 +269,8 @@ const ProfilePopup = ({ setSelectedListing, handleClose }: ProfilePopupProps) =>
                 >
                     <Typography fontSize={12}>Settings</Typography>
                 </Button>
-            </Box>
-            <Box mt={1} pl={1} pr={1} pb={1} className='flex w-full gap-2 items-center justify-evenly' sx={{borderBottom: `1px solid ${theme.palette.divider}`}}> 
+            </Box> */}
+            {/* <Box mt={1} pl={1} pr={1} pb={1} className='flex w-full gap-2 items-center justify-evenly' sx={{borderBottom: `1px solid ${theme.palette.divider}`}}> 
                 <Button
                     sx={{ 
                         textTransform: 'none',
@@ -305,7 +297,7 @@ const ProfilePopup = ({ setSelectedListing, handleClose }: ProfilePopupProps) =>
                 >
                     <Typography fontSize={12}>Your Plan</Typography>
                 </Button>
-            </Box>
+            </Box> */}
             <Box mt={1} pl={1} pr={1} pb={1} className='flex w-full gap-2 items-center justify-evenly' sx={{borderBottom: `1px solid ${theme.palette.divider}`}}> 
                 {
                     reports == null ? 
@@ -329,7 +321,7 @@ const ProfilePopup = ({ setSelectedListing, handleClose }: ProfilePopupProps) =>
                         }
 
                     >
-                        <Typography fontSize={12}>Reports</Typography>
+                        <Typography color='text.primary' fontSize={12}>Reports</Typography>
                     </Button>
                 :
                     <Button
@@ -341,7 +333,6 @@ const ProfilePopup = ({ setSelectedListing, handleClose }: ProfilePopupProps) =>
                             paddingTop: 0.5,
                             paddingBottom: 0.5,
                         }}  
-                        color='primary' 
                         fullWidth
                         startIcon={
                             <IconButton
@@ -357,7 +348,7 @@ const ProfilePopup = ({ setSelectedListing, handleClose }: ProfilePopupProps) =>
                             </IconButton>
                         }
                     >
-                        <Typography fontSize={12}>Reports</Typography>
+                        <Typography color='text.primary' fontSize={12}>Reports</Typography>
                     </Button> 
                 }
             </Box>

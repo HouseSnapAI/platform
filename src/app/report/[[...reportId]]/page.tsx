@@ -27,14 +27,15 @@ import { useUser } from '@auth0/nextjs-auth0/client';
 import { checkReport, fetchCrimeData, fetchReport, fetchUserInfo } from '@/utils/db';
 
 // ** Icon Imports
-import { IconGraph, IconMap, IconPaywall } from '@tabler/icons-react';
+import { IconCreditCardRefund, IconGraph, IconMap } from '@tabler/icons-react';
 
 // ** Component Imports
 import PricingPaymentComponent from '@/components/reports/pricing/PricingPageComponent';
 import CashFlow from '@/components/reports/sections/CashFlow';
-import Overview from '@/components/reports/sections/Overview';
 import DevelopmentalPage from '@/components/reports/sections/DevelopmentalPage';
 import DemographicPage from '@/components/reports/sections/DemographicPage';
+import HouseScore from '@/components/reports/sections/HouseScore';
+import MarketTrends from '@/components/reports/sections/MarketTrends';
 import SafetyPage from '@/components/reports/sections/SafetyPage';
 
 
@@ -53,7 +54,7 @@ const ChatPage = () => {
   // ** Listing States
   const [listing, setListing] = useState<ListingType | null>(null);
 
-  const { reportId } = useParams();
+  const { reportId: listingId } = useParams();
 
   const theme = useTheme();
 
@@ -66,17 +67,19 @@ const ChatPage = () => {
   const renderTabContent = () => {
     switch (selectedTab) {
       case 0:
-        return <Overview data={data as Report} listing={listing as ListingType} />;
+        return <HouseScore data={data as Report} listing={listing as ListingType} />;
       case 1:
-        return <DevelopmentalPage data={data as Report} listing={listing as ListingType} />;
+        return <MarketTrends data={data as Report} listing={listing as ListingType} />;
       case 2:
-        return <DemographicPage data={data as Report} listing={listing as ListingType} />;
+        return <DevelopmentalPage data={data as Report} listing={listing as ListingType} />;
       case 3:
-        return <CashFlow data={data as Report} listing={listing as ListingType} />;
+        return <DemographicPage data={data as Report} listing={listing as ListingType} />;
       case 4:
+        return <CashFlow data={data as Report} listing={listing as ListingType} />;
+      case 5:
         return <SafetyPage crimeData={crimeData} data={data as Report} listing={listing as ListingType} />
       default:
-        return <Overview data={data as Report} listing={listing as ListingType} />;
+        return <HouseScore data={data as Report} listing={listing as ListingType} />;
     }
   };
 
@@ -103,13 +106,13 @@ const ChatPage = () => {
 
   useEffect(() => {
     const updateReport = async () => {
-      console.log('Checking report validity for reportId:', reportId[0], 'and userId:', userInfo?.id);
-      const valid = await checkReport(reportId[0] as string, userInfo?.id as string);
+      console.log('Checking report validity for reportId:', listingId[0], 'and userId:', userInfo?.id);
+      const valid = await checkReport(listingId[0] as string, userInfo?.id as string);
       console.log('Report validity:', valid);
       setAuthReport(valid);
       if(valid){
-        console.log('Fetching report for reportId:', reportId[0]);
-        const report = await fetchReport(reportId[0] as string);
+        console.log('Fetching report for reportId:', listingId[0]);
+        const report = await fetchReport(listingId[0] as string);
         if (report && report.status == 'complete'){
           console.log('Report fetched successfully:', report);
           setData({...report } as Report);
@@ -128,7 +131,7 @@ const ChatPage = () => {
     if(userInfo?.id){
       updateReport();
     }
-  }, [reportId[0], userInfo?.id]);
+  }, [listingId[0], userInfo?.id]);
 
   useEffect(() => {
     
@@ -145,7 +148,7 @@ const ChatPage = () => {
             setStatus(message.message);
             if (message.message === 'complete') {
                 console.log('Lambda finished message received');
-                const report = await fetchReport(reportId[0] as string);
+                const report = await fetchReport(listingId[0] as string);
                 if (report){
                   console.log('Report fetched successfully:', report);
                   setData({...report, status: 'populated'});
@@ -154,20 +157,17 @@ const ChatPage = () => {
                   setData({status: 'empty'});
                 }
                 eventSource.close();
-                window.location.reload()
             }
           };
 
           eventSource.onerror = () => {
             console.log('EventSource error, closing connection');
             eventSource.close();
-            window.location.reload()
           };
 
           return () => {
             console.log('Closing EventSource');
             eventSource.close();
-            window.location.reload()
           };
         }
     };
@@ -228,7 +228,7 @@ const ChatPage = () => {
         </Modal>
 
         {/* Header */}
-        <Box className="flex w-full h-[42px] items-center justify-between" sx={{backgroundColor: theme.palette.background.paper}}>
+        <Box className="flex w-full h-[55px] items-center justify-between" sx={{backgroundColor: theme.palette.background.paper}}>
           <Box className="w-[305px]"></Box>
           <Typography fontSize={16} className='text-[#c1c1c1]' >HouseSnap<span className="bg-gradient-to-r from-purple-400 via-pink-500 fade-in-on-scroll to-red-500 text-transparent bg-clip-text">AI</span></Typography>
           <Box className="flex gap-2 items-center">
@@ -243,8 +243,8 @@ const ChatPage = () => {
               <IconGraph className='text-[#c1c1c1] w-[19px]' />
             </Box>        
             <Box onClick={() => setOpen(true)} className="mt-[3px] flex justify-center items-center gap-[5px] mr-[30px] py-[4px] px-3 rounded-sm shadow-lg cursor-pointer bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 hover:scale-[1.05] hover:shadow-xl transition-all ease-in-out duration-500">
-              <Typography fontSize={14} className='text-[#c1c1c1]' >Buy More</Typography>
-              <IconPaywall className='text-[#c1c1c1] w-[19px]' />
+              <Typography fontSize={14} color='white' >Buy More</Typography>
+              <IconCreditCardRefund stroke={1.5} color={theme.palette.text.primary} className='w-[19px]' />
             </Box>
           </Box>
         </Box>
@@ -255,11 +255,30 @@ const ChatPage = () => {
                       bgcolor: "#c243d8",
                     }
                   }}  value={selectedTab} color="secondary" onChange={handleTabChange} sx={{ backgroundColor: theme.palette.background.paper, textTransform: 'none'  }}>
-          <Tab label="Overview" color='secondary' sx={{ textTransform: 'none' }} />
-          <Tab label="Developmental" sx={{ textTransform: 'none' }} />
-          <Tab label="Demographic" sx={{ textTransform: 'none' }} />
-          <Tab label="Cash Flow" sx={{ textTransform: 'none' }} />
-          <Tab label="Safety" sx={{ textTransform: 'none' }} />
+          <Tab label="Overview" color='secondary' sx={{
+                      textTransform: 'none', 
+                      '&.Mui-selected': { color: theme.palette.text.primary }
+                    }}  />
+          <Tab label="Market Trends" sx={{
+                      textTransform: 'none', 
+                      '&.Mui-selected': { color: theme.palette.text.primary }
+                    }}  />
+          <Tab label="Developmental" sx={{
+                      textTransform: 'none', 
+                      '&.Mui-selected': { color: theme.palette.text.primary }
+                    }}  />
+          <Tab label="Demographic" sx={{
+                      textTransform: 'none', 
+                      '&.Mui-selected': { color: theme.palette.text.primary }
+                    }}  />
+          <Tab label="Cash Flow" sx={{
+                      textTransform: 'none', 
+                      '&.Mui-selected': { color: theme.palette.text.primary }
+                    }}  />
+          <Tab label="Safety" sx={{
+                      textTransform: 'none', 
+                      '&.Mui-selected': { color: theme.palette.text.primary }
+                    }}  />          
         </Tabs>
 
         {/* Main Body */}

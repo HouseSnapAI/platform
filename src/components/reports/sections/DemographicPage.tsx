@@ -94,12 +94,10 @@ const DemographicPage = ({data, listing}: Props) => {
         return columns.length % 2 !== 0 ? columns[mid].Description : `${columns[mid - 1].Description} - ${columns[mid].Description}`;
     };
 
-    console.log("Census Data", censusData)
+    // console.log("Census Data", censusData)
 
     return (
         <Box className='overflow-auto'>
-            <Typography variant='h4'>Demographic</Typography>
-            <Typography variant='h6'>data.year</Typography>
             <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
                     <Card className='relative'>

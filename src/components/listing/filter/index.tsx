@@ -8,7 +8,7 @@ import Chip from '@mui/material/Chip'
 import Popover from '@mui/material/Popover'
 
 // ** Icons Imports
-import { IconChevronDown } from '@tabler/icons-react'
+import { IconBath, IconBed, IconChevronDown, IconCurrencyDollar, IconHomeCog, IconMapPin, IconRuler, IconTextSize } from '@tabler/icons-react'
 
 // ** Style Imports
 import { useTheme } from '@mui/material/styles'
@@ -69,8 +69,8 @@ const Filter = ({userInfo, setUserInfo, setIds, setIsLoading, callFunction}:{use
                 return JSON.stringify(userInfo[key as keyof User]) !== JSON.stringify(value);
             });
 
-            console.log(hasChanges)
-            console.log(userPreferences)
+            // console.log(hasChanges)
+            // console.log(userPreferences)
 
             if (hasChanges) {
                 try {
@@ -100,7 +100,7 @@ const Filter = ({userInfo, setUserInfo, setIds, setIsLoading, callFunction}:{use
 
                         
                         if (data.status !== 200) {
-                            console.log("WORKING")
+                            // console.log("WORKING")
                             setIds([])
                         } else {
                             const responseData = await data.json()
@@ -139,7 +139,7 @@ const Filter = ({userInfo, setUserInfo, setIds, setIsLoading, callFunction}:{use
             const getUserFilters = sessionStorage.getItem('userFilters');
             if (getUserFilters) {
                 const userPreferences: Partial<User> = JSON.parse(getUserFilters);
-                console.log(userPreferences)
+                // console.log(userPreferences)
                 setBeds(userPreferences.beds || 0)
                 setBaths(userPreferences.baths || 0)
                 setBudget([userPreferences.min_budget || 0, userPreferences.max_budget || 5000000])
@@ -153,76 +153,76 @@ const Filter = ({userInfo, setUserInfo, setIds, setIsLoading, callFunction}:{use
     }, [callFunction])
 
     return (
-        <Box className="h-[40px] w-full rounded-lg px-4 flex items-center justify-center gap-2 bg-black mb-2 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
+        <Box className="h-[40px] rounded-lg px-4 flex items-center justify-center gap-2 mb-2 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
                 <Button
                     onClick={(e) => handleClick(e, 'propertyType')}
                     className="flex flex-row items-center justify-center hover:text-white whitespace-nowrap"
-                    sx={{textTransform: 'none', fontSize: '10px', color: theme.palette.text.secondary, minWidth: 'auto', padding: '4px 8px'}}
+                    sx={{textTransform: 'none', fontSize: '10px', color: theme.palette.text.secondary, minWidth: 'auto', padding: '4px 8px', borderColor: theme.palette.text.secondary, borderWidth: '0.5px'}}
                     variant="outlined"
-                    endIcon={<IconChevronDown size={12} />}
-                    size="small"
+                    endIcon={<IconChevronDown size={14} color={theme.palette.text.primary} />}
+                    size="medium"
                 >
-                    <Typography fontSize={10} noWrap>Property Type</Typography>
+                    <IconHomeCog size={22} stroke={1} className="hover:text-white" />
                 </Button>
                 <Button
                     onClick={(e) => handleClick(e, 'budget')}
                     className="flex flex-row items-center justify-center hover:text-white whitespace-nowrap"
-                    sx={{textTransform: 'none', fontSize: '10px', color: theme.palette.text.secondary, minWidth: 'auto', padding: '4px 8px'}}
+                    sx={{textTransform: 'none', fontSize: '10px', color: theme.palette.text.secondary, minWidth: 'auto', padding: '4px 8px', borderColor: theme.palette.text.secondary, borderWidth: '0.5px'}}
                     variant="outlined"
-                    endIcon={<IconChevronDown size={12} />}
-                    size="small"
+                    endIcon={<IconChevronDown size={14} color={theme.palette.text.primary} />}
+                    size="medium"
                 >
-                    <Typography fontSize={10} noWrap>Price</Typography>
+                    <IconCurrencyDollar size={22} stroke={1} className="hover:text-white" />
                 </Button>
                 <Button
                     onClick={(e) => handleClick(e, 'beds')}
                     className="flex flex-row items-center justify-center hover:text-white whitespace-nowrap"
-                    sx={{textTransform: 'none', fontSize: '10px', color: theme.palette.text.secondary, minWidth: 'auto', padding: '4px 8px'}}
+                    sx={{textTransform: 'none', fontSize: '10px', color: theme.palette.text.secondary, minWidth: 'auto', padding: '4px 8px', borderColor: theme.palette.text.secondary, borderWidth: '0.5px'}}
                     variant="outlined"
-                    endIcon={<IconChevronDown size={12} />}
-                    size="small"
+                    endIcon={<IconChevronDown size={14} color={theme.palette.text.primary} />}
+                    size="medium"
                 >
-                    <Typography fontSize={10} noWrap>Beds</Typography>
+                    <IconBed size={22} stroke={1} className="hover:text-white" />
                 </Button>
                 <Button
                     onClick={(e) => handleClick(e, 'baths')}
-                    className={"flex flex-row items-center justify-center hover:text-white whitespace-nowrap " + (popupActive === 'baths' ? 'bg-white text-black' : '')}
-                    sx={{textTransform: 'none', fontSize: '10px', color: theme.palette.text.secondary, minWidth: 'auto', padding: '4px 8px'}}
+                    className={"flex flex-row items-center justify-center hover:text-white whitespace-nowrap "}
+                    sx={{textTransform: 'none', fontSize: '10px', color: theme.palette.text.secondary, minWidth: 'auto', padding: '4px 8px', borderColor: theme.palette.text.secondary, borderWidth: '0.5px'}}
                     variant="outlined"
-                    endIcon={<IconChevronDown size={12} />}
-                    size="small"
+                    endIcon={<IconChevronDown size={14} color={theme.palette.text.primary} />}
+                    size="medium"
                 >
-                    <Typography fontSize={10} noWrap>Baths</Typography>
+                    <IconBath size={22} stroke={1} className="hover:text-white" />
                 </Button>
                 <Button
                     onClick={(e) => handleClick(e, 'location')}
                     className="flex flex-row items-center justify-center hover:text-white whitespace-nowrap"
-                    sx={{textTransform: 'none', fontSize: '10px', color: theme.palette.text.secondary, minWidth: 'auto', padding: '4px 8px'}}
+                    sx={{textTransform: 'none', fontSize: '10px', color: theme.palette.text.secondary, minWidth: 'auto', padding: '4px 8px', borderColor: theme.palette.text.secondary, borderWidth: '0.5px'}}
                     variant="outlined"
-                    endIcon={<IconChevronDown size={12} />}
-                    size="small"
+                    endIcon={<IconChevronDown size={14} color={theme.palette.text.primary} />}
+                    size="medium"
                 >
-                    <Typography fontSize={10} noWrap>Location</Typography>
+                    <IconMapPin size={22} stroke={1} className="hover:text-white" />
                 </Button>
                 <Button
                     onClick={(e) => handleClick(e, 'houseSize')}
                     className="flex flex-row items-center justify-center hover:text-white whitespace-nowrap"
-                    sx={{textTransform: 'none', fontSize: '10px', color: theme.palette.text.secondary, minWidth: 'auto', padding: '4px 8px'}}
+                    sx={{textTransform: 'none', fontSize: '10px', color: theme.palette.text.secondary, minWidth: 'auto', padding: '4px 8px', borderColor: theme.palette.text.secondary, borderWidth: '0.5px'}}
                     variant="outlined"
-                    endIcon={<IconChevronDown size={12} />}
-                    size="small"
+                    endIcon={<IconChevronDown size={14} color={theme.palette.text.primary} />}
+                    size="medium"
                 >
-                    <Typography fontSize={10} noWrap>House Size</Typography>
+                    <IconRuler size={22} stroke={1} className="hover:text-white" />
                 </Button>
                 <Button
                     onClick={(e) => handleClick(e, 'houseDescription')}
                     className="flex flex-row items-center justify-center hover:text-white whitespace-nowrap"
-                    sx={{textTransform: 'none', fontSize: '10px', color: theme.palette.text.secondary, minWidth: 'auto', padding: '4px 8px'}}
+                    sx={{textTransform: 'none', fontSize: '10px', color: theme.palette.text.secondary, minWidth: 'auto', padding: '4px 8px', borderColor: theme.palette.text.secondary, borderWidth: '0.5px'}}
                     variant="outlined"
-                    endIcon={<IconChevronDown size={12} />}
-                    size="small"
+                    endIcon={<IconChevronDown size={14} color={theme.palette.text.primary} />}
+                    size="medium"
                 >
-                    <Typography fontSize={10} noWrap>Description</Typography>
+                    <IconTextSize size={22} stroke={1} className="hover:text-white" />
                 </Button>
 
             <FilterPopup
