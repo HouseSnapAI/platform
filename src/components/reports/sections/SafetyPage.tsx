@@ -528,7 +528,7 @@ const SafetyPage = ({crimeData, data, listing}: Props) => {
                         </Box>
                         <Typography className='text-[#949494] text-[15px]'>Weapon(s)</Typography>
                     </Box>
-                BN</Box>
+                </Box>
 
                 <Box className='mt-[20px] flex items-start justify-center w-[100%] flex-col gap-[10px]'>
                     <Typography className='text-[#ababab] text-[16px]'>Age Data</Typography>
