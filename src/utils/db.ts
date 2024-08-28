@@ -332,3 +332,23 @@ export const fetchCrimeData = async(crime_data_ids: number[]) => {
     return null
   }
 }
+
+export const fetchEnvData = async(listing_id: string) => {
+  const response = await fetch(`/api/report/environmental-data`, {
+    method: 'POST',
+    body: JSON.stringify({ listing_id: listing_id }),
+  });
+
+  if (response.status === 200) {
+    const data = await response.json()
+    // console.log("DATAINDB", data)
+    if (data) {
+      // console.log(data)
+      return data;
+    } else {
+      return null;
+    }
+  } else {
+    return null
+  }
+}
