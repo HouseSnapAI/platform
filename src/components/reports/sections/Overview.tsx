@@ -24,6 +24,11 @@ import DemographicsAccordion from './overview-components/DemographicsAccordion';
 import CrimeDataAccordion from './overview-components/CrimeDataAccordion';
 import AgentCard from './overview-components/AgentCard';
 
+// ** Chart.js Imports
+import { Chart, CategoryScale, LinearScale, PointElement, LineController, LineElement, ArcElement, Tooltip, Legend, BarElement } from 'chart.js';
+
+// Register the "category" scale
+Chart.register(CategoryScale, LinearScale, PointElement, LineController, LineElement, ArcElement, Tooltip, Legend, BarElement);
 
 
 

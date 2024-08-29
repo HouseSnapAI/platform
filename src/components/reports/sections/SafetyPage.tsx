@@ -11,7 +11,7 @@ import CardContent from '@mui/material/CardContent';
 // ** Chart Imports
 import { Bar, Line, Doughnut } from 'react-chartjs-2';
 import { ChartOptions } from 'chart.js';
-import { Chart as ChartJS, ArcElement, Tooltip as ChartTooltip, Legend, PointElement, LineController, LineElement } from 'chart.js';
+import { Chart as ChartJS, ArcElement, Tooltip as ChartTooltip, Legend, PointElement, LineController, LineElement, CategoryScale, LinearScale } from 'chart.js';
 
 // ** Types
 import { ListingType, Report, CensusData, CrimeDataType, EnvDataType } from '@/utils/types';
@@ -30,7 +30,7 @@ type Props = {
     listing: ListingType;
 }
 
-ChartJS.register(ArcElement, ChartTooltip, Legend, PointElement, LineController, LineElement);
+ChartJS.register(ArcElement, ChartTooltip, Legend, PointElement, LineController, LineElement, CategoryScale, LinearScale);
 
 const SafetyPage = ({envData, crimeData, data, listing}: Props) => {
 
