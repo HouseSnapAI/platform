@@ -23,6 +23,7 @@ import SchoolScoresAccordion from './overview-components/SchoolScoresAccordion';
 import DemographicsAccordion from './overview-components/DemographicsAccordion';
 import CrimeDataAccordion from './overview-components/CrimeDataAccordion';
 import AgentCard from './overview-components/AgentCard';
+import DisclosureAccordion from './overview-components/DisclosureAccordion';
 
 // ** Chart.js Imports
 import { Chart, CategoryScale, LinearScale, PointElement, LineController, LineElement, ArcElement, Tooltip, Legend, BarElement } from 'chart.js';
@@ -46,6 +47,14 @@ const Overview = ({ data, listing, crimeData, envData }: OverviewProps) => {
   const censusData: CensusData = JSON.parse(data.census_data);
 
   const theme = useTheme();
+
+  const disclosureData = [
+    { type: 'pests', message: 'No pests reported', status: 'medium' },
+    { type: 'hvac', message: 'HVAC system last serviced in 2021', status: 'good' },
+    { type: 'roofing', message: 'Roof replaced in 2018', status: 'good' },
+    { type: 'flooding', message: 'No history of flooding', status: 'high' },
+    { type: 'other', message: 'Minor cracks in the foundation', status: 'minor' }
+  ];
  
   return (
     <Box className="flex w-full items-center justify-evenly" sx={{ height: '80vh', overflow: 'hidden' }}>
@@ -69,7 +78,7 @@ const Overview = ({ data, listing, crimeData, envData }: OverviewProps) => {
           <CrimeDataAccordion crimeData={crimeData} crimeScore={data.crime_score} />
 
           {/* Disclosure Packet */}
-          <></>
+          <DisclosureAccordion disclosureData={disclosureData} />
         </Box>
       </Box>
 
