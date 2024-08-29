@@ -319,7 +319,7 @@ export const fetchReportsByUser = async(user_id: string) => {
 
 
 export const fetchCrimeData = async(crime_data_ids: number[]) => {
-  const response = await fetch(`/api/report/crime-data`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/report/crime-data`, {
     method: 'POST',
     body: JSON.stringify({ crime_data_ids: crime_data_ids }),
   });
@@ -339,7 +339,7 @@ export const fetchCrimeData = async(crime_data_ids: number[]) => {
 }
 
 export const fetchEnvData = async(listing_id: string) => {
-  const response = await fetch(`/api/report/environmental-data`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/report/environmental-data`, {
     method: 'POST',
     body: JSON.stringify({ listing_id: listing_id }),
   });
