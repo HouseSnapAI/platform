@@ -58,7 +58,7 @@ const EnvCard = ({envData, title}: Props) => {
 
     return (
         <Box className="">
-            <Accordion square='false' sx={{backgroundColor: "#181818", width: "40vw", borderRadius: "10px", paddingTop: "10px", paddingBottom: "10px"}}>
+            <Accordion square={true} sx={{backgroundColor: "#181818", width: "40vw", borderRadius: "10px", paddingTop: "10px", paddingBottom: "10px"}}>
                 <AccordionSummary
                 expandIcon={<ExpandMoreIcon sx={{color: "#787878"}}/>}
                 aria-controls="panel1-content"
