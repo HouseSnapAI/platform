@@ -39,7 +39,7 @@ import MarketTrends from '@/components/reports/sections/MarketTrends';
 import SafetyPage from '@/components/reports/sections/SafetyPage';
 
 
-const ChatPage = () => {
+const ReportPage = () => {
 
   // ** User States
   const {user} = useUser();
@@ -313,4 +313,4 @@ const ChatPage = () => {
   )
 }
 
-export default ChatPage;
+export default ReportPage;
