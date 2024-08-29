@@ -12,7 +12,7 @@ const schema = z.object({
 
 const BATCH_SIZE = 50; // Adjust the batch size as needed
 
-export const POST = withApiAuthRequired(async function handler(
+export const POST = async function handler(
   req: NextRequest
 ) {
   if (req.method !== 'POST') {
@@ -50,4 +50,5 @@ export const POST = withApiAuthRequired(async function handler(
     console.error('Error processing request:', error);
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
   }
-});
+}
+// withApiAuthRequired();
