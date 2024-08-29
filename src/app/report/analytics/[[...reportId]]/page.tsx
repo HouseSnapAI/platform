@@ -330,40 +330,68 @@ const ReportAnalytics = () => {
     </TableBody>
   );
 
+  const dummySummary = {
+    views: 123,
+    avgTimeSpent: '12.5 seconds',
+    popularSection: 'Property Photos',
+    frequentLocation: 'New York, NY'
+  };
+
   return (
-    <Box className="w-[100vw] h-[100vh] bg-black px-2 ">
-        <Card>
-            <CardHeader title="Analytics" />
-
-            <CardContent className="overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
-
-                <Tabs value={selectedTab} onChange={handleTabChange} aria-label="analytics tabs">
-                    <Tab label="Action Analytics" color='secondary' sx={{
-                      textTransform: 'none', 
-                      '&.Mui-selected': { color: theme.palette.text.primary }
-                    }} />
-                    <Tab label="Section Analytics" color='secondary' sx={{
-                      textTransform: 'none', 
-                      '&.Mui-selected': { color: theme.palette.text.primary }
-                    }} />
-                </Tabs>
-                <Table className=' border border-[#6f6f6f] rounded-md ' sx={{'& .MuiTableCell-root': {
-                    borderBottom: theme.palette.divider 
-                }}}>
-                    {selectedTab === 0 ? renderTableHead(actionAnalyticsConfig) : renderTableHead(sectionAnalyticsConfig)}
-                </Table>
-                <Box sx={{maxHeight: '60vh', overflow: 'auto', '&::-webkit-scrollbar': { width: '8px' }, '&::-webkit-scrollbar-track': { background: 'black' } }}>
-                    <Table className=' border border-[#6f6f6f] rounded-md ' sx={{'& .MuiTableCell-root': {
-                        borderBottom: theme.palette.divider 
-                    }}}>
-                        {selectedTab === 0 ? renderActionTableBody(dummyAnalytics) : renderSectionTableBody(sectionAnalytics)}
-                    </Table>
-                </Box>
-                {/* name, email, location, action, time */}
-                {/* name, email, location, section, duration */}
-
-            </CardContent>
+    <Box className="w-[100vw] h-[100vh] bg-black p-2 overflow-y-auto">
+      <Box display="flex" justifyContent="space-between" mb={2}>
+        <Card sx={{ flex: 1, mx: 1 }}>
+          <CardContent>
+            <Typography fontSize={14} color='text.secondary'>Views</Typography>
+            <Typography fontSize={16} color='text.primary'>{dummySummary.views}</Typography>
+          </CardContent>
         </Card>
+        <Card sx={{ flex: 1, mx: 1 }}>
+          <CardContent>
+            <Typography fontSize={14} color='text.secondary'>Avg Time Spent</Typography>
+            <Typography fontSize={16} color='text.primary'>{dummySummary.avgTimeSpent}</Typography>
+          </CardContent>
+        </Card>
+        <Card sx={{ flex: 1, mx: 1 }}>
+          <CardContent>
+            <Typography fontSize={14} color='text.secondary'>Popular Section</Typography>
+            <Typography fontSize={16} color='text.primary'>{dummySummary.popularSection}</Typography>
+          </CardContent>
+        </Card>
+        <Card sx={{ flex: 1, mx: 1 }}>
+          <CardContent>
+            <Typography fontSize={14} color='text.secondary'>Frequent Location</Typography>
+            <Typography fontSize={16} color='text.primary'>{dummySummary.frequentLocation}</Typography>
+          </CardContent>
+        </Card>
+      </Box>
+      <Card>
+        <CardHeader title="Analytics" />
+        <CardContent className="overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
+          <Tabs value={selectedTab} onChange={handleTabChange} aria-label="analytics tabs">
+            <Tab label="Action Analytics" color='secondary' sx={{
+              textTransform: 'none', 
+              '&.Mui-selected': { color: theme.palette.text.primary }
+            }} />
+            <Tab label="Section Analytics" color='secondary' sx={{
+              textTransform: 'none', 
+              '&.Mui-selected': { color: theme.palette.text.primary }
+            }} />
+          </Tabs>
+          <Table className=' border border-[#6f6f6f] rounded-md ' sx={{'& .MuiTableCell-root': {
+              borderBottom: theme.palette.divider 
+          }}}>
+              {selectedTab === 0 ? renderTableHead(actionAnalyticsConfig) : renderTableHead(sectionAnalyticsConfig)}
+          </Table>
+          <Box sx={{maxHeight: '60vh', overflow: 'auto', '&::-webkit-scrollbar': { width: '8px' }, '&::-webkit-scrollbar-track': { background: 'black' } }}>
+              <Table className=' border border-[#6f6f6f] rounded-md ' sx={{'& .MuiTableCell-root': {
+                  borderBottom: theme.palette.divider 
+              }}}>
+                  {selectedTab === 0 ? renderActionTableBody(dummyAnalytics) : renderSectionTableBody(sectionAnalytics)}
+              </Table>
+          </Box>
+        </CardContent>
+      </Card>
     </Box>
   )
 }
