@@ -1,5 +1,5 @@
 // ** Next Imports
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box';
@@ -14,15 +14,17 @@ import { ChartOptions } from 'chart.js';
 import { Chart as ChartJS, ArcElement, Tooltip as ChartTooltip, Legend, PointElement, LineController, LineElement } from 'chart.js';
 
 // ** Types
-import { ListingType, Report, CensusData, CrimeDataType } from '@/utils/types';
+import { ListingType, Report, CensusData, CrimeDataType, EnvDataType } from '@/utils/types';
 import Tooltip from '@mui/material/Tooltip';
 import { IconInfoCircle } from '@tabler/icons-react';
 
 // ** Style
 import { useTheme } from '@mui/material/styles';
+import EnvCard from './EnvComponents/EnvCard';
 
 
 type Props = {
+    envData: any | undefined;
     crimeData: CrimeDataType | undefined;
     data: Report;
     listing: ListingType;
@@ -30,7 +32,7 @@ type Props = {
 
 ChartJS.register(ArcElement, ChartTooltip, Legend, PointElement, LineController, LineElement);
 
-const SafetyPage = ({crimeData, data, listing}: Props) => {
+const SafetyPage = ({envData, crimeData, data, listing}: Props) => {
 
     const theme = useTheme();
     const randomNum = () => Math.floor(Math.random() * (235 - 52 + 1) + 52);
@@ -419,8 +421,9 @@ const SafetyPage = ({crimeData, data, listing}: Props) => {
     datasets: [
         {
         data: values,
-        backgroundColor: ['#0a99ff', '#f2be55', '#4ccf7a', '#9e6fd1', "#f76ac8", "#f27c83"],
-        borderColor: "#121212"
+        backgroundColor: ['#1472b5', '#dba63b', '#32ad5e', '#7646ab', "#bf3b93", "#c7464d"],
+        borderColor: ['#0a99ff', '#f2be55', '#4ccf7a', '#9e6fd1', "#f76ac8", "#f27c83"],
+        borderWidth: 1.5,
         },
     ],
     })
@@ -485,11 +488,54 @@ const SafetyPage = ({crimeData, data, listing}: Props) => {
         
       };
 
+    const [envDataProcessed, setEnvDataProcessed] = useState<any>({});
+    const [county, setCounty] = useState<String>("");
+    const [envScore, setEnvScore] = useState<number>();
+    const [overallRisk, setOverallRisk] = useState<any>({});
+
     useEffect(() => {
-        console.log(data);
-        console.log(crimeData);
-        // get all crime data id's and consolidate information based on the keys
+        if(envData != undefined) {
+            console.log(envData);
+        
+            let temp: any = {};
+            let riskVals: any = {}
+            Object.keys(envData).map((key) => {
+                if (key == "county") {
+                    setCounty(envData[key]);
+                } else if (key == "overall_score") {
+                    setEnvScore(envData[key]);
+                } else {
+                    let split = key.split("_");
+                    let title = split[0];
+                    if(title == "risk") {
+                        console.log(split)
+                        riskVals[split[1]] = envData[key];
+                    } else {
+                        split.shift();
+                        let subType = split[split.length - 1]
+                        split.pop();
+
+                        if (!(title in temp)) {
+                            temp[title] = {}
+                        }
+
+                        let subTitle = split.join("_")
+
+                        if (!(subTitle in temp[title])) {
+                            temp[title][subTitle] = {}
+                        }
+
+                        temp[title][subTitle][subType] = envData[key];
+                    }
+                }
+            })
+            
+            setOverallRisk(riskVals);
+            setEnvDataProcessed(temp);
+        }
+        
     }, [data]);
+
 
     return (
         <Box className='flex px-[10px] w-[100vw] justify-center gap-[10px]'>
@@ -614,8 +660,29 @@ const SafetyPage = ({crimeData, data, listing}: Props) => {
                 </Box>
                 
             </Box>
-            <Box className='flex flex-col bg-[#121212] w-[47%] rounded-md py-[20px] px-[20px]'>
-                <Typography className='text-[#e4e4e4] text-[22px]'>Environmental Score: {0}</Typography>
+            <Box className='flex flex-col bg-[#121212] w-[47%] rounded-md py-[20px] px-[20px] items-start overflow-auto pb-[100px]'>
+                <Box className="flex justify-between items-center w-full">
+                    <Typography className='text-[#e4e4e4] text-[22px]'>Environmental Score: {envScore}</Typography>
+
+                    <Box className='flex justify-center items-center bg-[#313131] rounded-sm px-[10px] py-[2px]'>
+                        <Typography className='text-[#ababab] text-[15px]'>County: {county}</Typography>
+                    </Box>
+                </Box>
+
+                <Box className="flex justify-center items-center gap-[10px] mt-[30px] mb-[50px]">
+                    <Typography className='text-[#ababab] text-[18px]'>Overall Risk - {overallRisk.rating}</Typography>
+                    <Typography className={`text-[#ababab] text-[18px] ml-[10px] ${overallRisk.score >= 70 ? 'text-[#db5a57]' : overallRisk.score >= 30 ? 'text-[#dfa137]' : 'text-[#349142]'}`}>{overallRisk.score != undefined && overallRisk.score.toFixed(2)}/100</Typography>
+                </Box>
+
+                <Box className="w-full  flex flex-col items-center gap-[30px]">
+                    {
+                        Object.keys(envDataProcessed).map((key: any, index: number) => {
+                            return (
+                                <EnvCard title={key} envData={envDataProcessed[key]} key={index}/>
+                            )
+                        })
+                    }
+                </Box>
             </Box>
         </Box>
     )

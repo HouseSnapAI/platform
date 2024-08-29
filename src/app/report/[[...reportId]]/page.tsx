@@ -15,7 +15,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 
 // ** Type Imports
-import { User, Report, ListingType, CrimeDataType } from '@/utils/types';
+import { User, Report, ListingType, CrimeDataType, EnvDataType } from '@/utils/types';
 
 // ** Style Imports
 import { useTheme } from '@mui/material/styles';
@@ -24,7 +24,7 @@ import { useTheme } from '@mui/material/styles';
 import { useUser } from '@auth0/nextjs-auth0/client';
 
 // ** Util Imports
-import { checkReport, fetchCrimeData, fetchReport, fetchUserInfo } from '@/utils/db';
+import { checkReport, fetchCrimeData, fetchEnvData, fetchReport, fetchUserInfo } from '@/utils/db';
 
 // ** Icon Imports
 import { IconCreditCardRefund, IconGraph, IconMap } from '@tabler/icons-react';
@@ -50,6 +50,7 @@ const ChatPage = () => {
   const [status, setStatus] = useState('empty');
   const [authReport, setAuthReport] = useState(false);
   const [crimeData, setCrimeData] = useState<CrimeDataType>();
+  const [envData, setEnvData] = useState<EnvDataType>();
 
   // ** Listing States
   const [listing, setListing] = useState<ListingType | null>(null);
@@ -77,7 +78,7 @@ const ChatPage = () => {
       case 4:
         return <CashFlow data={data as Report} listing={listing as ListingType} />;
       case 5:
-        return <SafetyPage crimeData={crimeData} data={data as Report} listing={listing as ListingType} />
+        return <SafetyPage envData={envData} crimeData={crimeData} data={data as Report} listing={listing as ListingType} />
       default:
         return <Overview data={data as Report} listing={listing as ListingType} />;
     }
@@ -209,6 +210,22 @@ const ChatPage = () => {
     }
 
     getCrimeData();
+
+    const getEnvData = async() => {
+      if (data.status == "complete") {
+        console.log(data, "BRBRBRBR")
+        const listing_id = data.listing_id
+
+        if (listing_id != undefined) {
+          await fetchEnvData(listing_id).then(envData => {
+            console.log("ENV DATA:", envData);
+            setEnvData(envData);
+          });
+        }
+      }
+    }
+
+    getEnvData();
   }, [data])
 
   const [open, setOpen] = useState<boolean>(false)
