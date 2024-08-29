@@ -43,13 +43,13 @@ const EnvCard = ({envData, title}: Props) => {
         console.log(score)
         if (score == 0) {
             return "#828282"
-        } else if (score >= 80) {
+        } else if (score <= 20) {
             return "#349142"
-        } else if (score >= 60) {
+        } else if (score <= 40) {
             return "#77b526"
-        } else if (score >= 40) {
+        } else if (score <= 60) {
             return "#e3d254"
-        } else if (score >= 20) {
+        } else if (score <= 80) {
             return "#c77c1a"
         } else {
             return "#de413e"
