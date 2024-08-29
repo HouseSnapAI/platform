@@ -10,7 +10,7 @@ const schema = z.object({
   id: z.string().regex(uuidRegex, 'Invalid UUID format'),
 });
 
-export const POST = withApiAuthRequired(async function handler(
+export const POST = async function handler(
   req: NextRequest
 ) {
   if (req.method !== 'POST') {
@@ -47,4 +47,5 @@ export const POST = withApiAuthRequired(async function handler(
     console.error('Error processing request:', error);
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
   }
-});
+}
+// withApiAuthRequired();

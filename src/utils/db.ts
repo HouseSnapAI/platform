@@ -229,7 +229,7 @@ type FetchListingType = {
 
 export const fetchListing = async ({ ids }: FetchListingType) => {
   try {
-    const response = await fetch('/api/listing/fetch', {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/listing/fetch`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -243,6 +243,7 @@ export const fetchListing = async ({ ids }: FetchListingType) => {
       return { status: 200, data };
     } else {
       console.error('Error fetching listing');
+      console.log(ids)
       return { status: response.status, message: data.message || 'Error fetching listing' };
     }
   } catch (error) {
@@ -279,19 +280,23 @@ export const checkReportByListing = async (listingId: string, userId: string) =>
   }
 }
 
-export const fetchReport = async(listing_id:string) => {
-  const response = await fetch(`/api/report/fetch`, {
+export const fetchReport = async (listing_id: string) => {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  console.log("LISINTGID", listing_id)
+  const response = await fetch(`${baseUrl}/api/report/fetch`, {
     method: 'POST',
-    body: JSON.stringify({ listing_id: listing_id }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ listing_id }),
   });
 
-  if (response.status === 200) {
-    const data = await response.json()
-      return data
-  } else {
-    return {status: 'empty'}
+  if (!response.ok) {
+    throw new Error('Failed to fetch report');
   }
-}
+
+  return response.json();
+};
 
 export const fetchReportsByUser = async(user_id: string) => {
   const response = await fetch(`/api/report/fetch/by-user`, {
