@@ -34,7 +34,7 @@ import PricingPaymentComponent from '@/components/reports/pricing/PricingPageCom
 import CashFlow from '@/components/reports/sections/CashFlow';
 import DevelopmentalPage from '@/components/reports/sections/DevelopmentalPage';
 import DemographicPage from '@/components/reports/sections/DemographicPage';
-import HouseScore from '@/components/reports/sections/HouseScore';
+import Overview from '@/components/reports/sections/Overview';
 import MarketTrends from '@/components/reports/sections/MarketTrends';
 import SafetyPage from '@/components/reports/sections/SafetyPage';
 
@@ -68,7 +68,7 @@ const ChatPage = () => {
   const renderTabContent = () => {
     switch (selectedTab) {
       case 0:
-        return <HouseScore data={data as Report} listing={listing as ListingType} />;
+        return <Overview data={data as Report} listing={listing as ListingType} />;
       case 1:
         return <MarketTrends data={data as Report} listing={listing as ListingType} />;
       case 2:
@@ -80,7 +80,7 @@ const ChatPage = () => {
       case 5:
         return <SafetyPage envData={envData} crimeData={crimeData} data={data as Report} listing={listing as ListingType} />
       default:
-        return <HouseScore data={data as Report} listing={listing as ListingType} />;
+        return <Overview data={data as Report} listing={listing as ListingType} />;
     }
   };
 
