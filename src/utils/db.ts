@@ -1,5 +1,5 @@
 import { report } from "process";
-import {Chat, ListingType, User } from "./types";
+import {ActionAnalyticObject, Chat, ListingType, SectionAnalyticObject, User } from "./types";
 import { HumanMessage } from '@langchain/core/messages';
 
 export const fetchUserInfo = async (email: string) => {
@@ -252,6 +252,30 @@ export const fetchListing = async ({ ids }: FetchListingType) => {
   }
 };
 
+export const fetchListingByPublicId = async (public_id: string)=>{
+  try{
+    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/listing/fetch/by-public-id`,{
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({public_id})
+    })
+    const data = await response.json();
+
+    if (response.status === 200) {
+      return { status: 200, data };
+    } else {
+      console.error('Error fetching listing');
+      console.log(public_id)
+      return { status: response.status, message: data.message || 'Error fetching listing' };
+    }
+  } catch (error) {
+    console.error('Error fetching listing:', error);
+    return { status: 500, message: 'Internal server error' };
+  }
+}
+
 // REPORT FUNCTIONS
 export const checkReport = async (listingId: string, userId: string) => {
   const response = await fetch(`/api/report/check`, {
@@ -356,4 +380,13 @@ export const fetchEnvData = async(listing_id: string) => {
   } else {
     return null
   }
+}
+
+// PUBLIC ANALYTIC RELATED
+export const updateInteraction = async ({public_id, interaction}:{public_id:string, interaction: ActionAnalyticObject | SectionAnalyticObject}) =>{
+  // WRITE CODE TO HANDLE BOTH TYPES OF OBJ
+  const response = await fetch(`/api/analytics/update`, {
+    method: 'POST',
+    body: JSON.stringify({public_id, interaction})
+  }) 
 }

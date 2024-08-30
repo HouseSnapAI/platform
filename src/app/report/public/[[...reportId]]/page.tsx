@@ -48,7 +48,7 @@ const ReportPage = ({ params }: ReportPageProps) => {
   }
 
   return (
-    <Box className='w-[100vw] h-[100vh] bg-black p-4'>
+    <Box className='w-[100vw] h-[100vh] bg-black flex flex-col items-center justify-center'>
         <Overview data={report} listing={listing} crimeData={crimeData} envData={envData} />
     </Box>
   );

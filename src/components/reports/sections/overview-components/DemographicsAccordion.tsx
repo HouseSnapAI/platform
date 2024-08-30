@@ -80,6 +80,7 @@ const DemographicsAccordion = ({censusData, listing}: {censusData: CensusData, l
               expandIcon={<ExpandMoreIcon sx={{ color: 'white' }} />}
               aria-controls="demographics-content"
               id="demographics-header"
+              className='bg-[#6f6f6f]/10'
             >
               <Typography>Demographics</Typography>
             </AccordionSummary>

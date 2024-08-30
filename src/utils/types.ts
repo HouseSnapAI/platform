@@ -524,3 +524,22 @@ export type HomeDetails = {
     score: string
   }
 }
+
+// Analytics Related
+export type ActionAnalyticObject = {
+  name: string,
+  email: string,
+  location: string,
+  action: string,
+  section: string,
+  date: string
+}
+
+export type SectionAnalyticObject = {
+  name: string,
+  email: string,
+  location: string,
+  section: string,
+  duration: string,
+  date: string
+}

@@ -22,26 +22,11 @@ import TextField from '@mui/material/TextField';
 // ** Style Import
 import { theme } from '@/utils/theme';
 
+// ** Type Imports
+import { ActionAnalyticObject, SectionAnalyticObject } from '@/utils/types';
+
 type AnalyticConfigObject = {
     name: string
-}
-
-type ActionAnalyticObject = {
-    name: string,
-    email: string,
-    location: string,
-    action: string,
-    section: string,
-    date: string
-}
-
-type SectionAnalyticObject = {
-    name: string,
-    email: string,
-    location: string,
-    section: string,
-    duration: string,
-    date: string
 }
 
 const ReportAnalytics = () => {

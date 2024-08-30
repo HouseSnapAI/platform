@@ -24,6 +24,7 @@ const ListingAccordion = ({listing}: {listing: ListingType}) => {
             expandIcon={<ExpandMoreIcon sx={{ color: 'white' }} />}
             aria-controls="listing-details-content"
             id="listing-details-header"
+            className='bg-[#6f6f6f]/10'
         >
             <Typography>Listing Details</Typography>
         </AccordionSummary>

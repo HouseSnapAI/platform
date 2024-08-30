@@ -74,7 +74,8 @@ const CrimeDataAccordion = ({crimeData, crimeScore}: {crimeData: CrimeDataType, 
       expandIcon={<ExpandMoreIcon sx={{ color: 'white' }} />}
       aria-controls="crime-data-content"
       id="crime-data-header"
-    >
+      className='bg-[#6f6f6f]/10'
+      >
       <Typography>Crime Data</Typography>
     </AccordionSummary>
     <AccordionDetails>

@@ -77,9 +77,10 @@ const AgentCard = ({listing}: {listing: ListingType}) => {
 
           {/* Bid an Offer Button */}
           <Button variant="contained" color="primary" className="mt-4" sx={{textTransform: 'none'}} endIcon={<IconSparkles size={14} color='white' strokeWidth={1.5} />}>
-            HouseSnap Suggested Offers 
+            Bid Offer 
           </Button>
-          {/* Chat Interface */}
+
+          {/* Dummy Chat Interface */}
           <Box className="w-full px-4 py-2 overflow-y-hidden mt-4" sx={{ backgroundColor: theme.palette.background.paper }}>
             <Box className='w-full h-full overflow-x-hidden overflow-y-auto hide-scrollbar flex items-center justify-center'>
               <Box className='w-[90%] h-full py-3 gap-[15px] flex flex-col'>

@@ -58,6 +58,7 @@ const DisclosureAccordion = ({ disclosureData }: DisclosureAccordionProps) => {
         expandIcon={<ExpandMoreIcon sx={{ color: 'white' }} />}
         aria-controls="disclosure-content"
         id="disclosure-header"
+        className='bg-[#6f6f6f]/10'
       >
         <Typography>Disclosure</Typography>
       </AccordionSummary>

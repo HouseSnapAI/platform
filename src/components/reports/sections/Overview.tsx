@@ -27,11 +27,10 @@ import DisclosureAccordion from './overview-components/DisclosureAccordion';
 
 // ** Chart.js Imports
 import { Chart, CategoryScale, LinearScale, PointElement, LineController, LineElement, ArcElement, Tooltip, Legend, BarElement } from 'chart.js';
+import EnvironmentalAccordion from './overview-components/EnvironmentalAccordion';
 
 // Register the "category" scale
 Chart.register(CategoryScale, LinearScale, PointElement, LineController, LineElement, ArcElement, Tooltip, Legend, BarElement);
-
-
 
 type OverviewProps = {
     data: Report
@@ -76,6 +75,9 @@ const Overview = ({ data, listing, crimeData, envData }: OverviewProps) => {
 
           {/* Crime Data Accordion */}
           <CrimeDataAccordion crimeData={crimeData} crimeScore={data.crime_score} />
+
+          {/* Environmental Data Accordion */}
+          <EnvironmentalAccordion envData={envData} data={data} />
 
           {/* Disclosure Packet */}
           <DisclosureAccordion disclosureData={disclosureData} />
