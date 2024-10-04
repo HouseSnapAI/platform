@@ -202,7 +202,8 @@ export type Report = {
   rent_cash_flow: string, // JSON string
   home_details: string, // JSON string
   status: string,
-  flags: string[]
+  flags: string[],
+  public_id: string
 }
 
 export type TopSchools = {

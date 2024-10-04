@@ -306,7 +306,6 @@ export const checkReportByListing = async (listingId: string, userId: string) =>
 
 export const fetchReport = async (listing_id: string) => {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-  console.log("LISINTGID", listing_id)
   const response = await fetch(`${baseUrl}/api/report/fetch`, {
     method: 'POST',
     headers: {
@@ -321,6 +320,22 @@ export const fetchReport = async (listing_id: string) => {
 
   return response.json();
 };
+
+export const fetchReportsByPublicId = async(public_id: string) => {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+
+  const response = await fetch(`${baseUrl}/api/report/fetch/by-public-id`, {
+    method: 'POST',
+    body: JSON.stringify({ public_id: public_id }),
+  });
+
+  if (response.status === 200) {
+    const data = await response.json()
+    return data;
+  } else {
+    return null
+  }
+}
 
 export const fetchReportsByUser = async(user_id: string) => {
   const response = await fetch(`/api/report/fetch/by-user`, {

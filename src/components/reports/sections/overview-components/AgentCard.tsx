@@ -1,5 +1,6 @@
 // ** Next Imports
 import React from 'react'
+import LinkIcon from '@mui/icons-material/Link';
 
 // ** MUI Imports
 import Typography from '@mui/material/Typography'
@@ -18,7 +19,7 @@ import { IconBrandInstagram, IconBrandTwitter, IconSend, IconSparkles, IconWorld
 // ** Type Imports
 import { ListingType } from '@/utils/types';
 
-const AgentCard = ({listing}: {listing: ListingType}) => {
+const AgentCard = ({listing, isPublic, public_id}: {listing: ListingType, isPublic: boolean, public_id: string}) => {
     const theme = useTheme();
   return (
     <Box className="w-full py-2 flex flex-col gap-2 px-2">
@@ -76,9 +77,14 @@ const AgentCard = ({listing}: {listing: ListingType}) => {
           </Box>
 
           {/* Bid an Offer Button */}
-          <Button variant="contained" color="primary" className="mt-4" sx={{textTransform: 'none'}} endIcon={<IconSparkles size={14} color='white' strokeWidth={1.5} />}>
-            Bid Offer 
-          </Button>
+           {!isPublic ? 
+           <Button className="flex gap-2" variant="contained" color="primary" sx={{ textTransform: 'none' }} onClick={() => window.open(`/report/public/${public_id}`, '_blank')}>
+              <LinkIcon style={{ cursor: 'pointer', color: theme.palette.text.primary }} />
+            <Typography>Open Public Link</Typography>
+          </Button> : 
+           <Button variant="contained" color="primary" className="mt-4" sx={{textTransform: 'none'}} endIcon={<IconSparkles size={14} color='white' strokeWidth={1.5} />}>
+              Bid Offer 
+            </Button>}
 
           {/* Dummy Chat Interface */}
           <Box className="w-full px-4 py-2 overflow-y-hidden mt-4" sx={{ backgroundColor: theme.palette.background.paper }}>

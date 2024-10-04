@@ -68,7 +68,7 @@ const ReportPage = () => {
   const renderTabContent = () => {
     switch (selectedTab) {
       case 0:
-        return <Overview data={data as Report} listing={listing as ListingType} crimeData={crimeData as CrimeDataType} envData={envData as EnvDataType} />;
+        return <Overview data={data as Report} listing={listing as ListingType} crimeData={crimeData as CrimeDataType} envData={envData as EnvDataType} isPublic={false} />;
       case 1:
         return <MarketTrends data={data as Report} listing={listing as ListingType} />;
       case 2:
@@ -80,7 +80,7 @@ const ReportPage = () => {
       case 5:
         return <SafetyPage envData={envData} crimeData={crimeData} data={data as Report} listing={listing as ListingType} />
       default:
-        return <Overview data={data as Report} listing={listing as ListingType} crimeData={crimeData as CrimeDataType} envData={envData as EnvDataType} />;
+        return <Overview data={data as Report} listing={listing as ListingType} crimeData={crimeData as CrimeDataType} envData={envData as EnvDataType} isPublic={false} />;
     }
   };
 
