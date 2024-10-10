@@ -19,7 +19,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { TopSchools } from '@/utils/types'
 import { IconPlus, IconMinus } from '@tabler/icons-react'
 
-const SchoolScoresAccordion = ({topSchools, schoolScore}: {topSchools: TopSchools, schoolScore: number}) => {
+const SchoolScoresAccordion = ({topSchools, schoolScore }: {topSchools: TopSchools, schoolScore: number}) => {
 
 const theme = useTheme()
 
@@ -35,7 +35,7 @@ const theme = useTheme()
     </AccordionSummary>
     <AccordionDetails>
       <Box>
-        <Typography fontSize={16} fontWeight={600} sx={{ marginBottom: 2 }}>Overall School Score: {schoolScore.toFixed(0)}</Typography>
+        <Typography fontSize={16} fontWeight={600} sx={{ marginBottom: 2 }}>Overall School Score: {schoolScore.toFixed(0) || 0}</Typography>
         {['elementary', 'middle', 'high'].map((level) => (
           <Accordion key={level}>
             <AccordionSummary
